@@ -8,20 +8,65 @@
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    integrity="sha512-papbNFQ1+I2ph3MsO39pKExCphEMOJnsbKfSyK6fLXq+W80yt4Nk0c7Vlg5SZPnLJTXkYu+gvzG6zYdyTGA6ew=="
     crossorigin="anonymous"
-    referrerpolicy="no-referrer"
   />
+  <style>
+    /* Temporary fixes for no images */
+    .header-slash {
+      background: linear-gradient(135deg, #f26522 50%, #fff 50%);
+      height: 120px;
+      width: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 1;
+      border-bottom-left-radius: 80px;
+    }
+    .logo-text {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--primary-color);
+      font-family: var(--font-main);
+    }
+    .hero {
+      background-color: var(--light-gray);
+      height: 300px;
+      position: relative;
+      border-radius: 10px;
+      margin-bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      color: var(--secondary-color);
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    .hero h2 {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+    .hero p {
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .phone-button {
+      position: relative;
+      z-index: 2;
+    }
+  </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-slash">
-      <img src="slash.svg" alt="Decorative slash" class="slash-img" />
-    </div>
-    <div class="container header-content">
-      <a href="/" aria-label="Beenleigh Skip Bins Home">
-        <img src="logo.png" alt="Beenleigh Skip Bins Logo" class="logo-img" />
-      </a>
+  <header class="header" style="position: relative; padding-top: 120px;">
+    <div class="header-slash"></div>
+
+    <div class="container header-content" style="position: relative; z-index: 2;">
+      <a href="/" aria-label="Beenleigh Skip Bins Home" class="logo-text">Beenleigh Skip Bins</a>
 
       <nav class="nav-desktop" role="navigation" aria-label="Primary Navigation">
         <ul class="nav-list">
@@ -54,16 +99,13 @@
   </header>
 
   <main>
-    <section class="hero">
-      <img src="skip-bin-beenleigh.jpg" alt="Skip bins in Beenleigh" class="hero-img" />
-      <div class="hero-content">
-        <h1>Affordable, Reliable Skip Bin Hire</h1>
-        <h2>Beenleigh, Logan & Northern Gold Coast</h2>
-        <p>Book online or call us today for your skip bin needs.</p>
-      </div>
+    <section class="hero" role="banner">
+      <h1>Affordable, Reliable Skip Bin Hire</h1>
+      <h2>Beenleigh, Logan & Northern Gold Coast</h2>
+      <p>Book online or call us today for your skip bin needs.</p>
     </section>
 
-    <section class="booking-section">
+    <section class="booking-section" aria-label="Booking Section">
       <p><em>VIEW SKIP BIN PRICES & HIRE ONLINE INSTANTLY</em></p>
       <form class="booking-form" action="/booking" method="GET" aria-label="Skip bin booking form">
         <div class="form-group">
@@ -84,7 +126,7 @@
       </form>
     </section>
 
-    <section class="cta-section">
+    <section class="cta-section" aria-label="Call to Action Section">
       <h2>PREFER TO CALL?</h2>
       <p>If you would prefer to speak to <strong>our customer service team</strong> and book your skip bin hire over the phone, please call us directly.</p>
       <a href="tel:0499259837" class="phone-button" aria-label="Call Beenleigh Skip Bins">
@@ -113,7 +155,7 @@
     </section>
   </main>
 
-  <footer class="cta-section">
+  <footer class="cta-section" role="contentinfo" style="text-align:center; font-size: 0.9rem; padding: 20px 0; background: #f5f6f7;">
     <p>© 2025 Beenleigh Skip Bins. All rights reserved.</p>
   </footer>
 </body>
