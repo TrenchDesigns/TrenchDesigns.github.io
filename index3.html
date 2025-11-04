@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trench Landscapes - Demo</title>
+<style>
+  /* Reset & base */
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  body {
+    background: #f9f9f7;
+    color: #2b3e2e;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  a {
+    color: #386641;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  a:hover {
+    color: #6a994e;
+  }
+
+  /* Header */
+  header {
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.05);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  header img {
+    height: 50px;
+  }
+  .contact {
+    font-size: 0.9rem;
+    color: #6a994e;
+  }
+  nav ul {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+  nav li {
+    font-weight: 600;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center center/cover no-repeat;
+    height: 320px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: rgba(39, 79, 40, 0.6);
+    z-index: 0;
+  }
+  .hero h1 {
+    position: relative;
+    font-size: 2.5rem;
+    max-width: 90%;
+    text-align: center;
+    z-index: 1;
+    font-weight: 700;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+  }
+
+  /* Main content */
+  main {
+    flex: 1;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  /* Welcome Section */
+  .welcome {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+  .welcome img {
+    width: 280px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(54, 102, 38, 0.3);
+  }
+  .welcome-text {
+    flex: 1;
+    min-width: 280px;
+  }
+  .welcome-text h2 {
+    color: #386641;
+    margin-bottom: 1rem;
+  }
+  .welcome-text p {
+    font-size: 1rem;
+    color: #4a5d41;
+  }
+
+  /* Services */
+  .services {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .service-card {
+    background: #e6f0d4;
+    padding: 1.2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgb(54 102 38 / 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+  }
+  .service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgb(54 102 38 / 0.2);
+  }
+  .service-card h3 {
+    margin-bottom: 0.5rem;
+    color: #386641;
+  }
+  .service-card p {
+    color: #4a5d41;
+    font-size: 0.95rem;
+  }
+
+  /* Booking Section */
+  .booking {
+    background: #d1e7c2;
+    padding: 2rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(54, 102, 38, 0.25);
+    max-width: 600px;
+    margin: 0 auto 3rem auto;
+    text-align: center;
+  }
+  .booking h2 {
+    margin-bottom: 1rem;
+    color: #386641;
+  }
+  .booking label {
+    display: inline-block;
+    margin: 0.5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #2b3e2e;
+    user-select: none;
+  }
+  .booking input[type="radio"] {
+    margin-right: 0.3rem;
+    cursor: pointer;
+  }
+  #bookBtn {
+    margin-top: 1.5rem;
+    padding: 0.8rem 1.8rem;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: #6a994e;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 15px #6a994eaa;
+    display: none;
+    transition: background 0.3s ease;
+  }
+  #bookBtn:hover {
+    background: #386641;
+  }
+
+  /* Footer */
+  footer {
+    background: #386641;
+    color: white;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  footer a {
+    color: #d9e4dd;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .welcome {
+      flex-direction: column;
+    }
+    .welcome img {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://i.imgur.com/IuC6ZGi.png" alt="Trench Logo" />
+  <div class="contact">
+    Call us: <a href="tel:+61738792433">07 0000 0000</a> | 
+    <a href="https://www.facebook.com/TRCHLandscapes" target="_blank" rel="noopener">Facebook</a>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Testimonials</a></li>
+      <li><a href="#">Gallery</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Inspired Outdoor Living with Trench</h1>
+</section>
+
+<main>
+  <section class="welcome">
+    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Beautiful Landscape" />
+    <div class="welcome-text">
+      <h2>Welcome to Trench Landscapes</h2>
+      <p>Creating beautiful, sustainable, and inspiring outdoor spaces in Queensland. Our expert team works with you to design and maintain your dream garden, lawn, or landscape — tailored to your lifestyle and environment.</p>
+    </div>
+  </section>
+
+  <section class="services" aria-label="Landscaping services">
+    <div class="service-card">
+      <h3>Lawn Maintenance</h3>
+      <p>Regular mowing, fertilizing, and weed control to keep your lawn healthy and vibrant all year round.</p>
+    </div>
+    <div class="service-card">
+      <h3>Garden Design</h3>
+      <p>Custom landscape planning to transform your outdoor space with native plants, trees, and hardscapes.</p>
+    </div>
+    <div class="service-card">
+      <h3>Irrigation Solutions</h3>
+      <p>Efficient watering systems to conserve water while keeping your garden lush and green.</p>
+    </div>
+    <div class="service-card">
+      <h3>Outdoor Living Spaces</h3>
+      <p>Decks, patios, and seating areas designed for relaxing and entertaining outdoors.</p>
+    </div>
+  </section>
+
+  <section class="booking" aria-label="Book landscaping service">
+    <h2>Book Your Lawn Care</h2>
+    <p>Select your approximate lawn size to get a personalized quote:</p>
+    <form id="bookingForm">
+      <label><input type="radio" name="lawnSize" value="Small (up to 200 m²)" /> Small (up to 200 m²)</label>
+      <label><input type="radio" name="lawnSize" value="Medium (200 - 500 m²)" /> Medium (200 - 500 m²)</label>
+      <label><input type="radio" name="lawnSize" value="Large (500+ m²)" /> Large (500+ m²)</label>
+      <br />
+      <button id="bookBtn" type="button" onclick="alert('Thanks for booking! We will contact you soon.');">Book Now</button>
+    </form>
+  </section>
+</main>
+
+  <footer>
+<footer style="
+  background-color: #386641;
+  color: #d9e4dd;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.15);
+">
+  <p>
+    &copy; 2025 <strong>GreenTheme</strong> by Sebastian Trench Designs &mdash; Trench Landscaping &mdash; All Rights Reserved
+  </p>
+</footer>
+
+
+<script>
+  const bookingForm = document.getElementById('bookingForm');
+  const bookBtn = document.getElementById('bookBtn');
+
+  bookingForm.addEventListener('change', () => {
+    const selected = bookingForm.lawnSize.value;
+    if (selected) {
+      bookBtn.style.display = 'inline-block';
+    } else {
+      bookBtn.style.display = 'none';
+    }
+  });
+</script>
+
+</body>
+</html>
