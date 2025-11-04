@@ -1,162 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Beenleigh Skip Bins | Reliable Skip Bin Hire</title>
-  <link rel="stylesheet" href="style.css" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    crossorigin="anonymous"
-  />
-  <style>
-    /* Temporary fixes for no images */
-    .header-slash {
-      background: linear-gradient(135deg, #f26522 50%, #fff 50%);
-      height: 120px;
-      width: 100%;
-      position: absolute;
-      top: 0; left: 0;
-      z-index: 1;
-      border-bottom-left-radius: 80px;
-    }
-    .logo-text {
-      font-size: 2rem;
-      font-weight: 900;
-      color: var(--primary-color);
-      font-family: var(--font-main);
-    }
-    .hero {
-      background-color: var(--light-gray);
-      height: 300px;
-      position: relative;
-      border-radius: 10px;
-      margin-bottom: 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
-      color: var(--secondary-color);
-    }
-    .hero h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-    .hero h2 {
-      font-size: 1.5rem;
-      color: var(--primary-color);
-      margin-bottom: 15px;
-    }
-    .hero p {
-      font-size: 1rem;
-      line-height: 1.6;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .phone-button {
-      position: relative;
-      z-index: 2;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MySite</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <header class="header" style="position: relative; padding-top: 120px;">
-    <div class="header-slash"></div>
 
-    <div class="container header-content" style="position: relative; z-index: 2;">
-      <a href="/" aria-label="Beenleigh Skip Bins Home" class="logo-text">Beenleigh Skip Bins</a>
-
-      <nav class="nav-desktop" role="navigation" aria-label="Primary Navigation">
-        <ul class="nav-list">
-          <li><a href="/" class="active">Home</a></li>
-          <li class="dropdown">
-            <a href="#" aria-haspopup="true" aria-expanded="false">Skip Bin Info <i class="fa fa-caret-down"></i></a>
-            <ul class="dropdown-menu" aria-label="submenu">
-              <li><a href="/skip-bin-sizes.html">Bin Sizes</a></li>
-              <li><a href="/waste-types.html">Waste Types</a></li>
-              <li><a href="/hire-tips.html">Hire Tips</a></li>
-            </ul>
-          </li>
-          <li class="dropdown">
-            <a href="#" aria-haspopup="true" aria-expanded="false">Service Areas <i class="fa fa-caret-down"></i></a>
-            <ul class="dropdown-menu" aria-label="submenu">
-              <li><a href="/beenleigh.html">Beenleigh</a></li>
-              <li><a href="/logan.html">Logan</a></li>
-              <li><a href="/gold-coast.html">Northern Gold Coast</a></li>
-            </ul>
-          </li>
-          <li><a href="/about.html">About</a></li>
-          <li><a href="/contact.html">Contact</a></li>
-        </ul>
-      </nav>
-
-      <a href="tel:0499259837" class="phone-button" aria-label="Call Beenleigh Skip Bins">
-        <i class="fa fa-phone"></i> 0499 259 837
-      </a>
+<!-- ================= Header ================= -->
+<header class="header">
+  <div class="container header-content">
+    <!-- Logo -->
+    <div class="logo">
+      <h1>MySite</h1>
     </div>
-  </header>
 
-  <main>
-    <section class="hero" role="banner">
-      <h1>Affordable, Reliable Skip Bin Hire</h1>
-      <h2>Beenleigh, Logan & Northern Gold Coast</h2>
-      <p>Book online or call us today for your skip bin needs.</p>
-    </section>
+    <!-- Desktop Navigation -->
+    <nav class="nav-desktop">
+      <ul class="nav-list">
+        <li><a href="#" class="active">Home</a></li>
+        <li class="dropdown">
+          <a href="#">Services</a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Web Design</a></li>
+            <li><a href="#">SEO</a></li>
+            <li><a href="#">Marketing</a></li>
+          </ul>
+        </li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
 
-    <section class="booking-section" aria-label="Booking Section">
-      <p><em>VIEW SKIP BIN PRICES & HIRE ONLINE INSTANTLY</em></p>
-      <form class="booking-form" action="/booking" method="GET" aria-label="Skip bin booking form">
-        <div class="form-group">
-          <label for="location">Where</label>
-          <input type="text" id="location" name="location" placeholder="Enter your postcode & suburb" required />
-        </div>
-        <div class="form-group">
-          <label for="waste-type">Waste Type</label>
-          <select id="waste-type" name="waste-type" required>
-            <option value="" disabled selected>Select your waste type</option>
-            <option value="general">General Waste</option>
-            <option value="green">Green Waste</option>
-            <option value="rubble">Rubble</option>
-            <option value="mixed">Mixed Waste</option>
-          </select>
-        </div>
-        <button type="submit" class="button">VIEW PRICES</button>
-      </form>
-    </section>
+    <!-- Phone Button -->
+    <a href="tel:1234567890" class="phone-button">
+      <i class="fas fa-phone"></i> Call Us
+    </a>
 
-    <section class="cta-section" aria-label="Call to Action Section">
-      <h2>PREFER TO CALL?</h2>
-      <p>If you would prefer to speak to <strong>our customer service team</strong> and book your skip bin hire over the phone, please call us directly.</p>
-      <a href="tel:0499259837" class="phone-button" aria-label="Call Beenleigh Skip Bins">
-        <i class="fa fa-phone"></i> 0499 259 837
-      </a>
-    </section>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+  </div>
 
-    <section class="features-section container" aria-label="Why choose us">
-      <article class="feature" role="region" aria-labelledby="feature1-title">
-        <div class="feature-icon"><i class="fa fa-check"></i></div>
-        <h4 id="feature1-title">Convenient Bin Sizes</h4>
-        <p>We have a range of bin sizes to suit any type of demolition, construction, or clean-up project.</p>
-      </article>
+  <!-- Mobile Menu -->
+  <nav class="mobile-menu">
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li class="mobile-dropdown">
+        <a href="#">Services <i class="fas fa-caret-down"></i></a>
+        <ul>
+          <li><a href="#">Web Design</a></li>
+          <li><a href="#">SEO</a></li>
+          <li><a href="#">Marketing</a></li>
+        </ul>
+      </li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+</header>
 
-      <article class="feature" role="region" aria-labelledby="feature2-title">
-        <div class="feature-icon"><i class="fa fa-check"></i></div>
-        <h4 id="feature2-title">All Waste Types</h4>
-        <p>Skip bins are available for most waste types including general waste, light green waste, mixed waste, and rubble.</p>
-      </article>
+<!-- ================= Hero Section ================= -->
+<section class="hero">
+  <div class="container hero-content">
+    <h1>Welcome to MySite</h1>
+    <h2>Professional Services</h2>
+    <p>Providing top-notch solutions to boost your business online.</p>
+  </div>
+</section>
 
-      <article class="feature" role="region" aria-labelledby="feature3-title">
-        <div class="feature-icon"><i class="fa fa-check"></i></div>
-        <h4 id="feature3-title">Reliable Service</h4>
-        <p>Trusted by customers across Beenleigh and Logan for timely deliveries and efficient pickups.</p>
-      </article>
-    </section>
-  </main>
+<!-- ================= Booking Section ================= -->
+<section class="booking-section">
+  <div class="container">
+    <p>Book your consultation now!</p>
+    <form class="booking-form">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Your Name">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Your Email">
+      </div>
+      <div class="form-group">
+        <label for="service">Service</label>
+        <select id="service">
+          <option>Web Design</option>
+          <option>SEO</option>
+          <option>Marketing</option>
+        </select>
+      </div>
+      <button type="submit" class="button"><i class="fas fa-calendar-alt"></i> Book Now</button>
+    </form>
+  </div>
+</section>
 
-  <footer class="cta-section" role="contentinfo" style="text-align:center; font-size: 0.9rem; padding: 20px 0; background: #f5f6f7;">
-    <p>© 2025 Beenleigh Skip Bins. All rights reserved.</p>
-  </footer>
+<!-- ================= CTA Section ================= -->
+<section class="cta-section">
+  <div class="container cta-content">
+    <h3>Ready to Grow Your Business?</h3>
+    <p>Contact us today and get a free consultation for your project. Let’s achieve your goals together!</p>
+    <a href="#" class="book-button"><i class="fas fa-phone"></i> Get Started</a>
+  </div>
+</section>
+
+<!-- ================= Features Section ================= -->
+<section class="features-section">
+  <div class="container">
+    <div class="feature">
+      <div class="feature-icon"><i class="fas fa-laptop-code"></i></div>
+      <h4>Web Design</h4>
+      <p>Beautiful, responsive, and modern websites tailored to your needs.</p>
+      <a href="#" class="more-button">Learn More</a>
+    </div>
+    <div class="feature">
+      <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+      <h4>SEO Optimization</h4>
+      <p>Boost your online presence and improve your Google ranking.</p>
+      <a href="#" class="more-button">Learn More</a>
+    </div>
+    <div class="feature">
+      <div class="feature-icon"><i class="fas fa-bullhorn"></i></div>
+      <h4>Marketing</h4>
+      <p>Effective strategies to grow your brand and reach new audiences.</p>
+      <a href="#" class="more-button">Learn More</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Reviews Section ================= -->
+<section class="reviews-section">
+  <div class="container">
+    <h2>What Our <span>Clients Say</span></h2>
+    <p>"Excellent service and amazing support!" – Client A</p>
+    <p>"Highly professional team, great results." – Client B</p>
+  </div>
+</section>
+
+<!-- ================= JS for Mobile Menu ================= -->
+<script>
+  // Mobile Menu Toggle
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+  const mobileMenu = document.querySelector('.mobile-menu');
+  mobileToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('active');
+    document.body.classList.toggle('menu-open');
+  });
+
+  // Mobile Dropdown Toggle
+  const mobileDropdowns = document.querySelectorAll('.mobile-dropdown > a');
+  mobileDropdowns.forEach(drop => {
+    drop.addEventListener('click', e => {
+      e.preventDefault();
+      const submenu = drop.nextElementSibling;
+      submenu.classList.toggle('active');
+      drop.querySelector('i').classList.toggle('fa-caret-up');
+    });
+  });
+</script>
+
 </body>
 </html>
