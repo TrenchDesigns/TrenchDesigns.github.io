@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trench Detailing</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body, html { margin:0; padding:0; font-family:'Montserrat', sans-serif; background:#111; color:white; }
+h1,h2 { text-align:center; margin:0.5em 0; }
+h1 { font-size:2.5rem; color:#00c6ff; text-shadow:0 0 15px rgba(0,198,255,0.7);}
+h2 { font-size:2rem; color:#ff4d4d; text-shadow:0 0 10px rgba(255,77,77,0.7);}
+p { text-align:center; color:#ccc; line-height:1.5; }
+
+header {
+  background: linear-gradient(135deg, #1a1a1a, #0f2027);
+  padding:4rem 1rem 6rem 1rem;
+  position:relative;
+  overflow:hidden;
+}
+header .hero-text { max-width:700px; margin:0 auto; animation:dropIn 1s ease forwards; opacity:0; }
+@keyframes dropIn { 0% { transform:translateY(-50px); opacity:0; } 100% { transform:translateY(0); opacity:1; } }
+
+.services-container { display:flex; justify-content:center; flex-wrap:wrap; gap:2rem; padding:4rem 1rem; }
+.service-card { width:250px; height:300px; perspective:1000px; }
+.service-card-inner { position:relative; width:100%; height:100%; text-align:center; transition: transform 0.8s; transform-style: preserve-3d; cursor:pointer; }
+.service-card:hover .service-card-inner { transform: rotateY(180deg); }
+.service-card-front, .service-card-back {
+  position:absolute; width:100%; height:100%; border-radius:15px; backface-visibility:hidden;
+  box-shadow:0 0 20px #00c6ff, 0 0 40px rgba(0,198,255,0.2);
+}
+.service-card-front { background:#222; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+.service-card-front img { width:80%; border-radius:10px; margin-bottom:1rem; }
+.service-card-front h3 { color:#00c6ff; margin:0; }
+.service-card-back { background:#ff4d4d; color:white; transform:rotateY(180deg); display:flex; justify-content:center; align-items:center; padding:1rem; box-shadow:0 0 25px #ff1a1a, 0 0 50px rgba(255,0,0,0.3); }
+
+.widget-container { max-width:400px; margin:3rem auto; background:#111; padding:2rem; border-radius:15px; box-shadow:0 0 25px #00c6ff; }
+.widget-container h2 { font-size:1.5rem; color:#00c6ff; margin-bottom:1rem; }
+.widget-options { display:flex; justify-content:space-around; margin-bottom:1rem; flex-wrap:wrap; }
+.widget-options label { background:#222; padding:0.8rem 1rem; border-radius:10px; cursor:pointer; transition:0.3s; box-shadow:0 0 10px rgba(0,198,255,0.2); margin:0.3rem;}
+.widget-options input { margin-right:0.5rem; }
+.widget-options label:hover { box-shadow:0 0 25px #00c6ff; }
+.car-svg { display:block; margin:1rem auto; width:200px; height:auto; fill:#444; transition:fill 0.3s; }
+
+footer { text-align:center; padding:1rem; color:#777; background:#111; }
+
+@media(max-width:768px) {
+  .services-container { flex-direction:column; align-items:center; }
+  .widget-options { flex-direction:column; align-items:center; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero-text">
+    <h1>Trench Detailing</h1>
+    <p>Professional automotive detailing that brings your ride to life. Book your service and shine like never before!</p>
+  </div>
+</header>
+
+<section class="services-container">
+  <div class="service-card">
+    <div class="service-card-inner">
+      <div class="service-card-front">
+        <img src="media/1.png" alt="Exterior Detailing">
+        <h3>Exterior</h3>
+      </div>
+      <div class="service-card-back">
+        <p>Make your car shine like new with our premium exterior detailing.</p>
+      </div>
+    </div>
+  </div>
+  <div class="service-card">
+    <div class="service-card-inner">
+      <div class="service-card-front">
+        <img src="media/2.png" alt="Interior Detailing">
+        <h3>Interior</h3>
+      </div>
+      <div class="service-card-back">
+        <p>Deep clean and protect your car’s interior for a fresh, luxurious feel.</p>
+      </div>
+    </div>
+  </div>
+  <div class="service-card">
+    <div class="service-card-inner">
+      <div class="service-card-front">
+        <img src="media/3.png" alt="Engine Bay">
+        <h3>Engine Bay</h3>
+      </div>
+      <div class="service-card-back">
+        <p>Detail your engine bay safely to keep it spotless and performative.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="widget-container">
+  <h2>Select Your Detailing</h2>
+  <div class="widget-options">
+    <label><input type="checkbox" value="Exterior" onchange="togglePart('exterior', this.checked)">Exterior</label>
+    <label><input type="checkbox" value="Interior" onchange="togglePart('interior', this.checked)">Interior</label>
+    <label><input type="checkbox" value="Engine Bay" onchange="togglePart('engine', this.checked)">Engine Bay</label>
+  </div>
+  <svg class="car-svg" viewBox="0 0 200 100">
+    <rect id="exterior" x="10" y="50" width="180" height="20" fill="#444"/>
+    <rect id="interior" x="30" y="30" width="140" height="20" fill="#444"/>
+    <rect id="engine" x="70" y="10" width="60" height="20" fill="#444"/>
+  </svg>
+</section>
+
+<footer>
+  Powered by Trench Designs
+</footer>
+
+<script>
+function togglePart(partId, isChecked){
+  const part = document.getElementById(partId);
+  if(partId === 'engine'){
+    part.setAttribute('fill', isChecked ? '#ff6600' : '#444'); // orange/red for engine
+  } else {
+    part.setAttribute('fill', isChecked ? '#00c6ff' : '#444'); // blue for exterior/interior
+  }
+}
+</script>
+
+</body>
+</html>
