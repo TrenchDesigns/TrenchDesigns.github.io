@@ -28,10 +28,7 @@
   }
   header > * { position:relative; z-index:1; }
 
-  @keyframes dropIn { 
-    0% { transform: translateY(-50px); opacity:0; } 
-    100% { transform: translateY(0); opacity:1; } 
-  }
+  @keyframes dropIn { 0% { transform: translateY(-50px); opacity:0; } 100% { transform: translateY(0); opacity:1; } }
 
   .services { display:grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap:1rem; padding:2rem; }
   .card { perspective:1000px; }
@@ -50,62 +47,16 @@
   .card-front { background:#222; color:white; }
   .card-back { background:#00c6ff; color:#111; transform:rotateY(180deg); padding:1rem; text-align:center; }
 
-  /* === CAR WIDGET === */
-  .car-widget {
-    background:#1a1a1a;
-    padding:1rem;
-    margin:2rem auto;
-    border-radius:10px;
-    max-width:400px;
-    text-align:center;
-    box-shadow:0 0 15px #00c6ff;
-  }
-  .car-widget h2 { margin-bottom:0.8rem; color:#00c6ff; }
-  .car-widget label { display:block; margin:0.6rem 0; cursor:pointer; font-weight:500; }
+  .car-widget { background:#1a1a1a; padding:1rem; margin:2rem auto; border-radius:10px; max-width:400px; text-align:center; box-shadow:0 0 15px #00c6ff; }
+  .car-widget label { display:block; margin:0.5rem 0; cursor:pointer; }
   .car-svg { width:200px; height:100px; margin:1rem auto; display:block; }
+  .highlight { fill:transparent; transition: fill 0.3s; }
 
-  .highlight {
-    fill:transparent;
-    transition: all 0.4s ease;
-    stroke:#00c6ff;
-    stroke-width:1.5;
-    opacity:0.6;
-  }
-  .highlight.active {
-    fill:#00c6ff;
-    stroke:#00e0ff;
-    opacity:1;
-    filter: drop-shadow(0 0 8px #00c6ff);
-  }
-
-  #bookBtn {
-    display:none;
-    margin-top:1rem;
-    background:#00c6ff;
-    border:none;
-    padding:0.8rem 1.5rem;
-    font-weight:700;
-    border-radius:10px;
-    cursor:pointer;
-    box-shadow:0 0 20px #00c6ff;
-    transition: all 0.3s ease;
-    opacity:0;
-    transform: translateY(10px);
-  }
-  #bookBtn.show {
-    display:block;
-    opacity:1;
-    transform: translateY(0);
-  }
-  #bookBtn:hover {
-    background:#00e0ff;
-    box-shadow:0 0 30px #00e0ff;
-  }
+  #bookBtn { display:none; margin-top:1rem; background:#00c6ff; border:none; padding:0.8rem 1.5rem; font-weight:700; border-radius:10px; cursor:pointer; box-shadow:0 0 20px #00c6ff; }
 
   footer { background:#111; color:#ccc; text-align:center; padding:2rem 1rem; margin-top:3rem; border-top:1px solid #00c6ff; }
   footer p { margin:0.5rem 0; font-size:0.9rem; }
-  footer ul { list-style:none; padding:0; margin:0.5rem 0 0 0; text-align:left; display:inline-block; }
-  footer ul li { margin:0.3rem 0; color:#bbb; }
+  footer ul { text-align:left; max-width:600px; margin:1rem auto; padding-left:1.2rem; }
 
   @media(max-width:600px){
     header h1 { font-size:2rem; }
@@ -161,10 +112,14 @@
   <label><input type="checkbox" value="Engine Bay" class="serviceCheckbox"> Engine Bay</label>
 
   <svg class="car-svg" viewBox="0 0 200 100">
-    <rect x="20" y="40" width="160" height="30" fill="#555"/>
-    <circle cx="50" cy="75" r="10" class="highlight"/>
-    <circle cx="150" cy="75" r="10" class="highlight"/>
-    <rect x="80" y="30" width="40" height="20" class="highlight"/>
+    <!-- Car body (Exterior) -->
+    <rect id="carBody" x="20" y="40" width="160" height="30" class="highlight"/>
+    <!-- Cabin (Interior) -->
+    <rect id="cabin" x="80" y="30" width="40" height="20" class="highlight"/>
+    <!-- Front wheel (Engine Bay) -->
+    <circle id="frontWheel" cx="50" cy="75" r="10" class="highlight"/>
+    <!-- Rear wheel -->
+    <circle id="rearWheel" cx="150" cy="75" r="10" class="highlight"/>
   </svg>
 
   <button id="bookBtn" onclick="goToBooking()">Book Now</button>
@@ -190,31 +145,49 @@
 <script>
 const checkboxes = document.querySelectorAll('.serviceCheckbox');
 const bookBtn = document.getElementById('bookBtn');
-const carHighlights = document.querySelectorAll('.car-svg .highlight');
 
-function updateSelection(){
-  const selected = [];
-  checkboxes.forEach((c, i) => {
-    if(c.checked){
-      selected.push(c.value);
-      carHighlights[i].classList.add('active');
+const highlights = {
+  'Exterior': document.getElementById('carBody'),
+  'Interior': document.getElementById('cabin'),
+  'Engine Bay': document.getElementById('frontWheel')
+};
+
+// Optional: make rear wheel glow if exterior selected
+const rearWheel = document.getElementById('rearWheel');
+
+function updateSelection() {
+  let anySelected = false;
+
+  checkboxes.forEach(c => {
+    if(c.checked) {
+      anySelected = true;
+      // Highlight the correct parts
+      if(highlights[c.value]) highlights[c.value].setAttribute('fill','#00c6ff');
+      if(c.value === 'Exterior') rearWheel.setAttribute('fill','#00c6ff');
     } else {
-      carHighlights[i].classList.remove('active');
+      if(highlights[c.value]) highlights[c.value].setAttribute('fill','transparent');
+      if(c.value === 'Exterior') rearWheel.setAttribute('fill','transparent');
     }
   });
 
-  if(selected.length > 0){
-    bookBtn.classList.add('show');
-  } else {
-    bookBtn.classList.remove('show');
-  }
+  // Show/hide button
+  bookBtn.style.display = anySelected ? 'block' : 'none';
 
+  // Save selection for persistence
+  const selected = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
   localStorage.setItem('trenchServices', JSON.stringify(selected));
 }
 
+// Restore selection from localStorage
+const saved = JSON.parse(localStorage.getItem('trenchServices') || '[]');
+checkboxes.forEach(c => {
+  if(saved.includes(c.value)) c.checked = true;
+});
+updateSelection();
+
 checkboxes.forEach(c => c.addEventListener('change', updateSelection));
 
-function goToBooking(){
+function goToBooking() {
   location.href = 'booking.html';
 }
 </script>
