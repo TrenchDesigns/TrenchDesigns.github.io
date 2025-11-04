@@ -2,31 +2,40 @@
 <html lang="en-AU">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Skip Bins Beenleigh & Logan - Beenleigh Skip Bins</title>
   <meta name="description" content="Affordable skip bin hire in Beenleigh, Logan, and northern Gold Coast. Book online or call 0499 259 837.">
+
+  <!-- SEO & Social -->
+  <link rel="canonical" href="https://www.beenleighskipbins.com.au/">
+  <meta property="og:title" content="Skip Bins Beenleigh & Logan - Beenleigh Skip Bins">
+  <meta property="og:description" content="Affordable skip bin hire in Beenleigh, Logan, and northern Gold Coast. Book online or call 0499 259 837.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.beenleighskipbins.com.au/">
+  <meta property="og:image" content="images/beenleigh-skips-hero.jpg">
+
+  <!-- Styles & Fonts -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
   <!-- Header -->
   <header class="header">
-    <div class="header-slash">
-      <img src="images/header-slash-large.png" alt="Decorative slash" class="slash-img">
-    </div>
-    <div class="header-content">
-      <a href="index4.html" class="logo">
+    <div class="header-content container">
+      <a href="index.html" class="logo">
         <img src="images/Beenleigh-Skip-Bins-logo.svg" alt="Beenleigh Skip Bins Logo" class="logo-img">
       </a>
       <a href="tel:0499259837" class="phone-button">
         <i class="fas fa-phone-alt"></i> 0499 259 837
       </a>
-      <nav class="nav-desktop">
+      <nav class="nav-desktop" aria-label="Primary Navigation">
         <ul class="nav-list">
-          <li><a href="index4.html" class="active">Home</a></li>
+          <li><a href="index.html" class="active">Home</a></li>
           <li class="dropdown">
             <a href="#">Skip Bin Info <i class="fas fa-caret-down"></i></a>
             <ul class="dropdown-menu">
@@ -46,7 +55,7 @@
           <li><a href="contact.html">Contact</a></li>
         </ul>
       </nav>
-      <button class="mobile-menu-toggle" aria-label="Toggle menu">
+      <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
         <i class="fas fa-bars"></i>
       </button>
     </div>
@@ -54,24 +63,29 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <img src="images/beenleigh-skips-mob-new.jpg" alt="Skip bins in Beenleigh" class="hero-img">
-    <div class="hero-content">
-      <h1>SKIP BIN HIRE BEENLEIGH</h1>
-      <h2>DOMESTIC - INDUSTRIAL - COMMERCIAL</h2>
-      <p>Beenleigh Skip Bins provides affordable and reliable skip bin hire services to customers throughout Beenleigh, Logan, and northern Gold Coast areas.</p>
+    <picture>
+      <source srcset="images/beenleigh-skips-hero-mobile.jpg" media="(max-width: 768px)">
+      <img src="images/beenleigh-skips-hero.jpg" alt="Skip bins in Beenleigh" class="hero-img">
+    </picture>
+    <div class="hero-content container">
+      <h1>Skip Bin Hire in Beenleigh & Logan</h1>
+      <h2>Domestic • Industrial • Commercial</h2>
+      <p>Affordable, reliable skip bin hire across Beenleigh, Logan, and northern Gold Coast. Book online or call us today.</p>
+      <a href="#booking" class="button hero-button">View Prices & Book Online</a>
     </div>
   </section>
 
-  <!-- Booking Form -->
-  <section class="booking-section">
-    <p><em><strong>VIEW SKIP BIN PRICES & HIRE ONLINE INSTANTLY</strong></em></p>
+  <!-- Booking Section -->
+  <section class="booking-section container" id="booking">
+    <h3>Get Your Skip Bin Quote Instantly</h3>
+    <p>Enter your location and waste type to see available bins and prices.</p>
     <form class="booking-form" action="bins.html" method="post">
       <div class="form-group">
-        <label><strong>Where</strong></label>
+        <label for="post_code"><strong>Where</strong></label>
         <input type="text" id="post_code" name="post_code" placeholder="Enter your postcode & suburb" required>
       </div>
       <div class="form-group">
-        <label><strong>Waste Type</strong></label>
+        <label for="waste_type"><strong>Waste Type</strong></label>
         <select id="waste_type" name="waste_type" required>
           <option value="">Select your waste type</option>
           <option value="28">General Waste</option>
@@ -81,130 +95,97 @@
         </select>
       </div>
       <div class="form-group">
-        <button type="submit" class="button">VIEW PRICES</button>
+        <button type="submit" class="button">View Prices</button>
       </div>
     </form>
   </section>
 
   <!-- Call to Action -->
   <section class="cta-section">
-    <div class="cta-content">
-      <h3>PREFER TO CALL?</h3>
-      <p>If you would prefer to speak to our customer service team and book your skip bin hire over the phone, please call us direct.</p>
-      <a href="tel:0499259837" class="phone-button">
-        <i class="fas fa-phone-alt"></i> 0499 259 837
-      </a>
+    <div class="cta-content container">
+      <h3>Prefer to Call?</h3>
+      <p>Speak directly with our team and book your skip bin over the phone.</p>
+      <a href="tel:0499259837" class="phone-button"><i class="fas fa-phone-alt"></i> 0499 259 837</a>
     </div>
   </section>
 
-  <!-- Features -->
-  <section class="features-section">
-    <div class="container">
+  <!-- Features Section -->
+  <section class="features-section container">
+    <h3>Why Choose Beenleigh Skip Bins?</h3>
+    <div class="features-grid">
       <div class="feature">
-        <div class="feature-icon">
-          <i class="fas fa-check"></i>
-        </div>
-        <h4>CONVENIENT BIN SIZES</h4>
-        <p>We have a range of bin sizes to suit any type of demolition, construction, or clean-up project.</p>
-        <a href="skip-bin-sizes.html" class="more-button">
-          <i class="fas fa-angle-right"></i> MORE INFO
-        </a>
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <h4>Convenient Bin Sizes</h4>
+        <p>From 2m³ to 10m³, we have a bin size suitable for every project.</p>
+        <a href="skip-bin-sizes.html" class="more-button"><i class="fas fa-angle-right"></i> More Info</a>
       </div>
       <div class="feature">
-        <div class="feature-icon">
-          <i class="fas fa-check"></i>
-        </div>
-        <h4>ALL WASTE TYPES</h4>
-        <p>Skip bins are available for most waste types including general waste, light demolition, green waste, and heavy or concrete waste.</p>
-        <a href="waste-types.html" class="more-button">
-          <i class="fas fa-angle-right"></i> MORE INFO
-        </a>
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <h4>All Waste Types</h4>
+        <p>General, green, heavy, and mixed construction waste – we handle it all.</p>
+        <a href="waste-types.html" class="more-button"><i class="fas fa-angle-right"></i> More Info</a>
       </div>
       <div class="feature">
-        <div class="feature-icon">
-          <i class="fas fa-check"></i>
-        </div>
-        <h4>NEXT DAY DELIVERY</h4>
-        <p>Being locally focused on Beenleigh, Logan & northern Gold Coast allows us to provide prompt, next-day delivery for most orders.</p>
-        <a href="hire-now.html" class="book-button">
-          <i class="fas fa-angle-right"></i> BOOK NOW
-        </a>
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <h4>Next Day Delivery</h4>
+        <p>Local focus ensures fast, next-day delivery for most orders.</p>
+        <a href="hire-now.html" class="book-button"><i class="fas fa-angle-right"></i> Book Now</a>
       </div>
     </div>
   </section>
 
-  <!-- Reviews -->
-  <section class="reviews-section">
-    <h2><span>FEATURED</span> REVIEWS</h2>
+  <!-- Reviews Section -->
+  <section class="reviews-section container">
+    <h3>Customer Reviews</h3>
     <div class="reviews-carousel">
       <div class="review">
-        <div class="review-content">
-          <p>"Chris was great to deal with. He was very helpful when placing the skip bin and collected quickly after we were finished. Thanks again, we look forward to using your company again in the future."</p>
-        </div>
-        <div class="review-author">
-          <h4>Brian</h4>
-          <p>Beenleigh Renovator</p>
-        </div>
+        <p>"Chris was great to deal with. He was very helpful when placing the skip bin and collected quickly after we were finished. Thanks again!"</p>
+        <div class="review-author"><h4>Brian</h4><p>Beenleigh Renovator</p></div>
       </div>
       <div class="review">
-        <div class="review-content">
-          <p>"I just wanted to pass on my thanks to the Beenleigh Skips team. Everyone I dealt with during our skip bin hire was friendly and helpful."</p>
-        </div>
-        <div class="review-author">
-          <h4>Michelle</h4>
-          <p>Beenleigh Home Owner</p>
-        </div>
+        <p>"I just wanted to pass on my thanks to the Beenleigh Skips team. Everyone I dealt with was friendly and helpful."</p>
+        <div class="review-author"><h4>Michelle</h4><p>Beenleigh Home Owner</p></div>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="footer">
+  <footer class="footer container">
     <div class="footer-content">
       <div class="footer-links">
-        <h4>QUICK LINKS</h4>
+        <h4>Quick Links</h4>
         <ul>
           <li><a href="hire-now.html">Hire Now</a></li>
           <li><a href="service-areas.html">Service Areas</a></li>
           <li><a href="skip-bin-sizes.html">Skip Bin Sizes</a></li>
           <li><a href="waste-types.html">Waste Types</a></li>
-          <li><a href="skip-bins-beenleigh.html">Skip Bins Beenleigh</a></li>
-          <li><a href="skip-bins-logan.html">Skip Bins Logan</a></li>
           <li><a href="faq.html">FAQ</a></li>
           <li><a href="reviews.html">Reviews</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
       </div>
-      <div class="footer-links">
-        <ul>
-          <li><a href="my-account.html">My Account</a></li>
-          <li><a href="privacy-policy.html">Privacy Policy</a></li>
-          <li><a href="terms-conditions.html">Terms & Conditions</a></li>
-        </ul>
-      </div>
       <div class="footer-brand">
         <img src="images/Beenleigh-Skip-Bins-logo.svg" alt="Beenleigh Skip Bins Logo" class="footer-logo">
-        <p>Skip bin hire services for customers in Beenleigh, Logan, and northern Gold Coast areas.</p>
-        <div class="contact-info">
-          <a href="tel:0499259837"><i class="fas fa-phone-alt"></i> 0499 259 837</a>
+        <p>Skip bin hire services for Beenleigh, Logan, and northern Gold Coast areas.</p>
+        <address>
+          <a href="tel:0499259837"><i class="fas fa-phone-alt"></i> 0499 259 837</a><br>
           <a href="mailto:info@beenleighskipbins.com.au"><i class="fas fa-paper-plane"></i> info@beenleighskipbins.com.au</a>
-        </div>
+        </address>
         <div class="social-icons">
-          <a href="https://facebook.com/beenleighskipbins" target="_blank"><i class="fab fa-facebook-f"></i></a>
-          <a href="https://instagram.com/beenleighskipbins" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://facebook.com/beenleighskipbins" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://instagram.com/beenleighskipbins" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>Copyright © 2025 Beenleigh Skip Bins</p>
-      <p>Website by <a href="https://alignmedia.com.au" target="_blank">Align Media</a></p>
+      <p>© 2025 Beenleigh Skip Bins | Website by <a href="https://alignmedia.com.au" target="_blank" rel="noopener">Align Media</a></p>
     </div>
   </footer>
 
-  <!-- Mobile Menu (hidden by default) -->
-  <div class="mobile-menu">
+  <!-- Mobile Menu -->
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile Navigation">
     <ul>
-      <li><a href="index4.html">Home</a></li>
+      <li><a href="index.html">Home</a></li>
       <li class="mobile-dropdown">
         <a href="#">Skip Bin Info <i class="fas fa-caret-down"></i></a>
         <ul>
@@ -223,10 +204,8 @@
       <li><a href="about.html">About</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-  </div>
+  </nav>
 
-  <script src="js/script.js"></script>
+  <script src="js/script.js" defer></script>
 </body>
-
 </html>
-
