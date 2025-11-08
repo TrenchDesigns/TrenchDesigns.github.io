@@ -1,4 +1,4 @@
-/* --- Reset --- */
+/* Reset some basic styles */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,26 +7,15 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background: #121212 url('https://www.transparenttextures.com/patterns/carbon-fiber.png') repeat;
+  background: #121212;
   color: #ccc;
   line-height: 1.6;
   min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  animation: bgPulse 20s infinite alternate;
 }
 
-/* --- Background Pulse --- */
-@keyframes bgPulse {
-  0% { background-color: #121212; }
-  50% { background-color: #101010; }
-  100% { background-color: #121212; }
-}
-
-/* --- Header --- */
+/* Header style */
 .header {
-  background: linear-gradient(90deg, #181818, #1a1a1a);
+  background: #181818;
   padding: 15px 30px;
   display: flex;
   align-items: center;
@@ -35,95 +24,113 @@ body {
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.1);
 }
 
 .logo {
   font-family: 'Oswald', sans-serif;
-  color: #66ffff;
+  color: #fff;
   font-weight: 600;
   font-size: 1.8rem;
   letter-spacing: 1px;
-  text-shadow: 0 0 5px #66ffff, 0 0 10px #33cccc;
-  transition: text-shadow 0.3s ease;
-}
-
-.logo:hover {
-  text-shadow: 0 0 12px #66ffff, 0 0 25px #33cccc;
 }
 
 .nav a {
-  color: #66ffff;
+  color: #bbb;
   text-decoration: none;
   margin-left: 30px;
   font-weight: 600;
   font-size: 1rem;
-  position: relative;
-  transition: color 0.25s ease, text-shadow 0.3s ease;
-}
-
-.nav a::after {
-  content: '';
-  position: absolute;
-  width: 0%;
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background-color: #66ffff;
-  transition: width 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .nav a:hover {
-  color: #33cccc;
-  text-shadow: 0 0 6px #66ffff, 0 0 10px #33cccc;
+  color: #f44e3b;
 }
 
-.nav a:hover::after {
-  width: 100%;
-}
-
-/* --- Main Container --- */
+/* Main container */
 .container {
   max-width: 1200px;
   margin: 40px auto;
-  padding: 20px;
+  padding: 0 20px;
 }
 
 .container h2 {
   font-family: 'Oswald', sans-serif;
-  font-weight: 600;
-  font-size: 2rem;
+  font-weight: 800;
+  font-size: 1.8rem;
   margin-bottom: 30px;
   color: #fff;
-  border-left: 6px solid #66ffff;
-  padding-left: 10px;
+  padding: 13px 17px;
+  text-transform: uppercase;
+  background: url('https://www.transparenttextures.com/patterns/carbon-fiber.png') repeat;
+  border-left: 6px solid #f44e3b;
+  position: relative;
+  z-index: 1;
 }
 
-/* --- Grid --- */
+/* Grid for cards */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 30px;
 }
 
-/* --- Card --- */
+/* Individual cards */
 .card {
   background: #1c1c1c;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 6px 15px rgba(102, 255, 255, 0.2);
+  box-shadow: 0 6px 15px rgba(244, 78, 59, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   position: relative;
 }
 
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(244, 78, 59, 0.6);
+}
+
+.card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+/* Info inside card */
+.info {
+  padding: 20px;
+}
+
+.info h3 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #fff;
+  padding: 8px 12px;
+  text-transform: uppercase;
+  background: url('https://www.transparenttextures.com/patterns/carbon-fiber.png') repeat;
+  border-left: 4px solid #f44e3b;
+  margin-bottom: 8px;
+}
+
+/* Card description */
+.info p {
+  color: #aaa;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+/* Optional: subtle animated overlay on cards */
 .card::before {
   content: '';
   position: absolute;
   top: 0; left: 0;
   width: 200%;
   height: 200%;
-  background: linear-gradient(45deg, rgba(102,255,255,0.05) 25%, transparent 25%, transparent 50%, rgba(102,255,255,0.05) 50%, rgba(102,255,255,0.05) 75%, transparent 75%, transparent);
+  background: linear-gradient(45deg, rgba(244,78,59,0.05) 25%, transparent 25%, transparent 50%, rgba(244,78,59,0.05) 50%, rgba(244,78,59,0.05) 75%, transparent 75%, transparent);
   background-size: 50px 50px;
   animation: movePattern 60s linear infinite;
   pointer-events: none;
@@ -133,40 +140,4 @@ body {
 @keyframes movePattern {
   0% { transform: translate(0,0); }
   100% { transform: translate(-50px,-50px); }
-}
-
-.card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 10px 25px rgba(102, 255, 255, 0.4);
-}
-
-.card img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  display: block;
-  border-bottom: 1px solid #2a2a2a;
-  position: relative;
-  z-index: 1;
-}
-
-/* --- Card Info --- */
-.info {
-  padding: 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.info h3 {
-  font-family: 'Oswald', sans-serif;
-  font-weight: 600;
-  color: #66ffff;
-  font-size: 1.3rem;
-  margin-bottom: 8px;
-}
-
-.info p {
-  color: #aaa;
-  font-size: 0.9rem;
-  font-weight: 400;
 }
