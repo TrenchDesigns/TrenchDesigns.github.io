@@ -1,0 +1,112 @@
+/* Base Colors */
+:root {
+  --bg-dark: #0b0b0b;
+  --bg-card: #141414;
+  --border: #1e1e1e;
+  --text-light: #e5e5e5;
+  --accent: #00ffff; /* cyan glow */
+}
+
+body {
+  margin: 0;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 8%;
+  background: linear-gradient(180deg, #121212, #0b0b0b);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.logo {
+  font-family: 'Oswald', sans-serif;
+  font-size: 28px;
+  letter-spacing: 2px;
+}
+
+.nav a {
+  color: var(--text-light);
+  text-decoration: none;
+  margin-left: 25px;
+  transition: color 0.3s;
+}
+
+.nav a:hover {
+  color: var(--accent);
+}
+
+/* MAIN CONTENT */
+.container {
+  padding: 60px 10%;
+}
+
+.container h2 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 26px;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+  border-left: 4px solid var(--accent);
+  padding-left: 10px;
+}
+
+/* CARD GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.7),
+    inset 0 0 0px 1px rgba(255, 255, 255, 0.03);
+}
+
+.card img {
+  width: 100%;
+  display: block;
+  filter: brightness(0.9);
+  transition: filter 0.4s ease, transform 0.4s ease;
+}
+
+.card:hover img {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+
+.card:hover {
+  box-shadow:
+    0 0 15px rgba(0, 255, 255, 0.3),
+    inset 0 0 0px 1px rgba(255,255,255,0.1);
+  transform: translateY(-3px);
+}
+
+.info {
+  padding: 15px;
+}
+
+.info h3 {
+  font-family: 'Oswald', sans-serif;
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: var(--accent);
+}
+
+.info p {
+  margin: 0;
+  font-size: 14px;
+  color: #aaa;
+}
