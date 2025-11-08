@@ -1,50 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dark Gaming UI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Roboto&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style3.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skidrow Codex Replica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Roboto&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style3.css" />
 </head>
 <body>
 
-  <header class="header">
-    <h1 class="logo">SKiDROW STYLE</h1>
-    <nav class="nav">
+<header>
+  <div class="header-inner">
+    <div class="logo">SKiDROW CODEX.NET</div>
+    <nav class="navbar">
       <a href="#">Home</a>
+      <a href="#">Lists</a>
       <a href="#">Games</a>
-      <a href="#">Repacks</a>
-      <a href="#">Contact</a>
+      <a href="#">Updates</a>
+      <a href="#">Genres</a>
+      <a href="#">Tutorials</a>
+      <a href="#">Requests</a>
+      <a href="#">More</a>
     </nav>
-  </header>
-
-  <main class="container">
-    <h2>Featured Games</h2>
-    <div class="grid">
-      <div class="card">
-        <img src="https://picsum.photos/400/225?random=1" alt="">
-        <div class="info">
-          <h3>Cyberpunk 2077</h3>
-          <p>Action RPG | CD Projekt Red</p>
-        </div>
-      </div>
-      <div class="card">
-        <img src="https://picsum.photos/400/225?random=2" alt="">
-        <div class="info">
-          <h3>Elden Ring</h3>
-          <p>Open World | FromSoftware</p>
-        </div>
-      </div>
-      <div class="card">
-        <img src="https://picsum.photos/400/225?random=3" alt="">
-        <div class="info">
-          <h3>Alan Wake II</h3>
-          <p>Thriller | Remedy</p>
-        </div>
-      </div>
+    <div class="header-right">
+      <button class="btn">Register</button>
+      <button class="btn">Login</button>
     </div>
-  </main>
+  </div>
+</header>
+
+<main class="container">
+  <section class="content">
+    <h2>Latest News</h2>
+
+    <article class="card">
+      <div class="date-badge">
+        NOV
+        <small>08</small>
+      </div>
+      <img src="https://picsum.photos/200/120?blur=2" alt="Game preview" />
+      <div class="card-info">
+        <h3>Peaceful Days - Tenoke</h3>
+        <p>Welcome to the peaceful town of Aurora, a quiet place where you can build the life you've always dreamed of...</p>
+        <a href="#" class="read-more">Read More »</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="date-badge">
+        NOV
+        <small>08</small>
+      </div>
+      <img src="https://picsum.photos/200/120?random=2" alt="Game preview" />
+      <div class="card-info">
+        <h3>Another Game Title</h3>
+        <p>Short description or snippet of the game goes here for the user to read and decide.</p>
+        <a href="#" class="read-more">Read More »</a>
+      </div>
+    </article>
+
+  </section>
+
+  <aside class="sidebar">
+    <section>
+      <h3>Upcoming Games</h3>
+      <p>No dates present</p>
+    </section>
+    <section>
+      <h3>Recent Comments</h3>
+      <ul class="sidebar-list">
+        <li>The Joker commented on SnowRunner High Voltage-RUNE</li>
+        <li>downloaderror commented on SnowRunner High Voltage-RUNE</li>
+        <li>Abyssal commented on Dying Light The Beast Update</li>
+        <li>dweeb mode commented on Dispatch Update</li>
+      </ul>
+    </section>
+  </aside>
+</main>
 
 </body>
 </html>
