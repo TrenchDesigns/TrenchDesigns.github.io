@@ -1,4 +1,6 @@
-/* Base Reset */
+/* =========================
+   Base Reset & Global Styles
+========================= */
 * {
   margin: 0;
   padding: 0;
@@ -11,14 +13,28 @@ body {
   background-size: cover;
   color: #d9d9d9;
   overflow-x: hidden;
+  line-height: 1.6;
 }
 
-/* Navbar */
+/* Smooth transitions for all interactive elements */
+a, button, .card {
+  transition: all 0.3s ease;
+}
+
+/* =========================
+   Navbar
+========================= */
 .skidrow-navbar {
   background: #0d0d0d url('https://www.transparenttextures.com/patterns/carbon-fibre-v2.png') repeat;
   border-bottom: 2px solid #00ffff33;
   box-shadow: 0 0 15px rgba(0,255,255,0.1);
-  transition: all 0.3s ease;
+}
+
+.skidrow-navbar .navbar-brand {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  color: #00ffff;
+  text-shadow: 0 0 6px #00ffff, 0 0 15px #00cccc;
 }
 
 .skidrow-navbar .nav-link {
@@ -27,7 +43,6 @@ body {
   letter-spacing: 0.5px;
   text-transform: uppercase;
   padding: 12px 20px;
-  transition: all 0.3s ease;
 }
 
 .skidrow-navbar .nav-link:hover,
@@ -44,7 +59,6 @@ body {
 
 .dropdown-item {
   color: #ccc;
-  transition: all 0.3s ease;
 }
 
 .dropdown-item:hover {
@@ -52,18 +66,21 @@ body {
   color: #00ffff;
 }
 
-/* Hero Section */
+/* =========================
+   Hero Section
+========================= */
 .hero-section {
-  height: 300px;
+  height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-section .overlay {
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.65);
   width: 100%;
   height: 100%;
   position: absolute;
@@ -72,69 +89,85 @@ body {
 
 .hero-title {
   font-family: 'Oswald', sans-serif;
+  font-size: 3rem;
   color: #00ffff;
-  font-size: 2.5rem;
   position: relative;
   z-index: 1;
   text-shadow: 0 0 10px #00ffff, 0 0 25px #00cccc;
+  animation: glow 2s ease-in-out infinite alternate;
 }
 
 .hero-subtitle {
   color: #ccc;
   position: relative;
   z-index: 1;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
 }
 
-/* Main Container */
+/* Glowing animation for hero title */
+@keyframes glow {
+  0% { text-shadow: 0 0 10px #00ffff, 0 0 25px #00cccc; }
+  100% { text-shadow: 0 0 20px #00ffff, 0 0 40px #00cccc; }
+}
+
+/* =========================
+   Main Content
+========================= */
 .content-section {
   margin-top: 50px;
   background: rgba(10,10,10,0.95);
   padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0,255,255,0.05);
+  border-radius: 10px;
+  box-shadow: 0 0 25px rgba(0,255,255,0.05);
 }
 
-/* Widget Title (Carbon Fiber Header) */
+/* Widget Titles */
 .widget-title {
   font-family: 'Oswald', sans-serif;
   text-transform: uppercase;
   background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png') repeat;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   padding: 13px 17px;
   border-left: 4px solid #00ffff;
   margin-bottom: 25px;
   letter-spacing: 1px;
+  box-shadow: 0 0 10px rgba(0,255,255,0.1);
 }
 
-/* Cards */
+/* =========================
+   Game Cards
+========================= */
 .game-card {
   background: #161616 url('https://www.transparenttextures.com/patterns/carbon-fibre.png') repeat;
   border: 1px solid rgba(0,255,255,0.1);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 6px 15px rgba(0,0,0,0.8);
   transition: all 0.3s ease;
 }
 
 .game-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,255,255,0.3);
+  transform: translateY(-7px);
+  box-shadow: 0 12px 30px rgba(0,255,255,0.4);
 }
 
 .card-title {
   color: #00ffff;
   font-family: 'Oswald', sans-serif;
   text-transform: uppercase;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
 }
 
 .card-text {
   color: #bbb;
 }
 
-/* Footer */
+/* =========================
+   Footer
+========================= */
 .footer {
   background: #0d0d0d;
   color: #777;
@@ -142,4 +175,10 @@ body {
   letter-spacing: 0.5px;
   border-top: 1px solid #00ffff33;
   margin-top: 50px;
+  padding: 20px 0;
+}
+
+.footer span {
+  color: #00ffff;
+  font-weight: 600;
 }
