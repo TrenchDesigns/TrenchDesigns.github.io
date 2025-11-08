@@ -3,67 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dark Gaming UI - SKiDROW STYLE</title>
-  <!-- Google Fonts -->
+  <title>SKIDROW STYLE</title>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Roboto&display=swap" rel="stylesheet">
-  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom CSS -->
   <link rel="stylesheet" href="style3.css">
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <h1 class="logo">SKiDROW STYLE</h1>
-    <nav class="nav">
-      <a href="#">Home</a>
-      <a href="#">Games</a>
-      <a href="#">Repacks</a>
-      <a href="#">Contact</a>
-    </nav>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top skidrow-navbar">
+    <div class="container">
+      <a class="navbar-brand logo" href="#">SKiDROW STYLE</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Games</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Adventure</a></li>
+              <li><a class="dropdown-item" href="#">RPG</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="#">Repacks</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero / Header -->
+  <header class="hero-section">
+    <div class="overlay">
+      <h1 class="hero-title">Welcome to SKiDROW STYLE</h1>
+      <p class="hero-subtitle">The ultimate dark cyber aesthetic for gamers.</p>
+    </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="container">
-    <h2>Featured Games</h2>
-    
-    <div class="row g-4">
-      <!-- Card 1 -->
+  <!-- Main Content -->
+  <main class="container content-section">
+    <h2 class="widget-title">Featured Games</h2>
+    <div class="row gy-4">
       <div class="col-md-4">
-        <div class="card">
-          <img src="https://picsum.photos/400/225?random=1" alt="Cyberpunk 2077">
-          <div class="info">
-            <h3>Cyberpunk 2077</h3>
-            <p>Action RPG | CD Projekt Red</p>
+        <div class="card game-card">
+          <img src="https://picsum.photos/400/225?random=1" class="card-img-top" alt="Cyberpunk">
+          <div class="card-body">
+            <h5 class="card-title">Cyberpunk 2077</h5>
+            <p class="card-text">Action RPG | CD Projekt Red</p>
           </div>
         </div>
       </div>
-      <!-- Card 2 -->
       <div class="col-md-4">
-        <div class="card">
-          <img src="https://picsum.photos/400/225?random=2" alt="Elden Ring">
-          <div class="info">
-            <h3>Elden Ring</h3>
-            <p>Open World | FromSoftware</p>
+        <div class="card game-card">
+          <img src="https://picsum.photos/400/225?random=2" class="card-img-top" alt="Elden Ring">
+          <div class="card-body">
+            <h5 class="card-title">Elden Ring</h5>
+            <p class="card-text">Open World | FromSoftware</p>
           </div>
         </div>
       </div>
-      <!-- Card 3 -->
       <div class="col-md-4">
-        <div class="card">
-          <img src="https://picsum.photos/400/225?random=3" alt="Alan Wake II">
-          <div class="info">
-            <h3>Alan Wake II</h3>
-            <p>Thriller | Remedy</p>
+        <div class="card game-card">
+          <img src="https://picsum.photos/400/225?random=3" class="card-img-top" alt="Alan Wake II">
+          <div class="card-body">
+            <h5 class="card-title">Alan Wake II</h5>
+            <p class="card-text">Thriller | Remedy</p>
           </div>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- Optional: Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <footer class="footer text-center py-3">
+    <p>&copy; 2025 SKiDROW STYLE. All Rights Reserved.</p>
+  </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
