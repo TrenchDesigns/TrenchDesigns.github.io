@@ -5,31 +5,27 @@
   box-sizing: border-box;
 }
 
+/* --- Body & Fonts --- */
 body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #121212;
+  background: url('https://www.transparenttextures.com/patterns/carbon-fiber.png') repeat #121212;
   color: #d5d5d5;
-  line-height: 1.6;
+  font-family: 'Roboto', sans-serif;
   overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  animation: bgPulse 20s infinite alternate;
 }
 
-/* --- Body animated gradient --- */
-@keyframes bgPulse {
-  0% { background-color: #121212; }
-  50% { background-color: #101010; }
-  100% { background-color: #121212; }
+/* Links */
+a {
+  color: #66ffff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+a:hover {
+  color: #33cccc;
 }
 
 /* --- Header --- */
-.header {
+header {
   background: linear-gradient(90deg, #181818, #1a1a1a);
-  padding: 15px 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   border-bottom: 1px solid #222;
   position: sticky;
   top: 0;
@@ -37,83 +33,241 @@ body {
   box-shadow: 0 4px 12px rgba(0,255,255,0.1);
 }
 
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+}
+
 .logo {
   font-family: 'Oswald', sans-serif;
-  color: #66ffff; /* cyan accent */
   font-weight: 600;
   font-size: 1.8rem;
-  letter-spacing: 1px;
-  text-shadow: 0 0 5px #66ffff, 0 0 10px #33cccc;
-  transition: text-shadow 0.3s ease;
-}
-
-.logo:hover {
-  text-shadow: 0 0 12px #66ffff, 0 0 25px #33cccc;
-}
-
-.nav a {
   color: #66ffff;
-  font-weight: 600;
-  text-decoration: none;
-  margin-left: 30px;
-  position: relative;
-  transition: color 0.25s ease, text-shadow 0.3s ease;
-  font-size: 1rem;
+  text-shadow: 0 0 8px #66ffff, 0 0 12px #33cccc;
+  cursor: default;
+  user-select: none;
 }
 
-.nav a::after {
-  content: '';
+/* Navigation */
+nav.navbar {
+  display: flex;
+  gap: 25px;
+}
+
+nav.navbar a {
+  font-weight: 600;
+  font-size: 1rem;
+  position: relative;
+  padding: 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+nav.navbar a::after {
+  content: "";
   position: absolute;
-  width: 0%;
-  height: 2px;
   bottom: -4px;
   left: 0;
-  background-color: #66ffff;
+  width: 0%;
+  height: 2px;
+  background: #66ffff;
   transition: width 0.3s ease;
 }
 
-.nav a:hover {
-  color: #33cccc;
-  text-shadow: 0 0 6px #66ffff, 0 0 10px #33cccc;
-}
-
-.nav a:hover::after {
+nav.navbar a:hover::after {
   width: 100%;
 }
 
-/* --- Main Container --- */
-.container {
+/* Header right buttons */
+.header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  background: #111;
+  border: 1px solid #222;
+  padding: 8px 14px;
+  font-weight: 600;
+  color: #ccc;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.btn:hover {
+  background: #222;
+  color: #66ffff;
+  box-shadow: 0 0 10px #33cccc;
+}
+
+/* --- Main layout --- */
+main.container {
   max-width: 1200px;
-  margin: 40px auto;
-  padding: 20px;
-  background: #1a1a1a url('https://www.transparenttextures.com/patterns/carbon-fiber.png') repeat;
+  margin: 30px auto 60px;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 25px;
+}
+
+/* Content Area */
+.content {
+  background: #1a1a1a url('https://www.transparenttextures.com/patterns/carbon-fiber.png');
   border-radius: 8px;
   box-shadow:
     0 8px 20px rgba(0,0,0,0.9),
     inset 0 0 15px rgba(0, 255, 255, 0.05);
-  position: relative;
-  overflow: hidden;
+  padding: 20px;
 }
 
-/* --- Animated Carbon Fiber Overlay --- */
-.container::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, rgba(0,255,255,0.05) 25%, transparent 25%, transparent 50%, rgba(0,255,255,0.05) 50%, rgba(0,255,255,0.05) 75%, transparent 75%, transparent);
-  background-size: 50px 50px;
-  animation: movePattern 60s linear infinite;
-  pointer-events: none;
-  z-index: 0;
-}
-
-@keyframes movePattern {
-  0% { transform: translate(0,0); }
-  100% { transform: translate(-50px,-50px); }
-}
-
-/* --- Section Heading --- */
-.container h2 {
+.content h2 {
   font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  color: #66ffff;
+}
+
+/* Cards */
+.card {
+  background: #222;
+  border-radius: 5px;
+  display: flex;
+  margin-bottom: 25px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,255,255,0.05);
+  position: relative;
+}
+
+.date-badge {
+  width: 60px;
+  background: #fff;
+  color: #111;
+  font-weight: 700;
+  text-align: center;
+  padding: 12px 0;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  border-right: 2px solid #111;
+  user-select: none;
+}
+
+.date-badge small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  text-transform: uppercase;
+  color: #555;
+}
+
+.card img {
+  width: 180px;
+  object-fit: cover;
+}
+
+.card-info {
+  padding: 15px 20px;
+  flex-grow: 1;
+}
+
+.card-info h3 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  color: #66ffff;
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+.card-info p {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.read-more {
+  margin-top: 12px;
+  display: inline-block;
+  background: #111;
+  color: #66ffff;
+  padding: 6px 14px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 0 8px #33cccc;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.read-more:hover {
+  background: #222;
+}
+
+/* Sidebar */
+aside.sidebar {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 20px;
+  color: #ccc;
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.9),
+    inset 0 0 15px rgba(0, 255, 255, 0.05);
+  font-size: 0.9rem;
+}
+
+aside.sidebar h3 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  color: #66ffff;
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+}
+
+aside.sidebar section {
+  margin-bottom: 25px;
+}
+
+.sidebar-list {
+  list-style: none;
+  border-top: 1px solid #222;
+  padding-top: 12px;
+}
+
+.sidebar-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #222;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.sidebar-list li:hover {
+  color: #33cccc;
+}
+
+/* Scrollbar for sidebar */
+aside.sidebar {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+aside.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+aside.sidebar::-webkit-scrollbar-thumb {
+  background: #33cccc;
+  border-radius: 10px;
+}
