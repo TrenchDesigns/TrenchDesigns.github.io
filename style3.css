@@ -1,19 +1,21 @@
-/* Reset some basic styles */
+/* --- Base Reset --- */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   font-family: 'Roboto', sans-serif;
-  background: #121212;
-  color: #ccc;
+  background-color: #121212;
+  color: #d5d5d5;
   line-height: 1.6;
-  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Header style */
+/* --- Header --- */
 .header {
   background: #181818;
   padding: 15px 30px;
@@ -28,67 +30,94 @@ body {
 
 .logo {
   font-family: 'Oswald', sans-serif;
-  color: #fff;
+  color: #00ffff; /* neon cyan */
   font-weight: 600;
   font-size: 1.8rem;
   letter-spacing: 1px;
+  text-shadow: 0 0 5px #00ffff, 0 0 10px #33cccc;
+  transition: text-shadow 0.3s ease;
+}
+
+.logo:hover {
+  text-shadow: 0 0 12px #00ffff, 0 0 25px #33cccc;
 }
 
 .nav a {
-  color: #bbb;
+  color: #66ffff;
+  font-weight: 600;
   text-decoration: none;
   margin-left: 30px;
-  font-weight: 600;
   font-size: 1rem;
-  transition: color 0.3s ease;
+  position: relative;
+  transition: color 0.25s ease, text-shadow 0.3s ease;
+}
+
+.nav a::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #00ffff;
+  transition: width 0.3s ease;
 }
 
 .nav a:hover {
-  color: #f44e3b;
+  color: #33cccc;
+  text-shadow: 0 0 6px #00ffff, 0 0 10px #33cccc;
 }
 
-/* Main container */
+.nav a:hover::after {
+  width: 100%;
+}
+
+/* --- Main Container --- */
 .container {
   max-width: 1200px;
   margin: 40px auto;
-  padding: 0 20px;
+  padding: 20px;
+  background: #1a1a1a url('https://www.transparenttextures.com/patterns/carbon-fiber.png') repeat;
+  border-radius: 8px;
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.9),
+    inset 0 0 15px rgba(0, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
 }
 
+/* --- Section Heading --- */
 .container h2 {
   font-family: 'Oswald', sans-serif;
-  font-weight: 800;
-  font-size: 1.8rem;
+  font-weight: 600;
+  font-size: 2rem;
   margin-bottom: 30px;
-  color: #fff;
-  padding: 13px 17px;
-  text-transform: uppercase;
-  background: url('https://www.transparenttextures.com/patterns/carbon-fiber.png') repeat;
-  border-left: 6px solid #f44e3b;
-  position: relative;
-  z-index: 1;
+  color: #00ffff;
+  border-left: 6px solid #00ffff;
+  padding-left: 10px;
+  text-shadow: 0 0 5px #00ffff;
 }
 
-/* Grid for cards */
+/* --- Grid for cards --- */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 30px;
 }
 
-/* Individual cards */
+/* --- Card --- */
 .card {
   background: #1c1c1c;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 6px 15px rgba(244, 78, 59, 0.3);
+  box-shadow: 0 6px 15px rgba(0, 255, 255, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-  position: relative;
 }
 
 .card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 10px 25px rgba(244, 78, 59, 0.6);
+  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.6);
 }
 
 .card img {
@@ -99,45 +128,53 @@ body {
   border-bottom: 1px solid #2a2a2a;
 }
 
-/* Info inside card */
+/* --- Info inside card --- */
 .info {
   padding: 20px;
 }
 
 .info h3 {
   font-family: 'Oswald', sans-serif;
-  font-weight: 800;
-  font-size: 1.2rem;
-  color: #fff;
-  padding: 8px 12px;
-  text-transform: uppercase;
-  background: url('https://www.transparenttextures.com/patterns/carbon-fiber.png') repeat;
-  border-left: 4px solid #f44e3b;
+  font-weight: 600;
+  color: #00ffff;
+  font-size: 1.3rem;
   margin-bottom: 8px;
+  text-shadow: 0 0 5px #00ffff;
 }
 
-/* Card description */
 .info p {
   color: #aaa;
   font-size: 0.9rem;
   font-weight: 400;
 }
 
-/* Optional: subtle animated overlay on cards */
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, rgba(244,78,59,0.05) 25%, transparent 25%, transparent 50%, rgba(244,78,59,0.05) 50%, rgba(244,78,59,0.05) 75%, transparent 75%, transparent);
-  background-size: 50px 50px;
-  animation: movePattern 60s linear infinite;
-  pointer-events: none;
-  z-index: 0;
+/* --- Carbon fiber style headers (widgets/modal) --- */
+.modal-header h3,
+.widget h3,
+h3.widget-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 13px 17px;
+  z-index: 99999;
+  margin: 0;
+  background: url('https://www.transparenttextures.com/patterns/carbon-fiber.png') top left repeat;
+  font-family: 'Roboto', sans-serif;
+  color: #fff;
+  font-weight: 800;
+  text-shadow: 0 0 3px #00ffff;
+  border-radius: 4px 4px 0 0;
 }
 
-@keyframes movePattern {
-  0% { transform: translate(0,0); }
-  100% { transform: translate(-50px,-50px); }
+/* --- Responsive tweaks --- */
+@media screen and (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .nav {
+    margin-top: 10px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
