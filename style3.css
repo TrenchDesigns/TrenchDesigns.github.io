@@ -1,5 +1,5 @@
 /* =========================
-   Base Reset & Global Styles
+   Reset & Base
 ========================= */
 * {
   margin: 0;
@@ -13,40 +13,33 @@ body {
   background-size: cover;
   color: #d9d9d9;
   overflow-x: hidden;
-  line-height: 1.6;
-}
-
-/* Smooth transitions for all interactive elements */
-a, button, .card {
-  transition: all 0.3s ease;
 }
 
 /* =========================
    Navbar
 ========================= */
-.skidrow-navbar {
+.cyber-navbar {
   background: #0d0d0d url('https://www.transparenttextures.com/patterns/carbon-fibre-v2.png') repeat;
   border-bottom: 2px solid #00ffff33;
   box-shadow: 0 0 15px rgba(0,255,255,0.1);
 }
 
-.skidrow-navbar .navbar-brand {
+.cyber-navbar .navbar-brand {
   font-family: 'Oswald', sans-serif;
-  font-weight: 700;
   color: #00ffff;
+  font-weight: 700;
   text-shadow: 0 0 6px #00ffff, 0 0 15px #00cccc;
 }
 
-.skidrow-navbar .nav-link {
+.cyber-navbar .nav-link {
   color: #ccc;
   font-weight: 600;
-  letter-spacing: 0.5px;
   text-transform: uppercase;
   padding: 12px 20px;
 }
 
-.skidrow-navbar .nav-link:hover,
-.skidrow-navbar .nav-link.active {
+.cyber-navbar .nav-link:hover,
+.cyber-navbar .nav-link.active {
   color: #00ffff;
   text-shadow: 0 0 8px #00ffff, 0 0 15px #00cccc;
 }
@@ -54,7 +47,6 @@ a, button, .card {
 .dropdown-menu {
   background: #1a1a1a url('https://www.transparenttextures.com/patterns/carbon-fibre-v2.png') repeat;
   border: 1px solid #00cccc33;
-  box-shadow: 0 0 10px rgba(0,255,255,0.2);
 }
 
 .dropdown-item {
@@ -74,38 +66,37 @@ a, button, .card {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
   position: relative;
+  text-align: center;
   overflow: hidden;
 }
 
 .hero-section .overlay {
-  background: rgba(0,0,0,0.65);
-  width: 100%;
-  height: 100%;
   position: absolute;
   top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.65);
 }
 
 .hero-title {
   font-family: 'Oswald', sans-serif;
-  font-size: 3rem;
   color: #00ffff;
-  position: relative;
-  z-index: 1;
+  font-size: 3rem;
   text-shadow: 0 0 10px #00ffff, 0 0 25px #00cccc;
   animation: glow 2s ease-in-out infinite alternate;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-subtitle {
   color: #ccc;
-  position: relative;
-  z-index: 1;
   font-size: 1.2rem;
   margin-top: 0.5rem;
+  position: relative;
+  z-index: 1;
 }
 
-/* Glowing animation for hero title */
 @keyframes glow {
   0% { text-shadow: 0 0 10px #00ffff, 0 0 25px #00cccc; }
   100% { text-shadow: 0 0 20px #00ffff, 0 0 40px #00cccc; }
@@ -122,7 +113,6 @@ a, button, .card {
   box-shadow: 0 0 25px rgba(0,255,255,0.05);
 }
 
-/* Widget Titles */
 .widget-title {
   font-family: 'Oswald', sans-serif;
   text-transform: uppercase;
@@ -134,11 +124,10 @@ a, button, .card {
   border-left: 4px solid #00ffff;
   margin-bottom: 25px;
   letter-spacing: 1px;
-  box-shadow: 0 0 10px rgba(0,255,255,0.1);
 }
 
 /* =========================
-   Game Cards
+   Cards
 ========================= */
 .game-card {
   background: #161616 url('https://www.transparenttextures.com/patterns/carbon-fibre.png') repeat;
