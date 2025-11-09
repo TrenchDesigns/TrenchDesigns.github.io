@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SKIDROWCODEX Blog Layout</title>
+<title>Seb's Dark Theme Site</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -11,20 +11,32 @@
 *, *:before, *:after { box-sizing: border-box; outline:0; }
 
 body { 
-    margin:0; 
-    font-family:'Roboto',sans-serif; 
-    color:#ddd; 
-    height:100%; 
-    background: url('https://www.skidrowcodex.net/wp-content/uploads/2023/12/BG-BG.jpg') no-repeat center center fixed; 
-    background-size: cover; 
-    scroll-behavior: smooth;
+  margin: 0; 
+  font-family: 'Roboto', sans-serif; 
+  color: #ddd; 
+  height: 100%; 
+  background-size: cover; 
+  scroll-behavior: smooth; 
+  position: relative; /* important for ::before layering */
+  min-height: 100vh;  /* ensures full-page coverage */
 }
+    
 body::before { 
-    content:''; 
-    position:fixed; top:0; left:0; right:0; bottom:0; 
-    background: rgba(0,0,0,0.7); 
-    z-index:-1; 
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: url('https://www.skidrowcodex.net/wp-content/uploads/2023/12/BG-BG.jpg')
+              no-repeat center center fixed;
+  background-size: cover;
+
+  opacity: 0.8; /* optional transparency */
+  z-index: -1; /* ensures it stays behind other content */
 }
+
 
 /* ===== Top Bar ===== */
 .topbar { 
