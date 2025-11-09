@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKIDROWCODEX Blog Layout</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ===== Reset & Box-sizing ===== */
+*, *:before, *:after { box-sizing: border-box; outline:0; }
+
+body { 
+    margin:0; 
+    font-family:'Roboto',sans-serif; 
+    color:#ddd; 
+    height:100%; 
+    background: url('https://www.skidrowcodex.net/wp-content/uploads/2023/12/BG-BG.jpg') no-repeat center center fixed; 
+    background-size: cover; 
+    scroll-behavior: smooth;
+}
+body::before { 
+    content:''; 
+    position:fixed; top:0; left:0; right:0; bottom:0; 
+    background: rgba(0,0,0,0.7); 
+    z-index:-1; 
+}
+
+/* ===== Top Bar ===== */
+.topbar { 
+    background:#1a1a1a; height:40px; display:flex; justify-content:flex-end; align-items:center; gap:15px; padding:0 15px; font-size:0.9rem; border-bottom:1px solid #2a2a2a; z-index:100; 
+}
+.topbar i { opacity:0.6; cursor:pointer; transition:0.3s; }
+.topbar i:hover { opacity:1; }
+
+/* ===== Header ===== */
+header { 
+    background:#181818; 
+    border-bottom:3px solid #333; 
+    padding:10px 20px; 
+    display:flex; 
+    justify-content:space-between; 
+    align-items:center; 
+    position: relative;
+}
+.logo { font-weight:900; font-size:1.5rem; color:#eee; letter-spacing:1.5px; font-family:'Roboto Mono', monospace; display:flex; align-items:center; gap:10px; }
+.logo i { font-size:1.8rem; color:#ccc; }
+
+/* ===== Pulse Line Flying Left-to-Right ===== */
+.pulse-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #00cfff, #00ffff, #00cfff);
+    background-size: 200% 100%;
+    border-radius: 2px;
+    animation: flyLine 3s linear infinite;
+}
+@keyframes flyLine {
+    0% { background-position: 200% 0; }
+    80% { background-position: -200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ===== Navbar ===== */
+.navbar-static { display:flex; justify-content:center; flex-wrap:wrap; background:#202020; padding:6px 10px; border-top:1px solid #2a2a2a; border-bottom:3px solid #222; z-index:99; }
+.navbar-static a { color:#bbb; background:#252525; margin:0 3px; padding:9px 14px; font-weight:600; text-transform:uppercase; font-size:0.82rem; border:1px solid #2f2f2f; border-radius:2px; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.05), inset 0 -1px 2px rgba(0,0,0,0.4); transition: all 0.25s ease; }
+.navbar-static a i { opacity:0.7; transition:0.3s; }
+.navbar-static a:hover i { opacity:1; }
+.navbar-static a:hover { background:#333; color:#fff; border-color:#444; box-shadow: inset 0 1px 3px rgba(255,255,255,0.1), 0 0 5px rgba(0,0,0,0.5); }
+.navbar-static a.active { background:#383838; color:#fff; border-color:#555; box-shadow: inset 0 2px 5px rgba(0,0,0,0.6); }
+
+/* ===== Blog Container ===== */
+main.container { display:flex; flex-direction:column; gap:40px; margin:20px auto; max-width:1000px; padding-bottom:40px; }
+
+/* ===== Individual Blog Post ===== */
+.blog-post { background:#212528; border:1px solid #000; border-radius:4px; box-shadow: inset 0 1px 1px rgba(255,255,255,.2), 0 6px 12px rgba(0,0,0,0.6); padding:0; transition: transform 0.2s, box-shadow 0.2s; display:flex; flex-direction:column; gap:0; }
+.blog-post:hover { transform: translateY(-3px); box-shadow: inset 0 1px 1px rgba(255,255,255,.2), 0 12px 24px rgba(0,0,0,0.8); }
+.blog-post img { width:100%; max-height:250px; object-fit:cover; border-radius:3px; margin-bottom:0; }
+.blog-post .meta { font-size:0.85rem; color:#aaa; margin:10px 0; padding:0 20px; }
+.blog-post p { line-height:1.6rem; color:#ddd; padding:0 20px 20px 20px; }
+
+/* ===== Carbon-Fibre Title Style ===== */
+.carbon-title {
+    font-size: 14px;
+    font-weight: 800;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff;
+    padding: 13px 17px;
+    margin: 0;
+    border-bottom: 1px solid #111;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+    background-color: #2b2b2b;
+    background-image: 
+        linear-gradient(
+            45deg, 
+            rgba(255,255,255,0.05) 25%, 
+            transparent 25%, 
+            transparent 50%, 
+            rgba(255,255,255,0.05) 50%, 
+            rgba(255,255,255,0.05) 75%, 
+            transparent 75%, 
+            transparent
+        );
+    background-size: 5px 5px;
+}
+
+/* ===== Glowing Accents ===== */
+.glow-box {
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+    transition: box-shadow 0.3s;
+}
+.glow-box:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+}
+
+/* ===== Sidebar & Widgets ===== */
+.sidebar { margin-top:30px; }
+.widget { margin-bottom:20px; background:#212528; border-radius:4px; border:1px solid #000; overflow:hidden; box-shadow: inset 0 1px 1px rgba(255,255,255,.2), 0 6px 12px rgba(0,0,0,0.6); }
+.widget-content { padding:15px 20px; color:#ddd; }
+
+/* ===== Responsive ===== */
+@media(max-width:992px){ 
+    main.container { margin:10px; } 
+    .blog-post img { max-height:180px; } 
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <i class="fab fa-rss"></i>
+    <i class="fas fa-fire"></i>
+    <i class="fab fa-youtube"></i>
+    <i class="fab fa-twitter"></i>
+    <i class="fab fa-facebook-f"></i>
+</div>
+
+<header>
+    <div class="logo"><i class="fas fa-ghost"></i> SKIDROWCODEX.NET</div>
+    <div class="pulse-line"></div>
+</header>
+
+<nav class="navbar-static">
+    <a class="active" href="#home"><i class="fas fa-home"></i> Home</a>
+    <a href="#lists"><i class="fas fa-list"></i> Lists</a>
+    <a href="#games"><i class="fas fa-gamepad"></i> Games</a>
+    <a href="#updates"><i class="fas fa-bolt"></i> Updates</a>
+    <a href="#genres"><i class="fas fa-filter"></i> Genres</a>
+    <a href="#tutorials"><i class="fas fa-book"></i> Tutorials</a>
+    <a href="#requests"><i class="fas fa-clipboard-check"></i> Requests</a>
+</nav>
+
+<main class="container">
+
+    <!-- Home Section -->
+    <section id="home" class="glow-box">
+        <div class="blog-post">
+            <h2 class="carbon-title">Game Release: CyberSkidrow</h2>
+            <img src="https://via.placeholder.com/1000x250?text=Game+Highlight" alt="Highlight">
+            <div class="meta">Posted on Nov 8, 2025 | 5 min read</div>
+            <p>This is an example of a blog-style post. Hovering slightly lifts the box and darkens the shadow for a subtle effect.</p>
+        </div>
+    </section>
+
+    <!-- Lists Section -->
+    <section id="lists" class="glow-box">
+        <h2 class="carbon-title">Lists</h2>
+        <div class="blog-post">
+            <p>All your curated lists go here. You can add more structured content or tables.</p>
+        </div>
+    </section>
+
+    <!-- Games Section -->
+    <section id="games" class="glow-box">
+        <h2 class="carbon-title">Games</h2>
+        <div class="blog-post">
+            <p>Featured and upcoming games can be shown in this section.</p>
+        </div>
+    </section>
+
+    <!-- Updates Section -->
+    <section id="updates" class="glow-box">
+        <h2 class="carbon-title">Updates</h2>
+        <div class="blog-post">
+            <p>Patch notes, news, and update information can go here.</p>
+        </div>
+    </section>
+
+    <!-- Genres Section -->
+    <section id="genres" class="glow-box">
+        <h2 class="carbon-title">Genres</h2>
+        <div class="blog-post">
+            <p>Organize your games or content by genre in this section.</p>
+        </div>
+    </section>
+
+    <!-- Tutorials Section -->
+    <section id="tutorials" class="glow-box">
+        <h2 class="carbon-title">Tutorials</h2>
+        <div class="blog-post">
+            <p>Tutorial content, guides, and walkthroughs go here.</p>
+        </div>
+    </section>
+
+    <!-- Requests Section -->
+    <section id="requests" class="glow-box">
+        <h2 class="carbon-title">Requests</h2>
+        <div class="blog-post">
+            <p>User requests, feedback, or submission forms can go here.</p>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>
