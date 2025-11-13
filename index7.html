@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SKIDROWCODEX Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+/* ===== Reset ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 130px;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #0e0e0e url('https://www.transparenttextures.com/patterns/carbon-fibre-v2.png');
+  color: #ddd;
+  min-height: 100vh;
+}
+
+/* ===== Overlay for depth ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: -1;
+}
+
+/* ===== Topbar ===== */
+.topbar {
+  height: 40px;
+  background: #1a1a1a;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+  padding: 0 15px;
+  border-bottom: 1px solid #2a2a2a;
+}
+.topbar i { opacity: 0.6; transition: .3s; cursor: pointer; }
+.topbar i:hover { opacity: 1; color: #0ff; }
+
+/* ===== Header / Hero ===== */
+header {
+  text-align: center;
+  background: linear-gradient(180deg,#181818 0%,#111 100%);
+  padding: 60px 20px 80px;
+  position: relative;
+  overflow: hidden;
+}
+header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg,#00cfff,#00ffff,#00cfff);
+  background-size: 200% 100%;
+  animation: flyLine 3s linear infinite;
+}
+@keyframes flyLine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fff;
+  font-family: 'Roboto Mono', monospace;
+}
+.logo i { color: #00ffff; margin-right: 8px; }
+
+.tagline {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #aaa;
+  letter-spacing: 1px;
+}
+
+/* ===== Navbar ===== */
+.navbar-static {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: #202020;
+  border-top: 1px solid #2a2a2a;
+  border-bottom: 3px solid #222;
+  padding: 6px 10px;
+}
+.navbar-static a {
+  color: #bbb;
+  background: #252525;
+  margin: 0 3px;
+  padding: 9px 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  border: 1px solid #2f2f2f;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+.navbar-static a:hover {
+  background: #333;
+  color: #fff;
+  border-color: #444;
+  box-shadow: 0 0 8px rgba(0,255,255,0.4);
+}
+.navbar-static a.active {
+  background: #383838;
+  color: #fff;
+  border-color: #555;
+}
+
+/* ===== Main ===== */
+main {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px 60px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+/* ===== Card ===== */
+.card {
+  background: #212528;
+  border: 1px solid #000;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0,255,255,0.2);
+  transition: transform .25s, box-shadow .25s;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 16px rgba(0,255,255,0.4);
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.card-content {
+  padding: 15px 18px 20px;
+}
+.card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #fff;
+}
+.card p {
+  font-size: 0.9rem;
+  color: #bbb;
+  line-height: 1.5;
+}
+
+/* ===== Footer ===== */
+footer {
+  text-align: center;
+  padding: 25px;
+  background: #181818;
+  border-top: 1px solid #2a2a2a;
+  color: #777;
+  font-size: 0.85rem;
+}
+footer a { color: #00ffff; text-decoration: none; }
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  header { padding: 40px 15px 60px; }
+  .logo { font-size: 1.6rem; }
+}
+</style>
+</head>
+
+<body>
+  <!-- ===== Topbar ===== -->
+  <div class="topbar">
+    <i class="fab fa-rss"></i>
+    <i class="fas fa-fire"></i>
+    <i class="fab fa-youtube"></i>
+    <i class="fab fa-twitter"></i>
+    <i class="fab fa-facebook-f"></i>
+  </div>
+
+  <!-- ===== Hero Header ===== -->
+  <header>
+    <div class="logo"><i class="fas fa-ghost"></i> SKIDROWCODEX.NET</div>
+    <p class="tagline">Dark • Futuristic • Flexible</p>
+  </header>
+
+  <!-- ===== Navbar ===== -->
+  <nav class="navbar-static">
+    <a class="active" href="#home"><i class="fas fa-home"></i> Home</a>
+    <a href="#showcase"><i class="fas fa-th"></i> Showcase</a>
+    <a href="#updates"><i class="fas fa-bolt"></i> Updates</a>
+    <a href="#tutorials"><i class="fas fa-book"></i> Tutorials</a>
+    <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main>
+    <div class="card" id="home">
+      <img src="https://via.placeholder.com/600x300/0ff/000?text=Feature+One" alt="Feature One" />
+      <div class="card-content">
+        <h3>Feature Highlight</h3>
+        <p>Showcase your latest post, project, or idea with a clean cyber-styled card. Replace this text with anything.</p>
+      </div>
+    </div>
+
+    <div class="card" id="showcase">
+      <img src="https://via.placeholder.com/600x300/00bfff/000?text=Gallery+Card" alt="Gallery" />
+      <div class="card-content">
+        <h3>Showcase Section</h3>
+        <p>Add screenshots, projects, or downloads. Works as a flexible grid for any content you like.</p>
+      </div>
+    </div>
+
+    <div class="card" id="updates">
+      <img src="https://via.placeholder.com/600x300/008080/000?text=Update+Post" alt="Update" />
+      <div class="card-content">
+        <h3>Latest Updates</h3>
+        <p>Use this area to announce new posts, patches, or releases. The layout adapts automatically.</p>
+      </div>
+    </div>
+
+    <div class="card" id="tutorials">
+      <img src="https://via.placeholder.com/600x300/006666/000?text=Tutorial" alt="Tutorial" />
+      <div class="card-content">
+        <h3>Tutorial / Guide</h3>
+        <p>Perfect for walkthroughs or explanations. Keep the same structure but change the content focus later.</p>
+      </div>
+    </div>
+
+    <div class="card" id="contact">
+      <img src="https://via.placeholder.com/600x300/004c4c/000?text=Contact" alt="Contact" />
+      <div class="card-content">
+        <h3>Contact or Requests</h3>
+        <p>Could be a contact form, social links, or anything interactive. Flexible and ready to expand.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    © 2025 SKIDROWCODEX.NET — Built with ❤️ for experimentation. <br />
+    <a href="#">Back to top ↑</a>
+  </footer>
+</body>
+</html>
