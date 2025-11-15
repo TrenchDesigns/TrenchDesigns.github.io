@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Neptune Host — Premium Game Hosting</title>
+<meta name="description" content="Neptune Host — Fast, scalable, managed game hosting with DDoS protection and instant deploys." />
+<style>
+/* =========================
+   THEME & RESET
+   ========================= */
+:root{
+  --bg-1:#071026;
+  --bg-2:#0e1630;
+  --card:#0f2340;
+  --muted:#9fb3d6;
+  --text:#ecf4ff;
+  --accent1:#5680e9;
+  --accent2:#8860d0;
+  --glass: rgba(255,255,255,0.04);
+  --radius:14px;
+  --card-radius:12px;
+}
+
+/* Basic reset */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;color:var(--text);background:var(--bg-1);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.container{max-width:1180px;margin:0 auto;padding:0 1.1rem}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important}
+}
+
+/* =========================
+   BACKGROUNDS: NEBULA + PARTICLES
+   ========================= */
+/* layered nebula-style radial glows */
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:-3;
+  background:
+    radial-gradient(600px 360px at 10% 20%, rgba(86,128,233,0.12), transparent 6%),
+    radial-gradient(500px 320px at 80% 70%, rgba(136,96,208,0.10), transparent 6%),
+    radial-gradient(420px 260px at 55% 30%, rgba(74,185,234,0.06), transparent 6%),
+    linear-gradient(180deg,var(--bg-1),var(--bg-2));
+  filter: blur(28px);
+  opacity:1;
+  pointer-events:none;
+}
+
+/* subtle grain overlay for depth */
+body::after{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,0.008) 1px, transparent 1px);
+  background-size:4px 4px;opacity:.6;
+}
+
+/* canvas for particles sits under content */
+#particleCanvas{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
+
+/* =========================
+   NAV
+   ========================= */
+header{position:fixed;top:0;left:0;right:0;z-index:60;padding:.8rem 0;background:linear-gradient(180deg, rgba(10,16,33,0.65), rgba(10,16,33,0.35));backdrop-filter: blur(8px);border-bottom:1px solid rgba(255,255,255,0.03)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1180px;margin:0 auto;padding:0 1.1rem}
+.brand{display:flex;align-items:center;gap:.8rem;color:var(--text);font-weight:800}
+.logo-svg{width:44px;height:44px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));box-shadow:0 12px 34px rgba(86,128,233,0.12)}
+.nav-actions{display:flex;gap:.6rem;align-items:center}
+.btn{padding:.6rem .95rem;border-radius:11px;font-weight:800;cursor:pointer;border:0}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)}
+.btn-primary{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:white;box-shadow:0 8px 28px rgba(86,128,233,0.12)}
+@media(max-width:880px){ .nav-actions .btn-ghost{display:none} }
+
+/* =========================
+   HERO
+   ========================= */
+#hero{padding:160px 0 80px;position:relative}
+.hero-card{
+  display:grid;grid-template-columns:1fr 420px;gap:2rem;align-items:center;
+  padding:2rem;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 18px 48px rgba(3,6,20,0.55);
+  position:relative;overflow:visible;
+}
+/* animated gradient border using pseudo-element */
+.hero-card::before{
+  content:"";position:absolute;inset:-2px;border-radius:20px;padding:2px;
+  background:linear-gradient(90deg,var(--accent1),#5ab9ea, var(--accent2));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity:.55;filter:blur(10px);
+  animation: borderShift 6s linear infinite;
+  pointer-events:none;
+}
+@keyframes borderShift{ from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+.hero-eyebrow{display:inline-block;padding:.35rem .75rem;border-radius:999px;background:rgba(86,128,233,0.12);color:#b6d7ff;font-weight:900;font-size:.85rem}
+.hero-title{font-size:2.6rem;line-height:1.02;margin:.6rem 0 0 0;font-weight:900}
+.hero-sub{color:var(--muted);font-weight:600;margin-top:.7rem}
+
+/* hero right column cards */
+.side-stack{display:flex;flex-direction:column;gap:.9rem}
+.small-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:.9rem;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+
+/* pills row */
+.pills{display:flex;gap:.7rem;margin-top:1.4rem;flex-wrap:wrap}
+.pill{padding:.45rem .75rem;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:800;color:var(--muted);font-size:.9rem}
+
+/* responsive */
+@media(max-width:980px){ .hero-card{grid-template-columns:1fr; padding:1.2rem} #hero{padding-top:120px} }
+
+/* =========================
+   FEATURE GRID & CARDS
+   ========================= */
+.section-head{font-size:1.6rem;font-weight:900;text-align:center;margin-bottom:1rem}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+@media(max-width:980px){ .grid{grid-template-columns:1fr} }
+
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding:1.25rem;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 12px 34px rgba(2,8,20,0.6);
+  position:relative;overflow:hidden;
+}
+/* animated accent strip for cards */
+.card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(120deg, transparent 0%, rgba(86,128,233,0.06) 10%, transparent 30%),
+             linear-gradient(90deg, transparent 0%, rgba(136,96,208,0.03) 50%, transparent 100%);
+  mix-blend-mode: screen;
+}
+
+/* glow border on featured card */
+.card.featured{border:1px solid rgba(128,150,255,0.24);box-shadow:0 20px 60px rgba(86,128,233,0.08)}
+
+/* feature icon */
+.feature-icon{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;font-weight:900;color:white;background:linear-gradient(135deg,var(--accent1),var(--accent2));box-shadow:0 10px 30px rgba(86,128,233,0.12);margin-bottom:.8rem}
+
+/* =========================
+   PRICING TILES
+   ========================= */
+.pricing-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}
+@media(max-width:1100px){ .pricing-row{grid-template-columns:1fr} }
+.price{font-size:1.9rem;font-weight:900; margin-top:.4rem}
+.tier-list{margin:0;padding-left:1.05rem;color:var(--muted);font-weight:700}
+
+/* =========================
+   CTA & FOOTER
+   ========================= */
+.cta-strip{margin-top:2.2rem;padding:1rem;border-radius:12px;background:linear-gradient(90deg, rgba(86,128,233,0.14), rgba(136,96,208,0.12));display:flex;justify-content:space-between;align-items:center}
+@media(max-width:760px){ .cta-strip{flex-direction:column;gap:.6rem;text-align:center} }
+
+footer{margin-top:2.4rem;padding:2rem 0;color:var(--muted);text-align:center}
+
+/* =========================
+   REVEAL ANIMATIONS (scroll)
+   ========================= */
+.reveal{
+  transform: translateY(18px) scale(.995);
+  opacity:0;
+  transition: transform .64s cubic-bezier(.2,.9,.3,1), opacity .54s ease;
+}
+.reveal.in-view{
+  transform:none;opacity:1;
+}
+
+/* small utilities */
+.hcenter{text-align:center}
+.kicker{font-weight:900;color:var(--muted);font-size:.95rem}
+.lead{color:var(--muted);font-weight:600}
+
+/* tiny accessibility focus */
+:focus{outline:3px solid rgba(86,128,233,0.18);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="particleCanvas" aria-hidden="true"></canvas>
+
+<!-- NAV -->
+<header role="banner">
+  <div class="nav-inner container">
+    <div class="brand" aria-label="Neptune Host home">
+      <!-- SVG logo -->
+      <div class="logo-svg" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#5680e9"/>
+              <stop offset="1" stop-color="#8860d0"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="44" height="44" rx="8" fill="url(#g1)"/>
+          <g transform="translate(8,8)" fill="#fff">
+            <path d="M6 6c3 0 6 2.5 6 6s-2.7 6-6 6-6-2.5-6-6 2.7-6 6-6z"/>
+          </g>
+        </svg>
+      </div>
+      <div style="display:flex;flex-direction:column;line-height:1;">
+        <span style="font-size:1rem">Neptune Host</span>
+        <small style="color:var(--muted);font-weight:700">Game servers • Low latency</small>
+      </div>
+    </div>
+
+    <nav class="nav-actions" aria-label="Primary">
+      <a class="btn btn-ghost" href="#features">Features</a>
+      <a class="btn btn-ghost" href="#pricing">Pricing</a>
+      <button class="btn btn-primary" onclick="document.getElementById('contactLink')?.scrollIntoView({behavior:'smooth'})">Get started</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section id="hero" aria-label="Hero">
+    <div class="container">
+      <div class="hero-card reveal" role="region" aria-labelledby="hero-heading">
+        <div>
+          <div class="hero-eyebrow">New — 40% off first month</div>
+          <h1 id="hero-heading" class="hero-title">Premium game servers — <span style="color:var(--accent1)">spin up instantly</span></h1>
+          <p class="hero-sub lead">Managed game hosting for communities and competitive teams. Global regions, automated backups, and DDoS protection.</p>
+
+          <div style="margin-top:1.4rem;display:flex;gap:.8rem;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Launch a server</button>
+            <a class="btn btn-ghost" href="#features">See features</a>
+            <div style="margin-left:8px;color:var(--muted);font-weight:900">• 99.99% uptime</div>
+          </div>
+
+          <div class="pills" aria-hidden="true">
+            <div class="pill">Worldwide POPs</div>
+            <div class="pill">One-click mods</div>
+            <div class="pill">Autoscaling</div>
+          </div>
+        </div>
+
+        <aside class="side-stack" aria-hidden="false">
+          <div class="small-card">
+            <div style="font-weight:900;font-size:16px;color:var(--accent1)">Neptune Host</div>
+            <div class="lead" style="font-size:.95rem;margin-top:.4rem;color:var(--muted)">Built for gamers — DDoS & 24/7 support</div>
+          </div>
+
+          <div class="small-card" style="display:flex;gap:.6rem;align-items:center">
+            <div style="width:52px;height:52px;border-radius:10px;background:linear-gradient(180deg,var(--accent1),var(--accent2));display:grid;place-items:center;color:white;font-weight:900">GH</div>
+            <div>
+              <div style="font-weight:900">Accessible</div>
+              <div class="lead" style="margin-top:.25rem">Contrast-checked UI & control panel</div>
+            </div>
+          </div>
+
+          <div class="small-card" style="text-align:center">
+            <div style="font-weight:900;font-size:20px;color:var(--accent1)">4.8</div>
+            <div class="lead" style="margin-top:.3rem">Avg. Customer Rating</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" aria-label="Platform highlights">
+    <div class="container">
+      <h2 class="section-head reveal">Platform highlights</h2>
+      <p class="hcenter lead reveal" style="max-width:860px;margin:0 auto 1.4rem">
+        Everything your community needs — from one-click server installs to automated scaling and integrated billing.
+      </p>
+
+      <div class="grid reveal">
+        <div class="card">
+          <div class="feature-icon">⚡</div>
+          <h3 style="margin:0;font-weight:900">Autoscaling</h3>
+          <p class="lead" style="margin-top:.6rem;color:var(--muted)">Scale resources automatically when your server gets busy.</p>
+        </div>
+
+        <div class="card featured">
+          <div class="feature-icon">🛡️</div>
+          <h3 style="margin:0;font-weight:900">DDoS Mitigation</h3>
+          <p class="lead" style="margin-top:.6rem;color:var(--muted)">Layered protections and always-on scrubbing to keep your players online.</p>
+        </div>
+
+        <div class="card">
+          <div class="feature-icon">🧩</div>
+          <h3 style="margin:0;font-weight:900">Marketplace</h3>
+          <p class="lead" style="margin-top:.6rem;color:var(--muted)">Curated mods, maps and admin tools — install in one click.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" aria-label="Pricing plans">
+    <div class="container">
+      <h2 class="section-head reveal">Plans built for every player</h2>
+      <p class="hcenter lead reveal" style="max-width:860px;margin:0 auto 1.2rem">
+        Pay monthly or hourly. Spin up instantly and scale as you grow.
+      </p>
+
+      <div class="pricing-row reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem">
+        <div class="card">
+          <h3 style="margin:0;font-weight:900">Starter</h3>
+          <div class="price">$6<small style="font-weight:800;color:var(--muted)">/mo</small></div>
+          <ul class="tier-list">
+            <li>2GB RAM • 1 vCPU</li>
+            <li>20GB NVMe</li>
+            <li>Basic DDoS</li>
+          </ul>
+          <div style="margin-top:1rem;display:flex;gap:.5rem">
+            <button class="btn btn-ghost" onclick="openContact('Starter')">Contact</button>
+            <button class="btn btn-primary" onclick="purchase('Starter')">Launch</button>
+          </div>
+        </div>
+
+        <div class="card featured" aria-hidden="false" style="border:1px solid rgba(128,150,255,0.24);">
+          <h3 style="margin:0;font-weight:900">Pro</h3>
+          <div class="price">$24<small style="font-weight:800;color:var(--muted)">/mo</small></div>
+          <ul class="tier-list">
+            <li>8GB RAM • 4 vCPU</li>
+            <li>80GB NVMe • Backups</li>
+            <li>Advanced DDoS • Monitoring</li>
+          </ul>
+          <div style="margin-top:1rem;display:flex;gap:.5rem">
+            <button class="btn btn-primary" onclick="purchase('Pro')">Choose Pro</button>
+            <button class="btn btn-ghost" onclick="openContact('Pro')">Contact sales</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0;font-weight:900">Enterprise</h3>
+          <div class="price">Custom</div>
+          <ul class="tier-list">
+            <li>Dedicated hardware</li>
+            <li>Private networks & SLA</li>
+            <li>Dedicated TAM</li>
+          </ul>
+          <div style="margin-top:1rem;display:flex;gap:.5rem">
+            <button class="btn btn-ghost" onclick="openContact('Enterprise')">Request quote</button>
+            <button class="btn btn-ghost" onclick="openDemo()">Schedule demo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-strip reveal" style="margin-top:1.6rem;border-radius:12px;padding:1rem;">
+        <div>
+          <div style="font-weight:900">Start your server in under 60 seconds</div>
+          <div class="lead" style="margin-top:.3rem">Free instant spin-up and a 30-day money-back guarantee.</div>
+        </div>
+        <div style="display:flex;gap:.6rem;align-items:center">
+          <button class="btn btn-ghost" onclick="openContact()">Talk to sales</button>
+          <button class="btn btn-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Create account</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" aria-label="Contact & FAQ" style="padding-bottom:120px;">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div>
+          <h3 style="margin:0;font-weight:900">Frequently asked</h3>
+          <div style="margin-top:1rem">
+            <div class="card" style="margin-bottom:.8rem">
+              <button class="btn btn-ghost" style="width:100%;display:flex;justify-content:space-between;align-items:center" aria-expanded="false" onclick="toggleFaq(this)">
+                <span style="text-align:left;font-weight:800">What is typical latency?</span>
+                <span class="small">▼</span>
+              </button>
+              <div class="faq-body" style="display:none;margin-top:.6rem;color:var(--muted)">We route players to the nearest POP — typical pings are 10–40ms within region.</div>
+            </div>
+
+            <div class="card">
+              <button class="btn btn-ghost" style="width:100%;display:flex;justify-content:space-between;align-items:center" aria-expanded="false" onclick="toggleFaq(this)">
+                <span style="text-align:left;font-weight:800">Do you offer DDoS protection?</span>
+                <span class="small">▼</span>
+              </button>
+              <div class="faq-body" style="display:none;margin-top:.6rem;color:var(--muted)">Yes — included on Pro and Enterprise plans. Basic mitigation for Starter.</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin:0;font-weight:900" id="contactLink">Get in touch</h3>
+          <p class="lead" style="margin-top:.6rem;color:var(--muted)">Sales & support: <strong style="color:var(--text)">sales@neptunehost.example</strong></p>
+          <form onsubmit="submitContact(event)" style="margin-top:.8rem;display:grid;gap:.6rem">
+            <label class="sr-only" for="contactName">Full name</label>
+            <input class="input" id="contactName" placeholder="Full name" required style="padding:.75rem;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)"/>
+            <label class="sr-only" for="contactEmail">Email</label>
+            <input class="input" id="contactEmail" type="email" placeholder="Email" required style="padding:.75rem;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)"/>
+            <label class="sr-only" for="contactMessage">Message</label>
+            <textarea id="contactMessage" class="input" rows="4" placeholder="How can we help?" required style="padding:.75rem;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)"></textarea>
+            <div style="display:flex;gap:.6rem">
+              <button class="btn btn-ghost" type="reset">Reset</button>
+              <button class="btn btn-primary" type="submit">Send message</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer role="contentinfo">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:.8rem">
+          <div class="logo-svg" aria-hidden="true" style="width:44px;height:44px"></div>
+          <div>
+            <div style="font-weight:900">Neptune Host</div>
+            <div class="lead" style="margin-top:.2rem;color:var(--muted)">© <span id="yr"></span> Neptune Host — Built for gamers</div>
+          </div>
+        </div>
+        <div style="color:var(--muted)">Terms • Privacy • Status</div>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<!-- SIMPLE MODALS (DEMO) -->
+<div id="modalRoot" aria-hidden="true"></div>
+
+<script>
+/* =========================
+   PARTICLES: Lightweight, efficient
+   ========================= */
+(function(){
+  const canvas = document.getElementById('particleCanvas');
+  const ctx = canvas.getContext('2d');
+  let w = canvas.width = innerWidth;
+  let h = canvas.height = innerHeight;
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  canvas.width = Math.floor(w * dpr);
+  canvas.height = Math.floor(h * dpr);
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.scale(dpr,dpr);
+
+  const num = Math.max(24, Math.floor((w*h)/(1600*2))); // adaptive particles
+  const particles = [];
+  const colors = ['rgba(86,128,233,0.9)','rgba(138,96,208,0.85)','rgba(90,185,234,0.8)'];
+
+  function rand(min,max){ return Math.random()*(max-min)+min; }
+
+  for(let i=0;i<num;i++){
+    particles.push({
+      x: rand(0,w),
+      y: rand(0,h),
+      r: rand(0.8,2.3),
+      vx: rand(-0.2,0.6),
+      vy: rand(-0.15,0.15),
+      alpha: rand(0.06,0.25),
+      color: colors[i % colors.length],
+      tw: rand(60,220)
+    });
+  }
+
+  let t = 0;
+  function step(){
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    t += 0.016;
+    ctx.clearRect(0,0,w,h);
+    for(const p of particles){
+      // slow drift + subtle sine movement
+      p.x += p.vx * 0.6;
+      p.y += Math.sin((t + p.tw) * 0.2) * 0.25 + p.vy * 0.6;
+      // wrap
+      if(p.x > w + 20) p.x = -20;
+      if(p.x < -20) p.x = w + 20;
+      if(p.y > h + 40) p.y = -40;
+      if(p.y < -40) p.y = h + 40;
+
+      ctx.beginPath();
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.arc(p.x, p.y, p.r * (1 + Math.sin((t + p.tw)/7)*0.18), 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    raf = requestAnimationFrame(step);
+  }
+  let raf = requestAnimationFrame(step);
+
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(raf);
+    w = canvas.width = innerWidth;
+    h = canvas.height = innerHeight;
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.scale(dpr,dpr);
+    // optionally regenerate particles for large resizes
+  });
+})();
+
+/* =========================
+   Scroll reveal: IntersectionObserver
+   ========================= */
+(function(){
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in-view');
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold: 0.12});
+
+  document.querySelectorAll('.reveal').forEach(el=>{
+    io.observe(el);
+  });
+})();
+
+/* =========================
+   Small UI helpers (modals + forms)
+   ========================= */
+function openContact(plan){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+  <div style="position:fixed;inset:0;display:grid;place-items:center;background:rgba(2,6,18,0.6);z-index:120;">
+    <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:1.1rem;border-radius:12px;min-width:320px;max-width:720px;border:1px solid rgba(255,255,255,0.04);">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Contact Sales ${plan ? '— '+plan : ''}</h3>
+        <button onclick="closeModal()" aria-label="Close" style="background:transparent;border:0;font-weight:900;font-size:20px;color:var(--text)">✕</button>
+      </div>
+      <form onsubmit="contactSubmit(event)" style="display:grid;gap:.6rem;margin-top:.8rem">
+        <input id="mName" required placeholder="Full name" style="padding:.7rem;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)"/>
+        <input id="mEmail" required placeholder="Email" type="email" style="padding:.7rem;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)"/>
+        <textarea id="mMsg" rows="4" placeholder="Tell us about your requirements" style="padding:.7rem;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)"></textarea>
+        <div style="display:flex;gap:.6rem;justify-content:flex-end">
+          <button type="button" class="btn btn-ghost" onclick="closeModal()">Close</button>
+          <button type="submit" class="btn btn-primary">Send request</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
+  root.setAttribute('aria-hidden','false');
+  setTimeout(()=>document.querySelector('#modalRoot input')?.focus(),50);
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; document.getElementById('modalRoot').setAttribute('aria-hidden','true'); }
+
+function contactSubmit(e){
+  e.preventDefault();
+  const name = document.getElementById('mName')?.value || document.getElementById('contactName')?.value;
+  const email = document.getElementById('mEmail')?.value || document.getElementById('contactEmail')?.value;
+  closeModal();
+  alert('Thanks, ' + (name || '') + ' — we will contact you at ' + (email || '') + '. (Demo)');
+}
+
+function openDemo(){ openContact('Demo'); }
+function purchase(plan){
+  if(confirm('Proceed to checkout for ' + plan + '? (demo)')) alert('Redirecting to checkout (demo).');
+}
+
+/* FAQ toggle */
+function toggleFaq(btn){
+  const body = btn.parentElement.querySelector('.faq-body');
+  const expanded = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', String(!expanded));
+  btn.querySelector('.small').textContent = expanded ? '▼' : '▲';
+  if(body) body.style.display = expanded ? 'none' : 'block';
+}
+
+/* simple contact form handler */
+function submitContact(e){
+  e.preventDefault();
+  const name = document.getElementById('contactName').value;
+  const mail = document.getElementById('contactEmail').value;
+  if(!name || !mail) return alert('Please complete name and email');
+  document.getElementById('contactName').value='';
+  document.getElementById('contactEmail').value='';
+  document.getElementById('contactMessage').value='';
+  alert('Thanks — we will contact you at ' + mail);
+}
+
+/* Escape closes modal */
+document.addEventListener('keydown', (ev) => { if(ev.key === 'Escape') closeModal(); });
+
+/* set year */
+document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
