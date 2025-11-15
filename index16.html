@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberCorp Abstract</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  
+  <style>
+    /* --- Colors --- */
+    :root {
+      --white: #ffffff;
+      --light-grey: #f2f3f5;
+      --dark-grey: #1c1d1f;
+      --light-blue: #66b8ff;
+      --soft-blue: #99d4ff;
+      --transition-speed: 0.3s;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--dark-grey);
+      color: var(--white);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    a {
+      color: var(--light-blue);
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    a:hover {
+      color: var(--soft-blue);
+    }
+
+    /* --- Floating Background Shapes --- */
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.15;
+      animation: float 12s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    .shape:nth-child(1) { width: 250px; height: 250px; background: var(--light-blue); top: -50px; left: 10%; animation-duration: 18s;}
+    .shape:nth-child(2) { width: 180px; height: 180px; background: var(--soft-blue); top: 300px; left: 70%; animation-duration: 15s;}
+    .shape:nth-child(3) { width: 220px; height: 220px; background: var(--light-blue); top: 600px; left: 40%; animation-duration: 20s;}
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg);}
+      50% { transform: translateY(-40px) rotate(45deg);}
+    }
+
+    /* --- Header --- */
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      color: var(--light-blue);
+      text-shadow: 0 0 10px var(--light-blue), 0 0 20px var(--soft-blue);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    header h1:hover {
+      transform: scale(1.1) rotate(-2deg);
+    }
+
+    nav {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      z-index: 10;
+      position: relative;
+    }
+
+    nav a.nav-btn {
+      background: var(--light-blue);
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 700;
+      color: var(--white);
+      transition: all 0.3s;
+    }
+
+    nav a.nav-btn:hover {
+      background: var(--soft-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 0 12px var(--light-blue), 0 0 24px var(--soft-blue);
+    }
+
+    /* --- Sections --- */
+    section {
+      position: relative;
+      padding: 8rem 2rem;
+      min-height: 100vh;
+      z-index: 1;
+    }
+
+    section h2 {
+      font-size: 2.5rem;
+      color: var(--light-blue);
+      text-shadow: 0 0 6px var(--soft-blue);
+      margin-bottom: 1rem;
+      max-width: 800px;
+      line-height: 1.2;
+    }
+
+    section p {
+      max-width: 800px;
+      line-height: 1.8;
+      font-size: 1.1rem;
+      color: var(--white);
+      opacity: 0.9;
+    }
+
+    /* --- Footer --- */
+    footer {
+      background: var(--dark-grey);
+      padding: 4rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    footer .footer-column {
+      flex: 1 1 200px;
+      margin: 1rem;
+    }
+
+    footer h3 {
+      color: var(--light-blue);
+      margin-bottom: 1rem;
+    }
+
+    footer a {
+      color: var(--white);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    footer a:hover {
+      color: var(--soft-blue);
+    }
+
+    /* --- Dark / Light Toggle --- */
+    .toggle-switch {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 20;
+    }
+
+    .toggle-switch input { display:none; }
+
+    .slider {
+      width: 50px;
+      height: 26px;
+      background: var(--light-blue);
+      border-radius: 34px;
+      position: relative;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 20px; height: 20px;
+      left: 3px; bottom: 3px;
+      background: var(--white);
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    input:checked + .slider {
+      background: var(--soft-blue);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Floating Shapes -->
+  <div class="shape"></div>
+  <div class="shape"></div>
+  <div class="shape"></div>
+
+  <!-- Dark / Light Toggle -->
+  <label class="toggle-switch">
+    <input type="checkbox" id="themeToggle">
+    <span class="slider"></span>
+  </label>
+
+  <!-- Header -->
+  <header>
+    <h1 onclick="window.location='#home'">CYBERCORP</h1>
+    <nav>
+      <a href="#home" class="nav-btn">Home</a>
+      <a href="#about" class="nav-btn">About</a>
+      <a href="#services" class="nav-btn">Services</a>
+      <a href="#contact" class="nav-btn">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Sections -->
+  <section id="home">
+    <h2>Welcome to the Abstract Future</h2>
+    <p>Our corporate cyber solutions float beyond the traditional. Think shapes, layers, and elegance in motion. Placeholder jargon conveys executive sophistication in every pixel.</p>
+  </section>
+
+  <section id="about">
+    <h2>About CyberCorp</h2>
+    <p>Asymmetrical designs, floating panels, and glowing typography redefine luxury corporate branding. Every interaction is a journey through abstract innovation.</p>
+  </section>
+
+  <section id="services">
+    <h2>Services in Motion</h2>
+    <p>From strategic frameworks to visionary digital operations, our services exist in a cyber-luxury abstraction, crafted for the avant-garde corporate thinker.</p>
+  </section>
+
+  <section id="contact">
+    <h2>Get in Touch</h2>
+    <p>Reach out to explore our abstract cyber solutions. Your brand deserves more than linear thinking—it deserves to float in the future.</p>
+    <a class="nav-btn" href="mailto:contact@cybercorp.com"><i class="fas fa-envelope"></i> Email Us</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-column">
+      <h3>CyberCorp</h3>
+      <p>Luxury corporate cyber solutions designed for abstract innovation.</p>
+    </div>
+    <div class="footer-column">
+      <h3>Links</h3>
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-column">
+      <h3>Follow Us</h3>
+      <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+      <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+      <a href="#"><i class="fab fa-github"></i> GitHub</a>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    toggle.addEventListener('change', () => {
+      body.classList.toggle('dark-mode');
+      if(body.classList.contains('dark-mode')) {
+        document.querySelectorAll('.shape').forEach(s => s.style.opacity = 0.08);
+      } else {
+        document.querySelectorAll('.shape').forEach(s => s.style.opacity = 0.15);
+      }
+    });
+  </script>
+
+</body>
+</html>
