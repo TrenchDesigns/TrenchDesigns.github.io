@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NovaCore Systems — Next-Gen Infrastructure</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* ---------------- GLOBAL ---------------- */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #101010;
+    color: #fff;
+    scroll-behavior: smooth;
+}
+
+/* Anchor offset (so section titles don't hide behind navbar) */
+section {
+    scroll-margin-top: 90px;
+}
+
+/* Color variables */
+:root {
+    --accent-red: #e63946;
+}
+
+/* ---------------- NAVBAR ---------------- */
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.85);
+    padding: 14px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 50;
+    border-bottom: 1px solid #222;
+    backdrop-filter: blur(4px);
+}
+
+nav .logo {
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 22px;
+    padding: 0;
+    margin: 0;
+}
+
+nav a {
+    color: #ddd;
+    text-decoration: none;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+nav a:hover {
+    color: var(--accent-red);
+}
+
+/* mobile menu */
+.menu-toggle {
+    display: none;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+@media(max-width: 850px) {
+    nav ul {
+        position: fixed;
+        top: 60px;
+        right: -100%;
+        background: #000;
+        width: 220px;
+        height: 100vh;
+        flex-direction: column;
+        padding-top: 20px;
+        transition: 0.3s;
+    }
+    nav ul.active {
+        right: 0;
+    }
+    .menu-toggle {
+        display: block;
+    }
+}
+
+/* ---------------- HERO ---------------- */
+.hero {
+    height: 100vh;
+    background: url('https://picsum.photos/1920/1080?blur=2') center/cover no-repeat fixed;
+    display: flex;
+    align-items: center;
+    padding: 0 10%;
+    text-shadow: 0 0 20px #000;
+}
+
+.hero h1 {
+    font-size: 52px;
+    margin-bottom: 12px;
+}
+
+.hero h2 {
+    font-size: 24px;
+    opacity: 0.9;
+}
+
+.hero p {
+    max-width: 550px;
+    margin-top: 15px;
+    line-height: 1.5;
+    opacity: 0.85;
+}
+
+.btn-red {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 12px 24px;
+    background: var(--accent-red);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: 0.25s;
+}
+
+.btn-red:hover {
+    background: #ff4a58;
+}
+
+/* ---------------- COMMON SECTIONS ---------------- */
+.section {
+    padding: 90px 8%;
+}
+
+.section h2 {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 40px;
+}
+
+/* ---------------- FEATURES ---------------- */
+.card-grid {
+    margin-top: 45px;
+    display: grid;
+    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.card {
+    background: #181818;
+    padding: 25px;
+    border-radius: 10px;
+    border: 1px solid #222;
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-red);
+}
+
+.card i {
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: var(--accent-red);
+}
+
+.card h3 {
+    margin-bottom: 10px;
+}
+
+/* ---------------- ABOUT SECTION ---------------- */
+.about-box {
+    max-width: 900px;
+    margin: auto;
+    text-align: center;
+    line-height: 1.7;
+    opacity: 0.85;
+}
+
+/* ---------------- CONTACT SECTION ---------------- */
+.contact-box {
+    max-width: 700px;
+    margin: auto;
+    text-align: center;
+}
+
+.contact-box i {
+    color: var(--accent-red);
+    font-size: 30px;
+    margin: 15px 0 10px 0;
+}
+
+.contact-row {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* ---------------- FOOTER ---------------- */
+footer {
+    background: #000;
+    padding: 35px;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-top: 60px;
+}
+</style>
+
+<script>
+/* navbar scroll background polishing */
+window.addEventListener("scroll", () => {
+    const nav = document.querySelector("nav");
+    nav.style.background = window.scrollY > 40
+        ? "rgba(0,0,0,0.95)"
+        : "rgba(0,0,0,0.75)";
+});
+
+/* mobile menu logic */
+function toggleMenu() {
+    document.querySelector("nav ul").classList.toggle("active");
+}
+</script>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="logo"><i class="fa-solid fa-bolt"></i> NovaCore</div>
+
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+
+    <ul>
+        <li><a href="#hero"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="#features"><i class="fa-solid fa-layer-group"></i> Features</a></li>
+        <li><a href="#about"><i class="fa-solid fa-circle-info"></i> About</a></li>
+        <li><a href="#contact"><i class="fa-solid fa-envelope"></i> Contact</a></li>
+    </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="hero">
+    <div>
+        <h1>Build the Future of Digital Infrastructure</h1>
+        <h2>Advanced Cloud • Realtime Systems • Autonomous Scale</h2>
+
+        <p>
+            NovaCore delivers hyper-scalable compute frameworks, adaptive runtime orchestration,
+            and next-generation distributed stacks engineered for high-velocity development teams.
+        </p>
+
+        <a class="btn-red" href="#contact"><i class="fa-solid fa-rocket"></i> Get Started</a>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="section">
+    <h2>Why Choose NovaCore?</h2>
+
+    <div class="card-grid">
+
+        <div class="card">
+            <i class="fa-solid fa-gears"></i>
+            <h3>Adaptive Compute Mesh</h3>
+            <p>Dynamic load-balancing and on-demand computational weaving optimized for realtime workflows.</p>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-lock"></i>
+            <h3>Zero-Trust Security</h3>
+            <p>Encrypted pathways, AI-driven anomaly detection, and enterprise-grade compliance layers.</p>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-chart-line"></i>
+            <h3>Predictive Scaling Engine</h3>
+            <p>Automated forecasting algorithms that optimize performance before demand arises.</p>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-cloud"></i>
+            <h3>Cloud-Native DNA</h3>
+            <p>End-to-end containerized ecosystems built for rapid deployment and frictionless iteration.</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="section">
+    <h2>About NovaCore</h2>
+
+    <div class="about-box">
+        NovaCore blends distributed compute orchestration, neural optimization heuristics, and
+        high-throughput runtime engines into a seamless platform designed for both startups and enterprise
+        operations. Our stack prioritizes velocity, reliability, and future-proof modularity.
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section">
+    <h2>Contact Us</h2>
+
+    <div class="contact-row contact-box">
+
+        <div>
+            <i class="fa-solid fa-envelope"></i>
+            <h3>Email</h3>
+            <p>support@novacore.example</p>
+        </div>
+
+        <div>
+            <i class="fa-solid fa-phone"></i>
+            <h3>Phone</h3>
+            <p>+1 (555) 901-4455</p>
+        </div>
+
+        <div>
+            <i class="fa-solid fa-location-dot"></i>
+            <h3>Location</h3>
+            <p>Sector 7, NeoGrid District</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    © 2025 NovaCore Systems — One-page Educational Template. All text is placeholder jargon.
+</footer>
+
+</body>
+</html>
