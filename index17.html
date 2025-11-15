@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FuturCorp 2030</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --white: #ffffff;
+      --light-grey: #f5f6f7;
+      --dark-grey: #1c1d1f;
+      --light-blue: #66b8ff;
+      --soft-blue: #99d4ff;
+      --glass-bg: rgba(255,255,255,0.05);
+      --transition-speed: 0.3s;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--dark-grey);
+      color: var(--white);
+      scroll-behavior: smooth;
+    }
+
+    a { text-decoration: none; color: var(--light-blue); transition: 0.3s; }
+    a:hover { color: var(--soft-blue); }
+
+    /* --- Header / Nav --- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      background: var(--glass-bg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      color: var(--light-blue);
+      cursor: pointer;
+      text-shadow: 0 0 8px var(--light-blue), 0 0 16px var(--soft-blue);
+      transition: 0.3s;
+    }
+
+    header h1:hover { transform: scale(1.1); }
+
+    nav {
+      display: flex;
+      gap: 1rem;
+    }
+
+    nav a.nav-btn {
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      background: var(--light-blue);
+      color: var(--white);
+      transition: all var(--transition-speed);
+    }
+
+    nav a.nav-btn:hover {
+      background: var(--soft-blue);
+      box-shadow: 0 0 12px var(--light-blue), 0 0 24px var(--soft-blue);
+      transform: translateY(-2px);
+    }
+
+    /* --- Sections --- */
+    section {
+      min-height: 100vh;
+      padding: 8rem 2rem 4rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    section h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      color: var(--light-blue);
+      text-shadow: 0 0 8px var(--light-blue);
+      margin-bottom: 1rem;
+    }
+
+    section p {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      color: var(--white);
+      max-width: 700px;
+      opacity: 0.9;
+    }
+
+    /* --- Glass Panels --- */
+    .panel {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(20px);
+      padding: 2rem;
+      border-radius: 16px;
+      margin-top: 2rem;
+      transition: transform 0.4s, box-shadow 0.4s;
+    }
+
+    .panel:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px var(--light-blue), 0 0 40px var(--soft-blue);
+    }
+
+    /* --- Footer --- */
+    footer {
+      background: var(--dark-grey);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      padding: 4rem 2rem;
+      gap: 2rem;
+    }
+
+    footer .footer-column {
+      flex: 1 1 200px;
+    }
+
+    footer h3 {
+      color: var(--light-blue);
+      margin-bottom: 1rem;
+    }
+
+    footer a { display: block; margin-bottom: 0.5rem; }
+
+    footer a:hover { color: var(--soft-blue); }
+
+    /* --- Dark / Light Toggle --- */
+    .toggle-switch {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 200;
+    }
+
+    .toggle-switch input { display: none; }
+    .slider {
+      width: 50px;
+      height: 26px;
+      background: var(--light-blue);
+      border-radius: 34px;
+      position: relative;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 20px; height: 20px;
+      left: 3px; bottom: 3px;
+      background: var(--white);
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    input:checked + .slider { background: var(--soft-blue); }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+  </style>
+</head>
+<body>
+
+  <!-- Dark / Light Toggle -->
+  <label class="toggle-switch">
+    <input type="checkbox" id="themeToggle">
+    <span class="slider"></span>
+  </label>
+
+  <!-- Header -->
+  <header>
+    <h1 onclick="window.location='#home'">FUTURCORP 2030</h1>
+    <nav>
+      <a href="#home" class="nav-btn">Home</a>
+      <a href="#about" class="nav-btn">About</a>
+      <a href="#services" class="nav-btn">Services</a>
+      <a href="#contact" class="nav-btn">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Sections -->
+  <section id="home">
+    <h2>Welcome to 2030</h2>
+    <p>Step into the future of corporate design: sleek panels, neon accents, and glassmorphic layers. FuturCorp 2030 blends luxury with cyber innovation in every interaction.</p>
+    <div class="panel">Floating insight: Abstract strategy meets advanced AI analytics in every decision.</div>
+  </section>
+
+  <section id="about">
+    <h2>About Us</h2>
+    <p>We are pioneers in futuristic corporate experiences. Our designs are minimal yet striking, creating spaces that feel advanced and dynamic.</p>
+    <div class="panel">Our philosophy: Every pixel matters. Every interaction is a journey through futuristic elegance.</div>
+  </section>
+
+  <section id="services">
+    <h2>Our Services</h2>
+    <p>From cyber strategy to next-gen digital operations, we help brands transcend the ordinary. Abstract thinking, practical implementation, futuristic aesthetics.</p>
+    <div class="panel">Cyber solutions, AI advisory, data-driven creative insights, and immersive brand experiences.</div>
+  </section>
+
+  <section id="contact">
+    <h2>Get in Touch</h2>
+    <p>Reach out to explore our 2030 solutions. Your brand deserves futuristic thinking, now.</p>
+    <a class="nav-btn" href="mailto:contact@futurcorp.com"><i class="fas fa-envelope"></i> Email Us</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-column">
+      <h3>FuturCorp 2030</h3>
+      <p>Luxury corporate solutions designed for the 2030 era.</p>
+    </div>
+    <div class="footer-column">
+      <h3>Links</h3>
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-column">
+      <h3>Follow Us</h3>
+      <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+      <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+      <a href="#"><i class="fab fa-github"></i> GitHub</a>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('change', () => {
+      document.body.classList.toggle('light-mode');
+      if(document.body.classList.contains('light-mode')) {
+        document.body.style.background = 'var(--light-grey)';
+        document.body.style.color = 'var(--dark-grey)';
+      } else {
+        document.body.style.background = 'var(--dark-grey)';
+        document.body.style.color = 'var(--white)';
+      }
+    });
+  </script>
+
+</body>
+</html>
