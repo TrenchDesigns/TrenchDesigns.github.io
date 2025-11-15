@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock Tebex Exo Store</title>
+  <style>
+    /* Base reset & typography */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Inter, sans-serif; background: #F4F6F8; color: #1F2933; line-height: 1.5; }
+
+    /* Container */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* Header / Navbar */
+    header { background-color: #0052FF; color: white; padding: 20px 0; }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.5rem; font-weight: bold; }
+    nav ul { list-style: none; display: flex; gap: 24px; }
+    nav a { color: white; font-weight: 500; text-decoration: none; transition: color .2s; }
+    nav a:hover { color: #B3D4FF; }
+
+    /* Hero / Banner */
+    .hero { background: #E6EFFF; padding: 100px 0; text-align: center; }
+    .hero h1 { font-size: 2.75rem; color: #0B1D3A; margin-bottom: 16px; }
+    .hero p { font-size: 1.125rem; color: #334155; margin-bottom: 32px; }
+    .hero .btn { background: #0052FF; color: white; padding: 12px 28px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; transition: background .2s; }
+    .hero .btn:hover { background: #003ECB; }
+
+    /* Features Section */
+    .features { padding: 80px 0; }
+    .features h2 { text-align: center; font-size: 2rem; color: #0B1D3A; margin-bottom: 48px; }
+    .feature-list { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+    .feature { background: white; padding: 24px; border-radius: 8px; width: 280px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform .2s, box-shadow .2s; }
+    .feature:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .feature img { width: 100%; border-radius: 4px; margin-bottom: 16px; }
+    .feature h3 { font-size: 1.25rem; margin-bottom: 8px; color: #0B1D3A; }
+    .feature p { font-size: .95rem; color: #475569; }
+
+    /* Products Section */
+    .products { background: #FFFFFF; padding: 80px 0; }
+    .products h2 { text-align: center; font-size: 2rem; color: #0B1D3A; margin-bottom: 48px; }
+    .product-grid { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+    .product { background: white; border-radius: 8px; padding: 20px; width: 260px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); transition: transform .2s, box-shadow .2s; }
+    .product:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .product img { width: 100%; border-radius: 4px; margin-bottom: 16px; }
+    .product h3 { font-size: 1.25rem; margin-bottom: 8px; color: #0B1D3A; }
+    .product p { font-size: .9rem; color: #64748B; margin-bottom: 16px; }
+    .product button { background: #0052FF; color: white; padding: 10px 22px; border: none; border-radius: 6px; cursor: pointer; transition: background .2s; }
+    .product button:hover { background: #003ECB; }
+
+    /* Footer */
+    footer { background-color: #1E293B; color: #E2E8F0; padding: 40px 0; }
+    footer .footer-inner { max-width: 1200px; margin: 0 auto; text-align: center; }
+    footer a { color: #60A5FA; transition: text-decoration .2s; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media(max-width: 768px) {
+      .header-inner { flex-direction: column; gap: 12px; }
+      .hero h1 { font-size: 2.2rem; }
+      .features h2, .products h2 { font-size: 1.75rem; }
+      .feature, .product { width: 90%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Layout / Global Header -->
+  <header>
+    <div class="container header-inner">
+      <div class="logo">MockTebexExo</div>
+      <nav>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#packages">Packages</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero / Landing Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Monetize Your Server.</h1>
+      <p>Fast, secure, and powerful webstore for selling digital or game‑server packages.</p>
+      <button>Get Started</button>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <h2>Powerful Features</h2>
+      <div class="feature-list">
+        <div class="feature">
+          <img src="https://via.placeholder.com/280x160" alt="Feature 1">
+          <h3>Custom Templates</h3>
+          <p>Create custom store layouts using a flexible template engine.</p>
+        </div>
+        <div class="feature">
+          <img src="https://via.placeholder.com/280x160" alt="Feature 2">
+          <h3>Configurable Schema</h3>
+          <p>Allow store owners to tweak colours, nav layouts, and more.</p>
+        </div>
+        <div class="feature">
+          <img src="https://via.placeholder.com/280x160" alt="Feature 3">
+          <h3>Global Payments</h3>
+          <p>Accept payments from around the world with secure gateways.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products / Packages Section -->
+  <section class="products" id="packages">
+    <div class="container">
+      <h2>Your Packages</h2>
+      <div class="product-grid">
+        <div class="product">
+          <img src="https://via.placeholder.com/260x150" alt="Package 1">
+          <h3>Starter Pack</h3>
+          <p>A great entry-level package for new players.</p>
+          <button>Buy Now</button>
+        </div>
+        <div class="product">
+          <img src="https://via.placeholder.com/260x150" alt="Package 2">
+          <h3>Pro Pack</h3>
+          <p>More value, extra perks, perfect for active users.</p>
+          <button>Buy Now</button>
+        </div>
+        <div class="product">
+          <img src="https://via.placeholder.com/260x150" alt="Package 3">
+          <h3>Elite Pack</h3>
+          <p>All features unlocked, full-access premium bundle.</p>
+          <button>Buy Now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <div class="container footer-inner">
+      <p>Contact us: <a href="mailto:placeholder@store.com">placeholder@store.com</a></p>
+      <p>© 2025 Mock Tebex Exo. All content is placeholder.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
