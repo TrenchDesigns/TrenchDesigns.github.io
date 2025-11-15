@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Neptune Host — Game Hosting (One Page)</title>
+<meta name="description" content="Low-latency, managed game servers for communities and competitive teams." />
+
+<!-- =========================
+     TRIMMED "BOOTSTRAP-LIKE" CSS (medium)
+     Contains: reboot, grid, navbar basics, forms, buttons, cards, utilities
+     ========================= -->
+<style>
+/* Reboot-ish */
+:root{
+  --c1:#5680E9; --c2:#84CEEB; --c3:#5AB9EA; --c4:#C1C8E4; --c5:#8860D0;
+  --bg:#f6fbff; --surface:#ffffff; --text:#102033; --muted:#627884;
+  --radius:12px; --shadow-s: 0 8px 24px rgba(17,34,68,0.06); --shadow-l: 0 20px 60px rgba(17,34,68,0.09);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; -webkit-font-smoothing:antialiased;background:var(--bg);color:var(--text)}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+
+/* Container / grid (12-column-ish but simple) */
+.container{max-width:1180px;margin-left:auto;margin-right:auto;padding:0 1rem}
+.row{display:flex;flex-wrap:wrap;margin:0 -1rem}
+.col{padding:0 1rem;flex:1 1 0%}
+.col-6{flex:0 0 50%;max-width:50%}
+.col-4{flex:0 0 33.3333%;max-width:33.3333%}
+.col-3{flex:0 0 25%;max-width:25%}
+.col-12{flex:0 0 100%;max-width:100%}
+@media (max-width: 900px){ .col-6,.col-4,.col-3{flex:0 0 100%;max-width:100%} .nav-links{display:none} }
+
+/* Spacing utilities */
+.mt-1{margin-top:.6rem}.mt-2{margin-top:1.2rem}.mt-3{margin-top:2rem}
+.mb-1{margin-bottom:.6rem}.mb-2{margin-bottom:1.2rem}.mb-3{margin-bottom:2rem}
+.p-1{padding:.6rem}.p-2{padding:1rem}.p-3{padding:1.6rem}
+
+/* Typography */
+.h1{font-size:2.6rem;line-height:1.02;margin:0}
+.h2{font-size:1.45rem;margin:0}
+.lead{font-size:1.05rem;color:var(--muted);font-weight:600}
+
+/* Navbar */
+header.navbar{position:fixed;left:0;right:0;top:0;z-index:60;background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border-bottom:1px solid rgba(16,32,56,0.04)}
+.navbar-inner{display:flex;align-items:center;justify-content:space-between;padding:.9rem 0}
+.brand{display:flex;align-items:center;gap:.8rem}
+.brand .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--c1),var(--c5));display:grid;place-items:center;color:white;font-weight:900;box-shadow:0 10px 30px rgba(86,96,233,0.12)}
+.nav-links{display:flex;gap:.2rem;align-items:center}
+.nav-links a{padding:.5rem .7rem;border-radius:8px;color:var(--muted);font-weight:700}
+.nav-links a.active{color:var(--text);background:rgba(23,43,75,0.03)}
+
+/* Mobile toggler */
+.toggler{display:none;border:0;background:transparent;padding:.45rem;border-radius:8px}
+@media (max-width:900px){ .toggler{display:inline-flex} }
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:.6rem;padding:.6rem .9rem;border-radius:10px;border:0;font-weight:800;cursor:pointer}
+.btn-ghost{background:transparent;border:1px solid rgba(16,32,56,0.06);color:var(--text)}
+.btn-primary{background:linear-gradient(135deg,var(--c1),var(--c5));color:white;box-shadow:0 12px 36px rgba(86,96,233,0.14)}
+
+/* Hero */
+#hero{padding:140px 0 90px 0;position:relative;overflow:hidden}
+.hero-card{display:grid;grid-template-columns:1fr 380px;gap:2rem;align-items:center;padding:2rem;border-radius:20px;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(244,248,255,0.95));box-shadow:var(--shadow-l);border:1px solid rgba(16,32,56,0.04)}
+@media (max-width:980px){ .hero-card{grid-template-columns:1fr; padding:1.2rem} }
+.hero-eyebrow{display:inline-block;padding:.35rem .7rem;border-radius:999px;background:rgba(88,96,225,0.06);color:var(--c1);font-weight:900;font-size:.9rem}
+.hero-title{font-size:2.4rem;color:var(--text);font-weight:900;margin:0}
+.hero-sub{color:var(--muted);margin:0;font-weight:600}
+
+/* art circle */
+.art-wrap{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0.96}
+.art{width:56%;max-width:520px;border-radius:999px;padding:1.2rem;filter:drop-shadow(0 28px 60px rgba(24,39,75,0.12));transition:transform .7s ease}
+@media (max-width:980px){ .art{width:68%;max-width:420px} }
+
+/* Cards */
+.card{background:var(--surface);border-radius:14px;padding:1rem;border:1px solid rgba(16,32,56,0.04);box-shadow:var(--shadow-s)}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media (max-width:900px){ .feature-grid{grid-template-columns:1fr} }
+
+/* Pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media (max-width:1100px){ .pricing-grid{grid-template-columns:1fr} }
+.price-card{padding:1.15rem;border-radius:14px;background:linear-gradient(180deg, #fff, #fbfcff);border:1px solid rgba(16,32,56,0.04);box-shadow:var(--shadow-s);transition:transform .18s ease}
+.price-card.popular{box-shadow:0 22px 60px rgba(86,96,233,0.1);border:1px solid rgba(86,96,233,0.08)}
+.price-card:hover{transform:translateY(-8px)}
+
+/* Forms */
+.input, textarea{width:100%;padding:.7rem;border-radius:10px;border:1px solid rgba(16,32,56,0.06);font-weight:600}
+textarea{resize:vertical}
+
+/* FAQ */
+.faq-item{border-radius:12px;padding:.9rem;border:1px solid rgba(16,32,56,0.04);background:#fff}
+
+/* CTA */
+.cta-strip{margin-top:1.6rem;padding:1rem;border-radius:12px;background:linear-gradient(90deg,var(--c3),var(--c5));color:white;display:flex;align-items:center;justify-content:space-between}
+@media (max-width:760px){ .cta-strip{flex-direction:column;gap:.6rem;text-align:center} }
+
+/* Footer */
+footer.site{margin-top:2.2rem;padding:1.2rem 0;background:linear-gradient(90deg,var(--c5),var(--c1));color:white;border-radius:10px}
+
+/* Accessibility helpers */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Smooth scroll offset helper for browsers that don't support scroll-margin */
+:root{--nav-h:76px}
+</style>
+
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="container navbar-inner">
+    <div class="brand">
+      <div class="logo">N</div>
+      <div>
+        <div style="font-weight:900">Neptune Host</div>
+        <div style="font-size:.8rem;color:var(--muted)">Game servers • Low latency</div>
+      </div>
+    </div>
+
+    <nav style="display:flex;align-items:center;gap:.6rem">
+      <button class="toggler" id="navToggler" aria-expanded="false" aria-controls="navMenu" aria-label="Toggle navigation">☰</button>
+      <div class="nav-links" id="navMenu">
+        <a href="#hero" class="nav-link" data-target="hero">Home</a>
+        <a href="#features" class="nav-link" data-target="features">Features</a>
+        <a href="#pricing" class="nav-link" data-target="pricing">Pricing</a>
+        <a href="#testimonials" class="nav-link" data-target="testimonials">Testimonials</a>
+        <a href="#contact" class="nav-link" data-target="contact">Contact</a>
+      </div>
+      <button class="btn btn-ghost" onclick="openModal('login')">Sign in</button>
+      <button class="btn btn-primary" onclick="openModal('signup')">Get started</button>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<main>
+<section id="hero" aria-label="Hero section">
+  <div class="container">
+    <div class="hero-card">
+      <div>
+        <div class="hero-eyebrow">New • 40% off first month</div>
+        <h1 class="hero-title mt-1">Premium game servers — <span style="color:var(--c1)">Spin up instantly</span></h1>
+        <p class="hero-sub mt-1">Managed game hosting for communities and competitive teams. Global regions, DDoS protection, automated backups, and a 30-day money-back guarantee.</p>
+
+        <div class="mt-2" style="display:flex;gap:.8rem;align-items:center">
+          <button class="btn btn-primary" onclick="document.location.hash='#pricing'">Launch a server</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See features</button>
+          <div style="margin-left:8px" class="small" aria-hidden>• <strong style="font-weight:900">99.99%</strong> uptime</div>
+        </div>
+
+        <div class="feature-grid mt-2">
+          <div class="card">
+            <strong>Worldwide POPs</strong>
+            <div class="small mt-1">US, EU, APAC, LATAM — pick nearest region.</div>
+          </div>
+          <div class="card">
+            <strong>One-click mods</strong>
+            <div class="small mt-1">Install community mods & maps fast.</div>
+          </div>
+          <div class="card">
+            <strong>Autoscaling</strong>
+            <div class="small mt-1">Scale based on concurrent players.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="display:flex;flex-direction:column;gap:.9rem;align-items:stretch">
+        <div class="card" style="text-align:center">
+          <div style="font-weight:900;font-size:18px;color:var(--c1)">Neptune Host</div>
+          <div class="small mt-1">Built for gamers — DDoS & 24/7 support</div>
+        </div>
+
+        <div class="card" style="padding:.6rem">
+          <div style="display:flex;gap:.6rem;align-items:center">
+            <div style="width:52px;height:52px;border-radius:10px;background:linear-gradient(180deg,var(--c3),var(--c5));display:grid;place-items:center;color:white;font-weight:900">GH</div>
+            <div>
+              <div style="font-weight:900">Accessible</div>
+              <div class="small">Contrast-checked UI & control panel</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:.6rem;text-align:center">
+          <div style="font-weight:900;font-size:22px;color:var(--c1)">4.8</div>
+          <div class="small">Avg. Customer Rating</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- decorative art -->
+  <div class="art-wrap" aria-hidden="true">
+    <div class="art" id="heroArt">
+      <img src="/mnt/data/4b034eca-3f84-44a4-bbac-4da2c9cc0dfa.png" alt="Neptune motif" style="border-radius:999px;"/>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" aria-label="Features" style="scroll-margin-top:88px">
+  <div class="container">
+    <h2 class="h2">Platform highlights</h2>
+    <p class="lead mt-1">Everything your community needs — from one-click server installs to automated scaling and billing integrations.</p>
+
+    <div class="row mt-2">
+      <div class="col col-4">
+        <div class="card p-2">
+          <strong>Autoscaling</strong>
+          <div class="small mt-1">Scale resources automatically when a server gets busy.</div>
+        </div>
+      </div>
+      <div class="col col-4">
+        <div class="card p-2">
+          <strong>DDoS Mitigation</strong>
+          <div class="small mt-1">Layered protections and always-on scrubbing.</div>
+        </div>
+      </div>
+      <div class="col col-4">
+        <div class="card p-2">
+          <strong>Marketplace</strong>
+          <div class="small mt-1">Curated mods, maps & admin tools.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" aria-label="Pricing" style="background:linear-gradient(180deg,var(--c4),#f7fbff);scroll-margin-top:88px">
+  <div class="container">
+    <h2 class="h2">Plans built for every player</h2>
+    <p class="lead mt-1">Pay monthly or hourly. Spin up instantly and scale as you grow.</p>
+
+    <div class="pricing-grid mt-2">
+      <div class="price-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong style="font-size:1.05rem">Starter</strong><div class="small">1–30 players</div></div>
+          <div style="text-align:right;font-weight:900;color:var(--c1)">$6<span style="font-weight:700;font-size:.85rem">/mo</span></div>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(16,32,56,0.04);margin:.7rem 0">
+        <ul style="margin:0 0 0 1rem;padding:0;font-weight:800;color:var(--muted)">
+          <li>2GB RAM • 1 vCPU</li>
+          <li>20GB NVMe</li>
+          <li>Basic DDoS</li>
+        </ul>
+        <div class="mt-2" style="display:flex;gap:.6rem">
+          <button class="btn btn-ghost" onclick="openModal('contact','Starter')">Contact</button>
+          <button class="btn btn-primary" onclick="purchasePlan('Starter')">Launch</button>
+        </div>
+      </div>
+
+      <div class="price-card popular">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong style="font-size:1.05rem">Pro</strong><div class="small">Up to 100 players</div></div>
+          <div style="text-align:right;font-weight:900;color:var(--c1)">$24<span style="font-weight:700;font-size:.85rem">/mo</span></div>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(86,96,233,0.06);margin:.7rem 0">
+        <ul style="margin:0 0 0 1rem;padding:0;font-weight:800;color:var(--muted)">
+          <li>8GB RAM • 4 vCPU</li>
+          <li>80GB NVMe</li>
+          <li>Advanced DDoS • Backups</li>
+        </ul>
+        <div class="mt-2" style="display:flex;gap:.6rem;align-items:center">
+          <div style="flex:1">
+            <div class="small" style="color:var(--muted)">Save 15% if billed annually</div>
+            <button class="btn btn-primary mt-1" onclick="purchasePlan('Pro')">Choose Pro</button>
+          </div>
+          <button class="btn btn-ghost" onclick="openModal('contact','Pro')">Contact sales</button>
+        </div>
+      </div>
+
+      <div class="price-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong style="font-size:1.05rem">Enterprise</strong><div class="small">Custom capacity</div></div>
+          <div style="text-align:right;font-weight:900;color:var(--c1)">Custom</div>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(16,32,56,0.04);margin:.7rem 0">
+        <ul style="margin:0 0 0 1rem;padding:0;font-weight:800;color:var(--muted)">
+          <li>Dedicated hardware</li>
+          <li>Private networks & SLA</li>
+          <li>Dedicated TAM</li>
+        </ul>
+        <div class="mt-2" style="display:flex;gap:.6rem">
+          <button class="btn btn-ghost" onclick="openModal('contact','Enterprise')">Request quote</button>
+          <button class="btn btn-ghost" onclick="openModal('demo')">Schedule demo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials" aria-label="Testimonials" style="scroll-margin-top:88px">
+  <div class="container">
+    <h2 class="h2">What players say</h2>
+    <div class="row mt-2">
+      <div class="col col-6">
+        <div class="card">
+          <p style="margin:0">"Best hosting I’ve used — lag-free and reliable. Support responds fast."</p>
+          <div class="small mt-1" style="font-weight:900">— Arcade Labs</div>
+        </div>
+      </div>
+      <div class="col col-6">
+        <div class="card">
+          <p style="margin:0">"My Minecraft server has never been smoother. Highly recommended."</p>
+          <div class="small mt-1" style="font-weight:900">— IronClan</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ & CONTACT -->
+<section id="contact" aria-label="Contact" style="scroll-margin-top:88px">
+  <div class="container">
+    <div class="row">
+      <div class="col col-6">
+        <h3 class="h2">Frequently asked</h3>
+        <div class="mt-1">
+          <div class="faq-item mt-1">
+            <button class="btn btn-ghost" style="width:100%;display:flex;justify-content:space-between;align-items:center" aria-expanded="false" onclick="toggleFaq(this)">
+              <span style="text-align:left;font-weight:800">What is typical latency?</span>
+              <span class="small">▼</span>
+            </button>
+            <div class="faq-body small" style="display:none;margin-top:.6rem">We route players to the nearest POP — typical pings are 10–40ms within region.</div>
+          </div>
+
+          <div class="faq-item mt-1">
+            <button class="btn btn-ghost" style="width:100%;display:flex;justify-content:space-between;align-items:center" aria-expanded="false" onclick="toggleFaq(this)">
+              <span style="text-align:left;font-weight:800">Do you offer DDoS protection?</span>
+              <span class="small">▼</span>
+            </button>
+            <div class="faq-body small" style="display:none;margin-top:.6rem">Yes — included on Pro and Enterprise plans. Basic mitigation for Starter.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col col-6">
+        <h3 class="h2">Get in touch</h3>
+        <p class="small mt-1">Sales & support: <strong>sales@neptunehost.example</strong></p>
+        <form onsubmit="submitContact(event)" style="margin-top:.8rem;display:grid;gap:.6rem">
+          <input class="input" id="contactName" placeholder="Full name" required/>
+          <input class="input" id="contactEmail" type="email" placeholder="Email" required/>
+          <textarea id="contactMessage" class="input" rows="4" placeholder="How can we help?" required></textarea>
+          <div style="display:flex;gap:.6rem">
+            <button class="btn btn-ghost" type="reset">Reset</button>
+            <button class="btn btn-primary" type="submit">Send message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:1.2rem 0">
+  <div class="container">
+    <div class="cta-strip rounded">
+      <div>
+        <div style="font-weight:900">Start your server in under 60 seconds</div>
+        <div class="small">Free instant spin-up and a 30-day money-back guarantee.</div>
+      </div>
+      <div style="display:flex;gap:.6rem;align-items:center">
+        <button class="btn btn-ghost" onclick="openModal('contact')">Talk to sales</button>
+        <button class="btn btn-primary" onclick="openModal('signup')">Create account</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:.8rem">
+      <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--c5),var(--c1));display:grid;place-items:center;font-weight:900;color:white">N</div>
+      <div>
+        <div style="font-weight:900">Neptune Host</div>
+        <div class="small">© <span id="yr"></span> Neptune Host — Built for gamers</div>
+      </div>
+    </div>
+    <div class="small">Terms • Privacy • Status</div>
+  </div>
+</footer>
+
+</main>
+
+<!-- MODAL ROOT -->
+<div id="modalRoot" aria-hidden="true"></div>
+
+<!-- =========================
+     TRIMMED JS (collapse, smooth offset, nav active, simple modal handlers)
+     ========================= -->
+<script>
+/* small helpers */
+const navLinks = document.querySelectorAll('.nav-link');
+const navMenu = document.getElementById('navMenu');
+const navToggler = document.getElementById('navToggler');
+const heroArt = document.getElementById('heroArt');
+
+/* Mobile nav toggle */
+navToggler.addEventListener('click', () => {
+  const expanded = navToggler.getAttribute('aria-expanded') === 'true';
+  navToggler.setAttribute('aria-expanded', String(!expanded));
+  if(navMenu.style.display === 'flex' || navMenu.style.display === '') {
+    navMenu.style.display = 'none';
+  } else {
+    navMenu.style.display = 'flex';
+    navMenu.style.flexDirection = 'column';
+    navMenu.style.background = 'rgba(255,255,255,0.98)';
+    navMenu.style.padding = '.6rem';
+    navMenu.style.borderRadius = '10px';
+    navMenu.style.position = 'absolute';
+    navMenu.style.right = '1rem';
+    navMenu.style.top = '68px';
+  }
+});
+
+/* Smooth scrolling that accounts for fixed header offset */
+function scrollToId(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const navHeight = 76; // matches CSS variable --nav-h
+  const rect = el.getBoundingClientRect();
+  const absoluteY = window.scrollY + rect.top;
+  window.scrollTo({top: absoluteY - navHeight - 8, behavior: 'smooth'});
+}
+
+/* intercept nav links to provide precise offset */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', function(e){
+    const target = this.getAttribute('href').slice(1);
+    if(document.getElementById(target)){
+      e.preventDefault();
+      // collapse mobile menu if open
+      if(window.innerWidth <= 900 && navMenu.style.display === 'flex'){
+        navMenu.style.display = 'none';
+        navToggler.setAttribute('aria-expanded','false');
+      }
+      scrollToId(target);
+    }
+  });
+});
+
+/* update active nav on scroll */
+const sections = Array.from(document.querySelectorAll('main section[id]'));
+function onScroll(){
+  const navHeight = 84;
+  const y = window.scrollY + navHeight + 20;
+  let current = sections[0]?.id || '';
+  for(const sec of sections){
+    const top = sec.offsetTop;
+    if(y >= top) current = sec.id;
+  }
+  navLinks.forEach(a=>{
+    a.classList.toggle('active', a.dataset.target === current);
+  });
+}
+window.addEventListener('scroll', onScroll);
+window.addEventListener('resize', onScroll);
+onScroll();
+
+/* hero parallax */
+document.addEventListener('mousemove', (e)=>{
+  if(!heroArt) return;
+  const cx = window.innerWidth/2, cy = window.innerHeight/2;
+  const dx = (e.clientX - cx)/cx, dy = (e.clientY - cy)/cy;
+  heroArt.style.transform = `translate3d(${dx*10}px, ${dy*8}px, 0) scale(1.02)`;
+});
+document.addEventListener('mouseout', ()=>{ if(heroArt) heroArt.style.transform = 'translate3d(0,0,0)'; });
+
+/* FAQ toggle */
+function toggleFaq(btn){
+  const body = btn.parentElement.querySelector('.faq-body');
+  const expanded = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', String(!expanded));
+  btn.querySelector('.small').textContent = expanded ? '▼' : '▲';
+  if(body.style.display === 'block'){ body.style.display = 'none'; } else { body.style.display = 'block'; }
+}
+
+/* Modal system (very small, accessible) */
+function openModal(type = 'signup', plan){
+  const root = document.getElementById('modalRoot');
+  let html = '';
+  if(type === 'signup'){
+    html = `<div class="modal-backdrop" id="modalBackdrop" style="position:fixed;inset:0;display:grid;place-items:center;background:rgba(3,6,23,0.48);z-index:200;">
+      <div style="background:var(--surface);padding:1rem;border-radius:12px;max-width:720px;width:92%;box-shadow:var(--shadow-l);">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0">Create account</h3>
+          <button onclick="closeModal()" aria-label="Close" style="background:transparent;border:0;font-weight:900;font-size:20px">✕</button>
+        </div>
+        <p class="small">Start free trial — no card required.</p>
+        <form onsubmit="signupSubmit(event)" style="display:grid;gap:.6rem;margin-top:.6rem">
+          <input required placeholder="Email" type="email" id="suEmail" class="input"/>
+          <input required placeholder="Password" type="password" id="suPass" class="input"/>
+          <div style="display:flex;gap:.6rem;justify-content:flex-end">
+            <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+  } else if(type === 'login'){
+    html = `<div class="modal-backdrop" id="modalBackdrop" style="position:fixed;inset:0;display:grid;place-items:center;background:rgba(3,6,23,0.48);z-index:200;">
+      <div style="background:var(--surface);padding:1rem;border-radius:12px;max-width:420px;width:92%;box-shadow:var(--shadow-l);">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0">Sign in</h3>
+          <button onclick="closeModal()" aria-label="Close" style="background:transparent;border:0;font-weight:900;font-size:20px">✕</button>
+        </div>
+        <form onsubmit="loginSubmit(event)" style="display:grid;gap:.6rem;margin-top:.6rem">
+          <input required placeholder="Email" type="email" id="liEmail" class="input"/>
+          <input required placeholder="Password" type="password" id="liPass" class="input"/>
+          <div style="display:flex;gap:.6rem;justify-content:flex-end">
+            <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Sign in</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+  } else if(type === 'contact'){
+    html = `<div class="modal-backdrop" id="modalBackdrop" style="position:fixed;inset:0;display:grid;place-items:center;background:rgba(3,6,23,0.48);z-index:200;">
+      <div style="background:var(--surface);padding:1rem;border-radius:12px;max-width:720px;width:92%;box-shadow:var(--shadow-l);">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0">Contact sales ${plan? '&#8212; '+plan : ''}</h3>
+          <button onclick="closeModal()" aria-label="Close" style="background:transparent;border:0;font-weight:900;font-size:20px">✕</button>
+        </div>
+        <form onsubmit="contactSubmit(event)" style="display:grid;gap:.6rem;margin-top:.6rem">
+          <input required placeholder="Full name" id="ctName" class="input"/>
+          <input required placeholder="Email" type="email" id="ctEmail" class="input"/>
+          <textarea id="ctMsg" rows="4" class="input" placeholder="Tell us about your requirements"></textarea>
+          <div style="display:flex;gap:.6rem;justify-content:flex-end">
+            <button type="button" class="btn btn-ghost" onclick="closeModal()">Close</button>
+            <button type="submit" class="btn btn-primary">Send request</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+  } else if(type === 'demo'){
+    html = `<div class="modal-backdrop" id="modalBackdrop" style="position:fixed;inset:0;display:grid;place-items:center;background:rgba(3,6,23,0.48);z-index:200;">
+      <div style="background:var(--surface);padding:1rem;border-radius:12px;max-width:520px;width:92%;box-shadow:var(--shadow-l);">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0">Schedule a demo</h3>
+          <button onclick="closeModal()" aria-label="Close" style="background:transparent;border:0;font-weight:900;font-size:20px">✕</button>
+        </div>
+        <form onsubmit="demoSubmit(event)" style="display:grid;gap:.6rem;margin-top:.6rem">
+          <input required placeholder="Email" id="dmEmail" class="input" type="email"/>
+          <input placeholder="Preferred timezone" id="dmTZ" class="input"/>
+          <div style="display:flex;gap:.6rem;justify-content:flex-end">
+            <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Request demo</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+  }
+  document.getElementById('modalRoot').innerHTML = html;
+  document.getElementById('modalRoot').setAttribute('aria-hidden','false');
+  // focus first input for accessibility
+  setTimeout(()=> {
+    const first = document.querySelector('#modalRoot .input');
+    if(first) first.focus();
+  },50);
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; document.getElementById('modalRoot').setAttribute('aria-hidden','true'); }
+
+/* Form stubs */
+function signupSubmit(e){ e.preventDefault(); closeModal(); alert('Account created — demo'); }
+function loginSubmit(e){ e.preventDefault(); closeModal(); alert('Signed in — demo'); }
+function contactSubmit(e){ e.preventDefault(); closeModal(); alert('Sales request sent — demo'); }
+function demoSubmit(e){ e.preventDefault(); closeModal(); alert('Demo requested — demo'); }
+
+/* Purchase placeholder */
+function purchasePlan(plan){
+  if(confirm('Proceed to checkout for ' + plan + '? (demo)')){
+    alert('Redirecting to checkout (demo).');
+  }
+}
+
+/* contact form */
+function submitContact(e){
+  e.preventDefault();
+  const name = document.getElementById('contactName').value;
+  const mail = document.getElementById('contactEmail').value;
+  if(!name || !mail) return alert('Please complete name and email');
+  document.getElementById('contactName').value='';
+  document.getElementById('contactEmail').value='';
+  document.getElementById('contactMessage').value='';
+  alert('Thanks — we will contact you at ' + mail);
+}
+
+/* ESC closes modal */
+document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeModal(); });
+
+/* set year */
+document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
