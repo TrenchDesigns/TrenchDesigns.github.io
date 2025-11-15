@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Example Store</title>
+<style>
+  /* Reset */
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+  body { background: #f8f9fa; color: #333; line-height: 1.6; }
+
+  /* Header */
+  header {
+    background: #1a73e8;
+    color: white;
+    padding: 15px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  header .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  header h1 { font-size: 1.8rem; }
+
+  nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: #ffcd00; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #1a73e8, #4285f4);
+    color: white;
+    text-align: center;
+    padding: 100px 20px 60px;
+  }
+
+  .hero h2 { font-size: 3rem; margin-bottom: 20px; }
+  .hero p { font-size: 1.2rem; margin-bottom: 30px; }
+  .hero button {
+    padding: 12px 30px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    background: #ffcd00;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .hero button:hover { background: #e6b800; }
+
+  /* Features */
+  .features {
+    max-width: 1200px;
+    margin: 80px auto;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .features h2 { font-size: 2.5rem; margin-bottom: 50px; }
+
+  .feature-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+  }
+
+  .feature {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    flex: 1 1 250px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .feature:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  .feature img { max-width: 100%; border-radius: 10px; margin-bottom: 15px; }
+  .feature h3 { margin-bottom: 10px; }
+  .feature p { font-size: 0.95rem; color: #555; }
+
+  /* Products */
+  .products {
+    background: #f1f3f5;
+    padding: 80px 20px;
+  }
+
+  .products h2 { text-align: center; font-size: 2.5rem; margin-bottom: 50px; }
+
+  .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+
+  .product {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    width: 250px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  .product img { width: 100%; border-radius: 10px; margin-bottom: 15px; }
+  .product h3 { margin-bottom: 10px; }
+  .product p { font-size: 0.95rem; color: #555; margin-bottom: 15px; }
+
+  .product button {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .product button:hover { background: #155bb5; }
+
+  /* Footer */
+  footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  footer a { color: #ffcd00; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* Responsive */
+  @media(max-width: 768px) {
+    header .nav-container { flex-direction: column; gap: 10px; }
+    .hero h2 { font-size: 2.2rem; }
+    .features h2, .products h2 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-container">
+    <h1>Example Store</h1>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#products">Products</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <h2>Welcome to Your Store</h2>
+  <p>This is an educational clone with placeholders, inspired by modern digital stores.</p>
+  <button>Get Started</button>
+</section>
+
+<section class="features" id="features">
+  <h2>Key Features</h2>
+  <div class="feature-grid">
+    <div class="feature">
+      <img src="https://via.placeholder.com/200x150" alt="Feature 1">
+      <h3>Fast Setup</h3>
+      <p>Quick and simple setup for your store with zero coding required.</p>
+    </div>
+    <div class="feature">
+      <img src="https://via.placeholder.com/200x150" alt="Feature 2">
+      <h3>Secure Payments</h3>
+      <p>All transactions are secured with industry-standard encryption.</p>
+    </div>
+    <div class="feature">
+      <img src="https://via.placeholder.com/200x150" alt="Feature 3">
+      <h3>Customizable</h3>
+      <p>Fully flexible design to match your brand and style.</p>
+    </div>
+  </div>
+</section>
+
+<section class="products" id="products">
+  <h2>Our Products</h2>
+  <div class="product-grid">
+    <div class="product">
+      <img src="https://via.placeholder.com/250x150" alt="Product 1">
+      <h3>Product One</h3>
+      <p>Placeholder product description goes here.</p>
+      <button>Buy Now</button>
+    </div>
+    <div class="product">
+      <img src="https://via.placeholder.com/250x150" alt="Product 2">
+      <h3>Product Two</h3>
+      <p>Placeholder product description goes here.</p>
+      <button>Buy Now</button>
+    </div>
+    <div class="product">
+      <img src="https://via.placeholder.com/250x150" alt="Product 3">
+      <h3>Product Three</h3>
+      <p>Placeholder product description goes here.</p>
+      <button>Buy Now</button>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <p>Contact: <a href="mailto:placeholder@example.com">placeholder@example.com</a></p>
+  <p>© 2025 Example Store. All placeholder content.</p>
+</footer>
+
+</body>
+</html>
