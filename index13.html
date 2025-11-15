@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>NovaCore Landing</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+:root {
+    --bg-dark: #0c0c0f;
+    --bg-light: #f7f7f7;
+    --text-dark: #ffffff;
+    --text-light: #1a1a1a;
+    --accent-red: #ff2e4d;
+    --card-dark: #16161a;
+    --card-light: #ffffff;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    transition: background 0.3s, color 0.3s;
+    scroll-behavior: smooth;
+}
+
+.light-mode {
+    background: var(--bg-light);
+    color: var(--text-light);
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 999;
+    backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.45);
+}
+
+.light-mode .navbar {
+    background: rgba(255,255,255,0.5);
+}
+
+.nav-links a {
+    margin: 0 18px;
+    text-decoration: none;
+    color: inherit;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--accent-red);
+}
+
+.btn-red {
+    background: var(--accent-red);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-red:hover {
+    filter: brightness(1.1);
+}
+
+/* Glowing logo */
+.glow-logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--accent-red);
+    text-decoration: none;
+    animation: glowPulse 3s ease-in-out infinite;
+    transition: 0.3s;
+}
+.glow-logo i { margin-right: 8px; }
+
+.glow-logo:hover {
+    text-shadow: 0 0 12px var(--accent-red), 0 0 20px var(--accent-red);
+}
+
+@keyframes glowPulse {
+    0% { text-shadow: 0 0 5px var(--accent-red); }
+    50% { text-shadow: 0 0 18px var(--accent-red); }
+    100% { text-shadow: 0 0 5px var(--accent-red); }
+}
+
+/* HERO */
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 10%;
+    text-align: left;
+}
+
+.hero h1 {
+    font-size: 58px;
+    margin-bottom: 10px;
+    animation: heroGlow 5s ease-in-out infinite;
+}
+
+@keyframes heroGlow {
+    0% { text-shadow: 0 0 5px black; }
+    50% { text-shadow: 0 0 25px var(--accent-red); }
+    100% { text-shadow: 0 0 5px black; }
+}
+
+.hero p {
+    font-size: 20px;
+    max-width: 600px;
+    opacity: 0.8;
+}
+
+/* Section Styling */
+section {
+    padding: 110px 10%;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+}
+
+.card {
+    background: var(--card-dark);
+    padding: 22px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.light-mode .card {
+    background: var(--card-light);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 15px var(--accent-red);
+}
+
+/* Footer */
+footer {
+    padding: 60px 10%;
+    background: #111;
+}
+
+footer h4 {
+    margin-bottom: 10px;
+}
+
+footer a {
+    display: block;
+    text-decoration: none;
+    color: #ccc;
+    margin-bottom: 8px;
+    transition: 0.2s;
+}
+
+footer a:hover {
+    color: var(--accent-red);
+}
+
+/* Footer grid */
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+}
+
+/* Neon mode */
+.neon-mode * {
+    text-shadow: 0 0 12px var(--accent-red);
+}
+
+.neon-mode .card {
+    box-shadow: 0 0 15px var(--accent-red);
+}
+</style>
+
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <a href="#hero" class="glow-logo">
+        <i class="fa-solid fa-bolt"></i>NovaCore
+    </a>
+
+    <div class="nav-links">
+        <a href="#hero">Home</a>
+        <a href="#features">Features</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;">
+        <button class="btn-red" onclick="toggleTheme()">
+            <i class="fa-solid fa-circle-half-stroke"></i>
+        </button>
+        <button class="btn-red" onclick="toggleNeon()">
+            <i id="neonIcon" class="fa-solid fa-lightbulb"></i>
+        </button>
+    </div>
+</div>
+
+<!-- HERO -->
+<section id="hero" class="hero">
+    <h1>Redefining Digital Velocity</h1>
+    <p>
+        NovaCore is a conceptual tech sphere built on high-performance aesthetics,
+        modular abstractions, and creative energy. This is placeholder jargon —
+        but it sounds cool as hell.
+    </p>
+    <br>
+    <button class="btn-red">Start Exploring</button>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+    <h2>Why NovaCore?</h2>
+    <p>Because future-forward nonsense sounds impressive. Here are some cards:</p>
+
+    <div class="card-grid">
+        <div class="card">
+            <h3><i class="fa-solid fa-rocket"></i> Quantum Acceleration</h3>
+            <p>Multiphase pseudo-algorithms that probably don’t exist.</p>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-shield"></i> Secure Hyperlayer</h3>
+            <p>Security so overbuilt it protects your feelings too.</p>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-brain"></i> Cognitive Auto-Routing</h3>
+            <p>Smart routing powered by imaginary neural clusters.</p>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-code"></i> Modular Constructs</h3>
+            <p>Extremely modular. Unnecessarily modular, even.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <h2>About the Project</h2>
+    <p>
+        This platform is purely conceptual — a visual playground meant to channel
+        premium but fictional tech branding. Treat this as a canvas for ideas,
+        illusions, and aesthetic experiments.
+    </p>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <h2>Contact</h2>
+    <p>Reach us through the void:</p>
+
+    <div class="card-grid">
+        <div class="card">
+            <h3>Email</h3>
+            <p>contact@placeholder.dev</p>
+        </div>
+
+        <div class="card">
+            <h3>Support</h3>
+            <p>helpdesk@novacore.fake</p>
+        </div>
+
+        <div class="card">
+            <h3>Discord</h3>
+            <p>@NovaCoreLabs</p>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-grid">
+        <div>
+            <h4>Navigation</h4>
+            <a href="#hero">Home</a>
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </div>
+
+        <div>
+            <h4>Resources</h4>
+            <a href="#">API Docs</a>
+            <a href="#">Developer Notes</a>
+            <a href="#">System Blueprints</a>
+        </div>
+
+        <div>
+            <h4>Legal</h4>
+            <a href="#">Terms</a>
+            <a href="#">Privacy</a>
+            <a href="#">Compliance</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// Theme toggle
+function toggleTheme() {
+    document.body.classList.toggle("light-mode");
+}
+
+// Neon mode
+function toggleNeon() {
+    document.body.classList.toggle("neon-mode");
+    const icon = document.getElementById("neonIcon");
+
+    icon.classList.toggle("fa-lightbulb");
+    icon.classList.toggle("fa-lightbulb-on");
+}
+</script>
+
+</body>
+</html>
