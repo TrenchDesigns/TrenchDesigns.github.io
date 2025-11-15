@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NovaCore Enterprise Suite</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+
+/* ----------------------------------------------------
+   CORE THEME COLORS — tuned for luxury & cyber
+---------------------------------------------------- */
+:root {
+    --bg-dark: #0a0a0c;
+    --bg-light: #f6f6f6;
+    --text-dark: #ffffff;
+    --text-light: #111;
+    --accent-red: #ff2e4d;
+    --accent-gold: #d4b36a;
+    --card-dark: rgba(255, 255, 255, 0.05);
+    --card-light: rgba(0, 0, 0, 0.05);
+    --glass: rgba(255, 255, 255, 0.08);
+}
+
+/* ----------------------------------------------------
+   GLOBAL
+---------------------------------------------------- */
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    transition: background 0.4s, color 0.4s;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+/* Light mode */
+.light-mode { background: var(--bg-light); color: var(--text-light); }
+
+/* Cyber grid background */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: -2;
+}
+
+/* Floating cyber particles */
+body::after {
+    content: "";
+    position: fixed;
+    width: 100%; height: 100%;
+    background: url("https://www.transparenttextures.com/patterns/dot-grid.png");
+    opacity: 0.05;
+    z-index: -1;
+}
+
+/* ----------------------------------------------------
+   NAVBAR
+---------------------------------------------------- */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 45px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(12px);
+}
+
+/* Light mode navbar */
+.light-mode .navbar { background: rgba(255,255,255,0.6); }
+
+.nav-links a {
+    margin: 0 20px;
+    text-decoration: none;
+    color: inherit;
+    font-size: 17px;
+    transition: 0.2s;
+}
+
+.nav-links a:hover { color: var(--accent-gold); }
+
+/* ----------------------------------------------------
+   LUXURY / CYBER LOGO
+---------------------------------------------------- */
+.glow-logo {
+    color: var(--accent-gold);
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    animation: glowLogo 4s ease-in-out infinite;
+}
+
+@keyframes glowLogo {
+    0% { text-shadow: 0 0 4px var(--accent-gold); }
+    50% { text-shadow: 0 0 18px var(--accent-gold); }
+    100% { text-shadow: 0 0 4px var(--accent-gold); }
+}
+
+/* ----------------------------------------------------
+   HERO
+---------------------------------------------------- */
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 14%;
+}
+
+.hero h1 {
+    font-size: 62px;
+    max-width: 700px;
+    margin-bottom: 15px;
+    animation: heroGlow 5s ease-in-out infinite;
+}
+
+@keyframes heroGlow {
+    0% { text-shadow: 0 0 8px black; }
+    50% { text-shadow: 0 0 28px var(--accent-red); }
+    100% { text-shadow: 0 0 8px black; }
+}
+
+.hero p {
+    max-width: 650px;
+    font-size: 22px;
+    opacity: 0.85;
+    line-height: 1.5;
+}
+
+/* ----------------------------------------------------
+   BUTTONS
+---------------------------------------------------- */
+.btn-red {
+    background: var(--accent-red);
+    border: none;
+    color: white;
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 17px;
+    transition: 0.25s;
+}
+
+.btn-red:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px var(--accent-red);
+}
+
+/* ----------------------------------------------------
+   SECTIONS
+---------------------------------------------------- */
+section {
+    padding: 135px 14%;
+}
+
+h2 {
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.divider-line {
+    width: 80px;
+    height: 3px;
+    background: var(--accent-gold);
+    margin-bottom: 25px;
+}
+
+/* ----------------------------------------------------
+   CARDS WITH LUXURY GLASS + CYBER GLOW
+---------------------------------------------------- */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 28px;
+}
+
+.card {
+    background: var(--glass);
+    padding: 24px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 22px var(--accent-gold);
+}
+
+/* Light mode card */
+.light-mode .card { background: rgba(0,0,0,0.05); }
+
+/* ----------------------------------------------------
+   FOOTER (corporate style)
+---------------------------------------------------- */
+footer {
+    padding: 70px 14%;
+    background: #080808;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 40px;
+}
+
+footer h4 {
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--accent-gold);
+}
+
+footer a {
+    color: #bbb;
+    text-decoration: none;
+    margin-bottom: 8px;
+    display: block;
+    transition: 0.2s;
+}
+
+footer a:hover { color: var(--accent-red); }
+
+/* ----------------------------------------------------
+   NEON MODE
+---------------------------------------------------- */
+.neon-mode * {
+    text-shadow: 0 0 14px var(--accent-red);
+}
+
+.neon-mode .card {
+    box-shadow: 0 0 18px var(--accent-red);
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <a href="#hero" class="glow-logo"><i class="fa-solid fa-bolt"></i> NovaCore Enterprise</a>
+
+    <div class="nav-links">
+        <a href="#hero">Home</a>
+        <a href="#features">Solutions</a>
+        <a href="#about">Overview</a>
+        <a href="#contact">Contact</a>
+    </div>
+
+    <div style="display:flex; gap:14px;">
+        <button class="btn-red" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+        <button class="btn-red" onclick="toggleNeon()"><i id="neonIcon" class="fa-solid fa-lightbulb"></i></button>
+    </div>
+</div>
+
+<!-- HERO -->
+<section id="hero" class="hero">
+    <h1>Where Corporate Precision Meets Cyber Innovation</h1>
+    <p>
+        NovaCore Enterprise blends high-end digital engineering with executive-grade
+        reliability. A conceptual suite crafted with luxury, discipline, and futuristic energy.
+    </p>
+    <br>
+    <button class="btn-red"><i class="fa-solid fa-angles-right"></i> Discover NovaCore</button>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+    <h2>Enterprise Solutions</h2>
+    <div class="divider-line"></div>
+
+    <div class="card-grid">
+        <div class="card">
+            <h3><i class="fa-solid fa-network-wired"></i> Executive Layer Mesh</h3>
+            <p>Distributed networking engineered for zero-latency corporate demands.</p>
+        </div>
+        <div class="card">
+            <h3><i class="fa-solid fa-vault"></i> Quantum Governance Vault</h3>
+            <p>Security protocols reinforced with cyber-luxury lattice encryption.</p>
+        </div>
+        <div class="card">
+            <h3><i class="fa-solid fa-chart-line"></i> Predictive Flow Analytics</h3>
+            <p>Futuristic modelling to anticipate operational pressure points.</p>
+        </div>
+        <div class="card">
+            <h3><i class="fa-solid fa-microchip"></i> Autonomous Compute Fabric</h3>
+            <p>Optimized task distribution across intelligent hardware layers.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <h2>Enterprise Overview</h2>
+    <div class="divider-line"></div>
+
+    <p>
+        Designed as a conceptual fusion between corporate authority and cyber influence,
+        NovaCore Enterprise is a showcase of refined digital architecture.  
+        Every element is crafted to evoke trust, prestige, and high-tech sophistication.
+    </p>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <h2>Corporate Contact</h2>
+    <div class="divider-line"></div>
+
+    <div class="card-grid">
+        <div class="card">
+            <h3><i class="fa-solid fa-envelope"></i> Enterprise Email</h3>
+            <p>executive@novacore.global</p>
+        </div>
+        <div class="card">
+            <h3><i class="fa-solid fa-headset"></i> Support Desk</h3>
+            <p>support@novacore.system</p>
+        </div>
+        <div class="card">
+            <h3><i class="fa-brands fa-discord"></i> Corporate Discord</h3>
+            <p>@NovaCoreHQ</p>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-grid">
+        <div>
+            <h4>Navigation</h4>
+            <a href="#hero">Home</a>
+            <a href="#features">Solutions</a>
+            <a href="#about">Overview</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <div>
+            <h4>Resources</h4>
+            <a href="#">Whitepapers</a>
+            <a href="#">Case Studies</a>
+            <a href="#">API Standards</a>
+        </div>
+        <div>
+            <h4>Legal</h4>
+            <a href="#">Terms</a>
+            <a href="#">Privacy</a>
+            <a href="#">Compliance</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+function toggleTheme(){
+    document.body.classList.toggle("light-mode");
+}
+
+function toggleNeon(){
+    document.body.classList.toggle("neon-mode");
+    const icon = document.getElementById("neonIcon");
+    icon.classList.toggle("fa-lightbulb");
+    icon.classList.toggle("fa-lightbulb-on");
+}
+</script>
+
+</body>
+</html>
