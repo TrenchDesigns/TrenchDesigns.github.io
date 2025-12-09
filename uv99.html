@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UV99 Window Tinting</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --uv-blue: #0a4cff;
+      --uv-blue-bright: #3f7bff;
+      --uv-dark: #0a0f1f;
+      --uv-light: #e8f0ff;
+      --uv-white: #ffffff;
+    }
+
+    body {
+      font-family: "Helvetica Neue", sans-serif;
+      background-color: var(--uv-dark);
+      color: var(--uv-white);
+      scroll-behavior: smooth;
+    }
+
+    /* HERO */
+    #hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    #hero video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.45);
+    }
+    #hero .content {
+      position: relative;
+      z-index: 2;
+    }
+    h1.display-2 { font-weight: 900; text-shadow: 0 0 30px rgba(0,0,0,0.7); }
+
+    .btn-glow {
+      background: var(--uv-blue-bright);
+      border: none;
+      padding: 16px 46px;
+      border-radius: 50px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 0 25px rgba(63,123,255,1), 0 0 45px rgba(63,123,255,0.7);
+      transition: 0.25s ease-in-out;
+    }
+    .btn-glow:hover { transform: translateY(-5px) scale(1.04); box-shadow: 0 0 45px rgba(63,123,255,1); }
+
+    section { padding: 100px 0; }
+    #services .card {
+      background: #111626;
+      border-radius: 22px;
+      padding: 40px;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: 0.4s;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      color: rgba(255,255,255,0.9);
+    }
+    #services .card:hover {
+      transform: translateY(-10px) scale(1.03);
+      border-color: var(--uv-blue-bright);
+      box-shadow: 0 20px 50px rgba(63,123,255,0.4);
+    }
+    #reviews .review-box {
+      background: #111626;
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      color: rgba(255,255,255,0.9);
+    }
+    #reviews h6 { color: var(--uv-blue-bright); }
+    #map iframe { width: 100%; height: 380px; border-radius: 20px; border: none; }
+
+    #callBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--uv-blue-bright);
+      color: white;
+      padding: 18px 22px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      box-shadow: 0 0 25px rgba(63,123,255,1);
+      transition: 0.3s;
+      z-index: 999;
+    }
+    #callBtn:hover { transform: scale(1.12); }
+
+    footer {
+      background: #05070d;
+      text-align: center;
+      padding: 40px 0;
+      color: #6c7a9b;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section id="hero">
+    <video autoplay muted loop>
+      <source src="https://cdn.coverr.co/videos/coverr-driving-through-the-city-8534/1080p.mp4" type="video/mp4">
+    </video>
+    <div class="content animate__animated animate__fadeInUp">
+      <h1 class="display-2 fw-bold">UV99 WINDOW TINTING</h1>
+      <p class="lead fs-4 mt-3">Premium • Futuristic • Elite UV Protection</p>
+      <a href="#booking" class="btn-glow mt-4">Book Now</a>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="container">
+      <h2 class="text-center mb-5 fw-bold display-5">Tinting Packages</h2>
+      <div class="row g-5">
+        <div class="col-md-4 animate__animated animate__fadeInUp">
+          <div class="card">
+            <h4 class="fw-bold">Basic</h4>
+            <p>Clean look • Standard heat reduction</p>
+            <h3>$149</h3>
+          </div>
+        </div>
+        <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-1s">
+          <div class="card">
+            <h4 class="fw-bold">Ceramic</h4>
+            <p>Advanced UV & IR protection • Top clarity</p>
+            <h3>$249</h3>
+          </div>
+        </div>
+        <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-2s">
+          <div class="card">
+            <h4 class="fw-bold">Ultra Ceramic</h4>
+            <p>Maximum heat rejection • Premium comfort</p>
+            <h3>$349</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews">
+    <div class="container">
+      <h2 class="text-center fw-bold mb-5 display-5">Customer Reviews</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="review-box">
+            <p>“Amazing work! My Tesla looks incredible. Heat is way lower now.”</p>
+            <h6 class="mt-3 fw-bold">— Daniel R.</h6>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="review-box">
+            <p>“Super clean finish, fast install, and the ceramic tint is worth it.”</p>
+            <h6 class="mt-3 fw-bold">— Mia L.</h6>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="review-box">
+            <p>“Professional and modern setup. UV99 is my go-to tint place now.”</p>
+            <h6 class="mt-3 fw-bold">— Jose P.</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
+  <section id="booking" style="background: var(--uv-light); color: var(--uv-dark); border-radius: 40px 40px 0 0;">
+    <div class="container">
+      <h2 class="text-center fw-bold mb-5 display-5">Book Your Appointment</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <form id="bookingForm" class="bg-white p-5 rounded-4 shadow-lg">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Full Name</label>
+              <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Email</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Vehicle Model</label>
+              <input type="text" class="form-control" id="vehicle" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Tint Package</label>
+              <select class="form-select" id="package" required>
+                <option value="Basic">Basic - $149</option>
+                <option value="Ceramic">Ceramic - $249</option>
+                <option value="Ultra Ceramic">Ultra Ceramic - $349</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Preferred Date</label>
+              <input type="date" class="form-control" id="date" required>
+            </div>
+            <button type="submit" class="btn-glow w-100">Confirm Booking</button>
+          </form>
+          <div id="confirmation" class="alert alert-success mt-4 d-none rounded-4"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map" class="pb-5">
+    <div class="container">
+      <h2 class="text-center fw-bold mb-4">Find Us</h2>
+      <iframe src="https://maps.google.com/maps?q=Toronto&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 UV99 Window Tinting • Clean • Modern • Elite Protection</p>
+  </footer>
+
+  <!-- CALL BUTTON -->
+  <a id="callBtn" href="tel:+1234567890">Call Now</a>
+
+  <script>
+    const form = document.getElementById("bookingForm");
+    form.addEventListener("submit", async function(e){
+      e.preventDefault();
+      const formData = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        vehicle: document.getElementById("vehicle").value,
+        package: document.getElementById("package").value,
+        date: document.getElementById("date").value
+      };
+      const response = await fetch("https://formspree.io/f/mzzpbkzj", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+      const confirmation = document.getElementById("confirmation");
+      if(response.ok){
+        confirmation.textContent = `Thanks, ${formData.name}! Your ${formData.package} tinting appointment is booked for ${formData.date}.`;
+        confirmation.classList.remove("d-none");
+        form.reset();
+      } else {
+        confirmation.textContent = "Oops! Something went wrong. Please try again.";
+        confirmation.classList.remove("d-none");
+        confirmation.classList.replace("alert-success","alert-danger");
+      }
+    });
+  </script>
+
+</body>
+</html>
