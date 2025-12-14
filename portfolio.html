@@ -7,266 +7,280 @@
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
     :root {
-      --primary: #6a3f7c;
-      --primary-soft: #7a5a88;
-      --light: #f9f9fb;
-      --card-bg: #ffffff;
+      --primary: #7b3fbf;
+      --primary-soft: #9c63d1;
+      --accent: #ff5f7f;
+      --light-bg: #f5f5f7;
+      --card-bg: rgba(255,255,255,0.85);
+      --landing-gradient: linear-gradient(135deg, #7b3fbf, #9c63d1);
+      --business-gradient: linear-gradient(135deg, #2acfcf, #1a9c9c);
+      --experiment-gradient: linear-gradient(135deg, #ff7a5f, #ffb199);
     }
 
     body {
-      background-color: var(--light);
+      background: var(--light-bg);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: #2b2b2b;
     }
 
     /* Navbar */
     .navbar {
-      background-color: var(--primary);
+      background: linear-gradient(90deg, var(--primary), var(--primary-soft));
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
     }
-    .navbar-brand, .nav-link { color: #ffffff !important; }
+    .navbar-brand, .nav-link { color: #fff !important; font-weight: 600; }
 
     /* Hero */
     .hero {
+      position: relative;
       padding: 6rem 1rem 5rem;
-      background: linear-gradient(135deg, var(--primary), var(--primary-soft));
-      color: #ffffff;
+      color: #fff;
       text-align: center;
+      border-bottom-left-radius: 3rem;
+      border-bottom-right-radius: 3rem;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      z-index: -2;
     }
 
-    /* Section headings */
-    .section-title {
-      font-weight: 700;
-      margin-bottom: 1.5rem;
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    /* Cards */
-    .portfolio-card {
-      border: none;
-      border-radius: 1.25rem;
-      background: var(--card-bg);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      transition: transform .25s ease, box-shadow .25s ease, opacity .4s ease;
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.6;
+      background: rgba(255,255,255,0.6);
+      pointer-events: none;
+      animation: floatParticle linear infinite;
+    }
+    @keyframes floatParticle {
+      0% { transform: translateY(0) scale(1); opacity: 0.5; }
+      50% { transform: translateY(-40px) scale(1.2); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 0.5; }
+    }
+
+    .hero .btn-light {
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transition: transform .2s, box-shadow .2s, opacity .5s ease, translateY .5s ease;
       opacity: 0;
       transform: translateY(20px);
     }
-    .portfolio-card.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .portfolio-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.14);
-    }
+    .hero .btn-light.show { opacity:1; transform: translateY(0);}
+    .hero .btn-light:hover { transform: translateY(-3px); box-shadow:0 6px 25px rgba(0,0,0,0.15); }
 
-    .thumb {
-      border-top-left-radius: 1.25rem;
-      border-top-right-radius: 1.25rem;
-      background: linear-gradient(135deg, #ece7ef, #d9cfdf);
-      height: 160px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--primary);
-      font-weight: 600;
-      text-align: center;
-      padding: 0 0.5rem;
-    }
+    /* Section titles */
+    .section-title { font-weight: 700; margin-bottom: 2rem; position: relative; }
+    .section-title::after { content:''; width:60px; height:4px; background: var(--accent); display:block; margin:0.5rem auto 0; border-radius:2px; }
 
-    .badge-custom {
-      background-color: rgba(95,67,108,.1);
-      color: var(--primary);
-      border-radius: 999px;
-      font-weight: 500;
+    /* Portfolio cards */
+    .portfolio-card {
+      border:none; border-radius:1.5rem; background: var(--card-bg);
+      backdrop-filter: blur(8px); box-shadow:0 15px 35px rgba(0,0,0,0.1);
+      transition: transform .3s ease, box-shadow .3s ease, opacity .5s ease;
+      opacity:0; transform: translateY(30px); overflow:hidden;
     }
+    .portfolio-card.show { opacity:1; transform:translateY(0); }
+    .portfolio-card:hover { transform: translateY(-10px) scale(1.02); box-shadow:0 25px 60px rgba(0,0,0,0.18);}
+    .thumb { height:180px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; text-align:center; padding:0 0.5rem; color:#fff; transition: transform .3s;}
+    .portfolio-card:hover .thumb { transform: scale(1.05);}
+    .thumb.landing { background: var(--landing-gradient); }
+    .thumb.business { background: var(--business-gradient); }
+    .thumb.experiment { background: var(--experiment-gradient); }
 
-    .btn-primary {
-      background-color: var(--primary);
-      border-color: var(--primary);
-    }
-    .btn-outline-primary {
-      --bs-btn-color: var(--primary);
-      --bs-btn-border-color: var(--primary);
-      --bs-btn-hover-bg: var(--primary);
-      --bs-btn-hover-border-color: var(--primary);
-    }
+    /* Badges */
+    .badge-custom { background: var(--accent); color:#fff; border-radius:999px; font-weight:500; padding:.35em .8em; text-transform:uppercase; font-size:.75rem; transition: transform .3s, box-shadow .3s, opacity .5s ease, translateY .5s ease; opacity:0; transform:translateY(20px); display:inline-block; margin-bottom:.25rem; }
+    .badge-custom.show { opacity:1; transform:translateY(0); }
+    .badge-custom:hover { transform:translateY(-3px); box-shadow:0 5px 15px rgba(0,0,0,0.15); }
+
+    /* Buttons */
+    .btn-primary { background: var(--primary); border:none; box-shadow:0 5px 20px rgba(0,0,0,0.1); transition: transform .2s, box-shadow .2s, opacity .5s ease, translateY .5s ease; opacity:0; transform:translateY(20px);}
+    .btn-primary.show { opacity:1; transform:translateY(0);}
+    .btn-primary:hover { transform: translateY(-3px); box-shadow:0 8px 30px rgba(0,0,0,0.15); }
 
     /* Footer */
-    footer {
-      background-color: var(--primary);
-      color: #ffffff;
-      padding: 3rem 0 2rem;
-      margin-top: 5rem;
-    }
+    footer { background: linear-gradient(135deg,var(--primary-soft),var(--primary)); color:#fff; padding:4rem 0 2rem; margin-top:5rem; text-align:center; }
+    footer a { color:#fff; font-size:1.2rem; transition: transform .2s; }
+    footer a:hover { transform: scale(1.2); }
+
+    @media(max-width:768px){ .particle { display:none;} }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="#top">Sebastian</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="nav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="#work">Work</a></li>
-          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-        </ul>
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#top">Sebastian</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#work">Work</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <div class="container">
+    <h1 class="display-5 fw-bold">Web Design Portfolio</h1>
+    <p class="lead mt-3">I'm Sebastian — a 26‑year‑old web developer based in Australia. I design and build clean, responsive websites using modern web technologies.</p>
+    <a href="#work" class="btn btn-light hero-btn btn-lg">View My Work</a>
+  </div>
+</section>
+
+<section class="container my-5 pt-5" id="work">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <h2 class="section-title mb-3 mb-md-0">Selected Work</h2>
+    <div class="btn-group">
+      <button class="btn btn-outline-primary active" data-filter="all">All</button>
+      <button class="btn btn-outline-primary" data-filter="landing">Landing</button>
+      <button class="btn btn-outline-primary" data-filter="business">Business</button>
+      <button class="btn btn-outline-primary" data-filter="experiment">Experiment</button>
+    </div>
+  </div>
+  <div class="row g-4" id="portfolioGrid"></div>
+</section>
+
+<section class="container my-5" id="about">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 text-center">
+      <h2 class="section-title">About Me</h2>
+      <p class="lead">I'm a passionate web developer who enjoys turning ideas into polished, functional web experiences. My focus is on responsive layouts, performance, and clean UI.</p>
+      <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap" id="skills">
+        <span class="badge badge-custom">HTML</span>
+        <span class="badge badge-custom">CSS</span>
+        <span class="badge badge-custom">JavaScript</span>
+        <span class="badge badge-custom">Bootstrap</span>
       </div>
     </div>
-  </nav>
+  </div>
+</section>
 
-  <!-- Hero -->
-  <section class="hero" id="top">
-    <div class="container">
-      <h1 class="display-5 fw-bold">Web Design Portfolio</h1>
-      <p class="lead mt-3">I'm Sebastian — a 26‑year‑old web developer based in Australia. I design and build clean, responsive websites using modern web technologies.</p>
-      <a href="#work" class="btn btn-light btn-lg mt-4">View My Work</a>
-    </div>
-  </section>
-
-  <!-- Portfolio -->
-  <section class="container my-5 pt-5" id="work">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-      <h2 class="section-title mb-3 mb-md-0">Selected Work</h2>
-      <div class="btn-group">
-        <button class="btn btn-outline-primary active" data-filter="all">All</button>
-        <button class="btn btn-outline-primary" data-filter="landing">Landing</button>
-        <button class="btn btn-outline-primary" data-filter="business">Business</button>
-        <button class="btn btn-outline-primary" data-filter="experiment">Experiment</button>
-      </div>
-    </div>
-
-    <div class="row g-4" id="portfolioGrid"></div>
-  </section>
-
-  <!-- About -->
-  <section class="container my-5" id="about">
-    <div class="row justify-content-center">
-      <div class="col-lg-8 text-center">
-        <h2 class="section-title">About Me</h2>
-        <p class="lead">I'm a passionate web developer who enjoys turning ideas into polished, functional web experiences. My focus is on responsive layouts, performance, and clean UI.</p>
-        <div class="d-flex justify-content-center gap-3 mt-4">
-          <span class="badge badge-custom px-3 py-2">HTML</span>
-          <span class="badge badge-custom px-3 py-2">CSS</span>
-          <span class="badge badge-custom px-3 py-2">JavaScript</span>
-          <span class="badge badge-custom px-3 py-2">Bootstrap</span>
+<section class="container my-5" id="contact">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+          <h2 class="section-title text-center">Get In Touch</h2>
+          <p class="text-center text-muted mb-4">Interested in working together or have a question?</p>
+          <form>
+            <div class="mb-3"><input type="text" class="form-control" placeholder="Your name" required></div>
+            <div class="mb-3"><input type="email" class="form-control" placeholder="Your email" required></div>
+            <div class="mb-3"><textarea class="form-control" rows="4" placeholder="Your message" required></textarea></div>
+            <div class="text-center"><button type="submit" class="btn btn-primary btn-lg">Send Message</button></div>
+          </form>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Contact -->
-  <section class="container my-5" id="contact">
-    <div class="row justify-content-center">
-      <div class="col-lg-7">
-        <div class="card border-0 shadow-sm rounded-4">
-          <div class="card-body p-4 p-md-5">
-            <h2 class="section-title text-center">Get In Touch</h2>
-            <p class="text-center text-muted mb-4">Interested in working together or have a question?</p>
-            <form>
-              <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Your name" required>
-              </div>
-              <div class="mb-3">
-                <input type="email" class="form-control" placeholder="Your email" required>
-              </div>
-              <div class="mb-3">
-                <textarea class="form-control" rows="4" placeholder="Your message" required></textarea>
-              </div>
-              <div class="text-center">
-                <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
-              </div>
-            </form>
-          </div>
+<footer>
+  <div class="container text-center">
+    <p class="mb-2">© 2025 Sebastian — Web Developer</p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="#"><i class="bi bi-github"></i></a>
+      <a href="#"><i class="bi bi-linkedin"></i></a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // Portfolio Items
+  const grid = document.getElementById('portfolioGrid');
+  const portfolioItems = [
+    { url: "https://trenchdesigns.github.io/index4.html", title: "Consultation Demo", category: "business" },
+    { url: "https://trenchdesigns.github.io/index10.html", title: "Cloud Host Demo", category: "business" },
+    { url: "https://trenchdesigns.github.io/index13.html", title: "Another Cloud Demo", category: "business" },
+    { url: "https://trenchdesigns.github.io/index14.html", title: "ANOTHER CLOUD DEMO", category: "business" },
+    { url: "https://trenchdesigns.github.io/index18.html", title: "Bootstrap Store DEMO", category: "landing" },
+    { url: "https://trenchdesigns.github.io/index22.html", title: "Digital Solutions Demo", category: "landing" },
+    { url: "https://trenchdesigns.github.io/index23.html", title: "Game Server Host Demo", category: "experiment" },
+    { url: "https://trenchdesigns.github.io/index24.html", title: "Game Server Host Demo", category: "experiment" },
+    { url: "https://trenchdesigns.github.io/index27.html", title: "Game Server Host Demo", category: "experiment" },
+    { url: "https://trenchdesigns.github.io/index28.html", title: "Game Server Host Demo", category: "experiment" },
+    { url: "https://trenchdesigns.github.io/index30.html", title: "Game Server Host Demo", category: "experiment" },
+    { url: "https://trenchdesigns.github.io/uv99.html", title: "Car Window Tinting Business Demo", category: "business" }
+  ];
+
+  portfolioItems.forEach(item => {
+    const col = document.createElement('div');
+    col.className = 'col-12 col-md-6 col-lg-4 portfolio-item';
+    col.dataset.category = item.category;
+
+    col.innerHTML = `
+      <div class="card portfolio-card h-100">
+        <div class="thumb ${item.category}">${item.title}</div>
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">${item.title}</h5>
+          <span class="badge badge-custom mb-2 text-capitalize">${item.category}</span>
+          <p class="card-text text-muted">Responsive website concept built with modern web standards.</p>
+          <a href="${item.url}" target="_blank" class="btn btn-primary mt-auto">Visit Design</a>
         </div>
       </div>
-    </div>
-  </section>
+    `;
+    grid.appendChild(col);
+  });
 
-  <!-- Footer -->
-  <footer>
-    <div class="container text-center">
-      <p class="mb-2">© 2025 Sebastian — Web Developer</p>
-      <div class="d-flex justify-content-center gap-3">
-        <a href="#" class="text-white"><i class="bi bi-github"></i></a>
-        <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Portfolio + Animations -->
-  <script>
-    const grid = document.getElementById('portfolioGrid');
-
-    const portfolioItems = [
-      { url: "https://trenchdesigns.github.io/index4.html", title: "Consultation Demo", category: "business" },
-      { url: "https://trenchdesigns.github.io/index10.html", title: "Cloud Host Demo", category: "business" },
-      { url: "https://trenchdesigns.github.io/index13.html", title: "Another Cloud Demo", category: "business" },
-      { url: "https://trenchdesigns.github.io/index14.html", title: "ANOTHER CLOUD DEMO", category: "business" },
-      { url: "https://trenchdesigns.github.io/index18.html", title: "Bootstrap Store DEMO", category: "landing" },
-      { url: "https://trenchdesigns.github.io/index22.html", title: "Digital Solutions Demo", category: "landing" },
-      { url: "https://trenchdesigns.github.io/index23.html", title: "Game Server Host Demo", category: "experiment" },
-      { url: "https://trenchdesigns.github.io/index24.html", title: "Game Server Host Demo", category: "experiment" },
-      { url: "https://trenchdesigns.github.io/index27.html", title: "Game Server Host Demo", category: "experiment" },
-      { url: "https://trenchdesigns.github.io/index28.html", title: "Game Server Host Demo", category: "experiment" },
-      { url: "https://trenchdesigns.github.io/index30.html", title: "Game Server Host Demo", category: "experiment" },
-      { url: "https://trenchdesigns.github.io/uv99.html", title: "Car Window Tinting Business Demo", category: "business" }
-    ];
-
-    portfolioItems.forEach(item => {
-      const col = document.createElement('div');
-      col.className = 'col-12 col-md-6 col-lg-4 portfolio-item';
-      col.dataset.category = item.category;
-
-      col.innerHTML = `
-        <div class="card portfolio-card h-100">
-          <div class="thumb">${item.title}</div>
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">${item.title}</h5>
-            <span class="badge badge-custom mb-2 text-capitalize">${item.category}</span>
-            <p class="card-text text-muted">Responsive website concept built with modern web standards.</p>
-            <a href="${item.url}" target="_blank" class="btn btn-primary mt-auto">Visit Design</a>
-          </div>
-        </div>
-      `;
-
-      grid.appendChild(col);
-    });
-
-    // Filter logic
-    document.querySelectorAll('[data-filter]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        const filter = btn.dataset.filter;
-        document.querySelectorAll('.portfolio-item').forEach(item => {
-          item.style.display = (filter === 'all' || item.dataset.category === filter) ? '' : 'none';
-        });
+  // Filter
+  document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.portfolio-item').forEach(item => {
+        item.style.display = (filter==='all'||item.dataset.category===filter)?'':'none';
       });
     });
+  });
 
-    // Reveal on scroll
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('show');
-      });
-    }, { threshold: 0.15 });
+  // Scroll Reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) entry.target.classList.add('show');
+    });
+  },{threshold:0.15});
 
-    document.querySelectorAll('.portfolio-card').forEach(card => observer.observe(card));
-  </script>
+  document.querySelectorAll('.portfolio-card, .badge-custom, .btn-primary, .hero-btn').forEach(el => observer.observe(el));
 
+  // Generate particles
+  const hero = document.querySelector('.hero');
+  const particleCount = 30;
+  for(let i=0;i<particleCount;i++){
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    particle.style.width = particle.style.height = `${Math.random()*6+4}px`;
+    particle.style.left = `${Math.random()*100}%`;
+    particle.style.top = `${Math.random()*100}%`;
+    particle.style.animationDuration = `${Math.random()*10+5}s`;
+    particle.style.animationDelay = `${Math.random()*5}s`;
+    hero.appendChild(particle);
+  }
+
+});
+</script>
 </body>
 </html>
