@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DayZ Chernarus Hub – Official Xbox</title>
 
+<!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
@@ -19,7 +22,7 @@ html,body{margin:0;padding:0;height:100%;background:#111;overflow:hidden;}
   transform:scale(1.1);
 }
 #map{position:absolute;inset:0;z-index:10;}
-nav.navbar{position:fixed;top:0;width:100%;z-index:9999;}
+.navbar .btn{display:flex;align-items:center;gap:4px;}
 .panel{
   position:absolute;
   background:rgba(0,0,0,0.75);
@@ -36,6 +39,7 @@ nav.navbar{position:fixed;top:0;width:100%;z-index:9999;}
   background:red;border:2px solid #fff;border-radius:50%;
 }
 .leaflet-container{background:transparent!important;}
+.btn-active{box-shadow:0 0 10px #fff;}
 </style>
 </head>
 
@@ -47,11 +51,11 @@ nav.navbar{position:fixed;top:0;width:100%;z-index:9999;}
       <i class="fa-solid fa-skull-crossbones me-2"></i>DayZ Chernarus Hub
     </span>
     <div class="d-flex gap-2">
-      <button id="addPin" class="btn btn-danger btn-sm"><i class="fa-solid fa-map-pin"></i></button>
-      <button id="addRoute" class="btn btn-secondary btn-sm"><i class="fa-solid fa-route"></i></button>
-      <button id="toggleHeat" class="btn btn-warning btn-sm"><i class="fa-solid fa-fire"></i></button>
-      <button id="toggleNight" class="btn btn-secondary btn-sm"><i class="fa-solid fa-moon"></i></button>
-      <button id="clearAll" class="btn btn-secondary btn-sm"><i class="fa-solid fa-trash"></i></button>
+      <button id="addPin" class="btn btn-danger btn-sm"><i class="fa-solid fa-map-pin"></i> Pin</button>
+      <button id="addRoute" class="btn btn-secondary btn-sm"><i class="fa-solid fa-route"></i> Route</button>
+      <button id="toggleHeat" class="btn btn-warning btn-sm"><i class="fa-solid fa-fire"></i> Heat</button>
+      <button id="toggleNight" class="btn btn-secondary btn-sm"><i class="fa-solid fa-moon"></i> Night</button>
+      <button id="clearAll" class="btn btn-secondary btn-sm"><i class="fa-solid fa-trash"></i> Clear</button>
     </div>
   </div>
 </nav>
@@ -100,23 +104,30 @@ pins.forEach(p=>L.marker(px(p.x,p.y)).addTo(map).bindPopup(p.name));
 
 // ---------------- ROUTES ----------------
 let routes=JSON.parse(localStorage.getItem("dzRoutes")||"[]");
-routes.forEach(r=>L.polyline(r.points.map(pt=>px(pt.x,pt.y)),{color:"orange"}).addTo(map));
+routes.forEach(r=>L.polyline(r.points.map(pt=>px(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map));
+
 let addingPin=false,addingRoute=false,tempRoute=[],tempLine=null;
 
 // ---------------- HEATMAP ----------------
-const heat = L.heatLayer(military.map(m=>[m.y,m.x,1]),{radius:80,blur:60,max:1});
+const heat = L.heatLayer(military.map(m=>[m.y,m.x,1]),{
+  radius:120,
+  blur:80,
+  max:1,
+  gradient:{0:'rgba(0,255,0,0.5)',0.5:'rgba(255,255,0,0.7)',0.8:'rgba(255,165,0,0.8)',1:'rgba(255,0,0,1)'}
+});
 let heatOn=false;
-toggleHeat.onclick=()=>{heatOn=!heatOn;heatOn?heat.addTo(map):map.removeLayer(heat);};
 
 // ---------------- BUTTONS ----------------
-addPin.onclick=()=>{addingPin=true;addingRoute=false;};
-addRoute.onclick=()=>{addingRoute=true;addingPin=false;tempRoute=[];};
+addPin.onclick=()=>{addingPin=true;addingRoute=false;addPin.classList.add('btn-active');addRoute.classList.remove('btn-active');};
+addRoute.onclick=()=>{addingRoute=true;addingPin=false;tempRoute=[];addRoute.classList.add('btn-active');addPin.classList.remove('btn-active');};
 clearAll.onclick=()=>{
   if(confirm("Clear all pins/routes?")){
     localStorage.clear();
     location.reload();
   }
 };
+toggleHeat.onclick=()=>{heatOn=!heatOn;heatOn?heat.addTo(map):map.removeLayer(heat);toggleHeat.classList.toggle('btn-active');};
+toggleNight.onclick=()=>{document.getElementById("map-container").style.filter = toggleNight.classList.toggle('btn-active')?"brightness(0.28) contrast(1.5)":"none";};
 
 // ---------------- MAP CLICK ----------------
 map.on("click",e=>{
@@ -134,7 +145,7 @@ map.on("click",e=>{
   if(addingRoute){
     tempRoute.push(pt);
     if(tempLine) map.removeLayer(tempLine);
-    tempLine = L.polyline(tempRoute.map(p=>px(p.x,p.y)),{color:"orange"}).addTo(map);
+    tempLine = L.polyline(tempRoute.map(p=>px(p.x,p.y)),{color:"orange",weight:3}).addTo(map);
   }
 });
 
@@ -145,15 +156,10 @@ map.on("dblclick",e=>{
     addingRoute=false;
     tempRoute=[];
     tempLine=null;
+    alert("Route saved!");
+    addRoute.classList.remove('btn-active');
   }
 });
-
-// ---------------- NIGHT MODE ----------------
-let night=false;
-toggleNight.onclick=()=>{
-  night=!night;
-  document.getElementById("map-container").style.filter = night?"brightness(0.28) contrast(1.5)":"none";
-};
 
 // ---------------- SURVIVAL TIPS ----------------
 const tips = [
