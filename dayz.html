@@ -136,7 +136,7 @@ lootHotspots.forEach(l=>{
 
 // --- HEATMAP ---
 const heat=L.heatLayer(military.map(m=>[m.y,m.x,1]),{
-  radius:180, blur:100, max:1,
+  radius:60, blur:30, max:1,
   gradient:{0:'rgba(0,0,0,0)',0.2:'rgba(0,0,255,0.6)',0.4:'rgba(0,255,0,0.7)',0.6:'rgba(255,255,0,0.8)',0.8:'rgba(255,165,0,0.9)',1:'rgba(255,0,0,1)'}
 });
 let heatOn=false;
@@ -154,30 +154,35 @@ function spawnZombie(){
 }
 setInterval(spawnZombie,1500);
 
-// --- SIMULATED PLAYER MOVEMENT ---
+// --- SIMULATED PLAYER DOTS ---
 const commonRoutes=[
   [{x:214,y:454},{x:410,y:148},{x:152,y:260},{x:566,y:734},{x:1120,y:1280}],
   [{x:410,y:148},{x:152,y:260},{x:214,y:454},{x:264,y:1376}],
   [{x:370,y:754},{x:784,y:1388},{x:1120,y:1280}]
 ];
 const colors=['lime','cyan','magenta','orange','yellow'];
-const playerTracers=[];
+const playerDots=[];
 commonRoutes.forEach((route,i)=>{
-  playerTracers.push({route:route,color:colors[i%colors.length],index:0});
+  const dot=L.circleMarker(px(route[0].x,route[0].y),{radius:6,color:colors[i%colors.length],fillOpacity:1}).addTo(map);
+  playerDots.push({dot:dot,route:route,index:0,color:colors[i%colors.length],trail:[]});
 });
 
-function animatePlayers(){
-  playerTracers.forEach(pt=>{
-    if(pt.index<pt.route.length-1){
-      const start=px(pt.route[pt.index].x,pt.route[pt.index].y);
-      const end=px(pt.route[pt.index+1].x,pt.route[pt.index+1].y);
-      const line=L.polyline([start,end],{color:pt.color,weight:4,opacity:0.7,dashArray:'6,4'}).addTo(map);
-      setTimeout(()=>{map.removeLayer(line)},3000);
-      pt.index++;
-    } else pt.index=0;
+function animatePlayerDots(){
+  playerDots.forEach(p=>{
+    const nextIndex=(p.index+1)%p.route.length;
+    const start=px(p.route[p.index].x,p.route[p.index].y);
+    const end=px(p.route[nextIndex].x,p.route[nextIndex].y);
+
+    p.dot.setLatLng(end);
+
+    const segment=L.polyline([start,end],{color:p.color,weight:3,opacity:0.5}).addTo(map);
+    p.trail.push(segment);
+    if(p.trail.length>10){ map.removeLayer(p.trail.shift()); }
+
+    p.index=nextIndex;
   });
 }
-setInterval(animatePlayers,1200);
+setInterval(animatePlayerDots,1200);
 
 // --- SURVIVAL TIPS ---
 const tips=["Stay hydrated; water is life.","Avoid high zombie populations at night.","Cities have best loot but highest risk.","Military areas are worth the danger."];
@@ -186,7 +191,6 @@ setInterval(()=>{tip.innerText="Survival Tip: "+tips[Math.floor(Math.random()*ti
 // --- BUTTONS ---
 toggleHeat.onclick=()=>{heatOn=!heatOn;heatOn?heat.addTo(map):map.removeLayer(heat);toggleHeat.classList.toggle('btn-active');};
 toggleNight.onclick=()=>{document.getElementById("map-container").style.filter=toggleNight.classList.toggle('btn-active')?"brightness(0.15) contrast(1.7) grayscale(0.3)":"none";};
-
 </script>
 </body>
 </html>
