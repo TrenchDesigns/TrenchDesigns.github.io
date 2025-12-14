@@ -30,8 +30,22 @@
     /* Navbar */
     .navbar { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08);}
     .navbar-brand { color: var(--primary); font-weight: 700; font-size:1.5rem;}
-    .nav-link { color: #333 !important; font-weight: 500; transition: color .3s;}
-    .nav-link:hover { color: var(--primary) !important;}
+    .nav-link.btn-nav {
+      background: var(--primary);
+      color: #fff !important;
+      border-radius: 50px;
+      padding: 0.4rem 1rem;
+      font-weight:500;
+      display: flex;
+      align-items: center;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .nav-link.btn-nav:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    .nav-link.btn-nav i { font-size: 0.9rem; }
 
     /* Hero */
     .hero {
@@ -145,6 +159,7 @@
       .hero h1 { font-size:2.2rem;}
       #about { flex-direction:column;}
       #about .about-image { max-width:90%;}
+      .nav-link.btn-nav { margin-bottom:0.3rem;}
     }
   </style>
 </head>
@@ -159,9 +174,15 @@
       </button>
       <div class="collapse navbar-collapse" id="nav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+          <li class="nav-item me-2">
+            <a class="nav-link btn-nav" href="#services"><i class="fas fa-tools me-1"></i>Services</a>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link btn-nav" href="#about"><i class="fas fa-user me-1"></i>About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link btn-nav" href="#contact"><i class="fas fa-envelope me-1"></i>Contact</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -210,7 +231,7 @@
       <h2 class="section-title">About UV99</h2>
       <p>UV99 is owned by Beau, providing professional car window tinting across the Gold Coast and Brisbane. We prioritize quality, reliability, and customer satisfaction. Protect your car and yourself with our premium tinting solutions.</p>
     </div>
-    <img src="https://images.unsplash.com/photo-1605902711622-cfb43c443f6d?auto=format&fit=crop&w=800&q=80" alt="Car Tinting" class="about-image">
+    <img src="https://ptawindows.co.za/wp-content/uploads/2025/01/Vehicle-window-tinting-Pretoria.jpg" alt="Car Tinting" class="about-image">
   </section>
 
   <!-- Contact -->
