@@ -63,8 +63,12 @@ L.imageOverlay('chernarus.png',bounds).addTo(map);
 map.fitBounds(bounds);
 
 // --- COORD HELPERS ---
-function percentToPixel(xPercent,yPercent){return [mapHeight-(yPercent/100*mapHeight),xPercent/100*mapWidth];}
-function pixelToPercent(lat,lng){return {x:lng/mapWidth*100, y:(mapHeight-lat)/mapHeight*100};}
+function percentToLeaflet(xPercent,yPercent){
+  const x = xPercent / 100 * mapWidth;
+  const y = yPercent / 100 * mapHeight;
+  return [y, x]; // Leaflet [lat,lng] = [y,x]
+}
+function pixelToPercent(lat,lng){return {x:lng/mapWidth*100, y:lat/mapHeight*100};}
 
 // --- MARKERS DATA ---
 const towns=[
@@ -86,7 +90,7 @@ const audioManager={current:null,play(url){this.stop();this.current=new Audio(ur
 const lootMarkers=[];
 function createMarker(obj){
   const icon=L.divIcon({className:obj.type==="military"?"marker-military":"marker-civilian"});
-  const marker=L.marker(percentToPixel(obj.x,obj.y),{icon:icon}).addTo(map);
+  const marker=L.marker(percentToLeaflet(obj.x,obj.y),{icon:icon}).addTo(map);
   marker.on('mouseover',()=>{document.getElementById('lore').innerText=obj.name+": "+obj.lore;if(obj.sound)audioManager.play(obj.sound);});
   marker.on('mouseout',()=>{document.getElementById('lore').innerText='Hover over a city/military base for info...';audioManager.stop();});
   marker.obj=obj; lootMarkers.push(marker);
@@ -108,8 +112,8 @@ function applyFilters(){
 let pins=JSON.parse(localStorage.getItem('dzPins')||'[]');
 let routes=JSON.parse(localStorage.getItem('dzRoutes')||'[]');
 let addingPin=false, addingRoute=false,tempRoute=[];
-function renderPins(){pins.forEach(p=>L.marker(percentToPixel(p.x,p.y)).addTo(map).bindPopup(p.name));}
-function renderRoutes(){routes.forEach(r=>L.polyline(r.points.map(pt=>percentToPixel(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map));}
+function renderPins(){pins.forEach(p=>L.marker(percentToLeaflet(p.x,p.y)).addTo(map).bindPopup(p.name));}
+function renderRoutes(){routes.forEach(r=>L.polyline(r.points.map(pt=>percentToLeaflet(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map));}
 renderPins();renderRoutes();
 
 // --- CONTROLS ---
@@ -121,7 +125,7 @@ document.getElementById('clearAll').onclick=()=>{if(confirm("Clear all pins/rout
 map.on('click',e=>{
   const coords=pixelToPercent(e.latlng.lat,e.latlng.lng);
   if(addingPin){const n=prompt("Pin name:");if(n){pins.push({...coords,name:n});localStorage.setItem('dzPins',JSON.stringify(pins));renderPins();}}
-  if(addingRoute){tempRoute.push(coords);if(tempRoute.length>1)L.polyline(tempRoute.map(pt=>percentToPixel(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map);}
+  if(addingRoute){tempRoute.push(coords);if(tempRoute.length>1)L.polyline(tempRoute.map(pt=>percentToLeaflet(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map);}
 });
 map.on('dblclick',e=>{if(addingRoute&&tempRoute.length>1){routes.push({points:tempRoute});localStorage.setItem('dzRoutes',JSON.stringify(routes));renderRoutes(); tempRoute=[]; addingRoute=false; alert("Route saved!");}});
 
@@ -142,7 +146,7 @@ setInterval(()=>{document.getElementById("tip").innerText="Survival Tip: "+tips[
 const trafficPoints=[
 {x:50,y:85,intensity:0.9},{x:76,y:61,intensity:0.7},{x:15,y:80,intensity:1},{x:35,y:70,intensity:0.5},{x:20,y:78,intensity:0.6}
 ];
-const heatLayer=L.heatLayer(trafficPoints.map(p=>percentToPixel(p.x,p.y).concat([p.intensity])),{
+const heatLayer=L.heatLayer(trafficPoints.map(p=>percentToLeaflet(p.x,p.y).concat([p.intensity])),{
 radius:50,blur:40,max:1,gradient:{0.0:'green',0.5:'yellow',0.8:'orange',1.0:'red'}
 });
 let heatOn=false;
