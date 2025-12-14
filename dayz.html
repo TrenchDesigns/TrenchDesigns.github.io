@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DayZ Vanilla Chernarus Hub</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+  #map { height: 80vh; }
+  .stencil { font-family: 'Courier New', Courier, monospace; }
+  #lore, #tip { position: absolute; background: rgba(0,0,0,0.7); padding: 0.8rem; border-radius: 6px; color:#fff; }
+  #lore { top: 10px; right: 10px; max-width: 280px; }
+  #tip { bottom: 10px; left: 50%; transform: translateX(-50%); }
+</style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+<nav class="bg-gray-800 p-4 flex justify-between items-center">
+  <h1 class="text-2xl font-bold text-red-600 stencil">DayZ Vanilla Chernarus Hub</h1>
+  <div class="flex space-x-2">
+    <button id="addPin" class="bg-red-600 px-3 py-2 rounded">Add Pin</button>
+    <button id="addRoute" class="bg-gray-700 px-3 py-2 rounded">Add Route</button>
+    <button id="clearAll" class="bg-gray-700 px-3 py-2 rounded">Clear All</button>
+    <button id="toggleNight" class="bg-gray-700 px-3 py-2 rounded">Night Mode</button>
+    <button id="toggleSound" class="bg-gray-700 px-3 py-2 rounded">Toggle Sound</button>
+  </div>
+</nav>
+
+<div id="map"></div>
+<div id="lore" class="stencil">Hover over a town for lore...</div>
+<div id="tip" class="stencil">Survival Tip: Start on the coast and plan inland!</div>
+
+<script>
+/* --- Initialize Leaflet with static Chernarus overlay --- */
+const map = L.map('map', {crs:L.CRS.Simple, minZoom:-1, maxZoom:2});
+
+const bounds = [[0,0],[100,100]];
+L.imageOverlay('chernarus.png', bounds).addTo(map);
+map.fitBounds(bounds);
+
+/* --- Loot + Towns --- */
+const lootDefs = [
+  {x:80,y:15,name:'NW Airfield','type':'Military','rarity':'epic'},
+  {x:85,y:50,name:'Berezino Loot','type':'Food','rarity':'common'},
+  {x:40,y:30,name:'Electrozavodsk Loot','type':'Weapons','rarity':'rare'}
+];
+const rarityColor = {common:'green',rare:'yellow',epic:'red'};
+const lootMarkers=[];
+lootDefs.forEach(item=>{
+  const m=L.circleMarker([item.y,item.x],{color:rarityColor[item.rarity],radius:8})
+  .bindPopup(`<strong>${item.name}</strong><br>${item.type} (${item.rarity})`).addTo(map);
+  lootMarkers.push(m);
+});
+
+const towns = [
+  {x:80,y:15,name:'NW Airfield',lore:'Top military loot but extreme danger'},
+  {x:85,y:50,name:'Berezino',lore:'Coastal start town — early game loot'},
+  {x:40,y:30,name:'Electrozavodsk',lore:'City center — moderate risk'}
+];
+towns.forEach(t=>{
+  const m=L.marker([t.y,t.x]).addTo(map);
+  m.on('mouseover',()=>document.getElementById('lore').innerText=`${t.name}: ${t.lore}`);
+  m.on('mouseout',()=>document.getElementById('lore').innerText='Hover over a town for lore...');
+});
+
+/* --- Persistent Pins & Routes --- */
+let pins = JSON.parse(localStorage.getItem('dzPins')||'[]');
+let routes = JSON.parse(localStorage.getItem('dzRoutes')||'[]');
+let addingPin=false, addingRoute=false, routeTemp=[];
+
+function renderPins(){pins.forEach(p=>L.marker([p.y,p.x]).addTo(map).bindPopup(p.name));}
+function renderRoutes(){routes.forEach(rt=>L.polyline(rt.points.map(pt=>[pt.y,pt.x]),{color:'red'}).addTo(map));}
+renderPins(); renderRoutes();
+
+/* --- Survival Tips --- */
+const tips=[
+  "Stay hydrated and eat regularly.",
+  "Avoid high zombie density areas at night.",
+  "Check buildings for loot before camping outside.",
+  "Military zones are risky but rewarding.",
+  "Travel in groups for safety."
+];
+setInterval(()=>document.getElementById('tip').innerText="Survival Tip: "+tips[Math.floor(Math.random()*tips.length)],10000);
+
+/* --- Map Click Handlers --- */
+document.getElementById('addPin').onclick=()=>{addingPin=!addingPin;addingRoute=false; alert('Click map to add pin');};
+document.getElementById('addRoute').onclick=()=>{addingRoute=!addingRoute;addingPin=false; routeTemp=[]; alert('Click to add route, double-click to finish');};
+document.getElementById('clearAll').onclick=()=>{if(confirm('Clear all pins/routes?')){pins=[];routes=[];localStorage.clear(); location.reload();}};
+
+map.on('click',e=>{
+  if(addingPin){const n=prompt('Pin name:');if(n){pins.push({x:e.latlng.lng,y:e.latlng.lat,name:n});localStorage.setItem('dzPins',JSON.stringify(pins)); renderPins();}}
+  if(addingRoute){routeTemp.push({x:e.latlng.lng,y:e.latlng.lat});if(routeTemp.length>1)L.polyline(routeTemp.map(pt=>[pt.y,pt.x]),{color:'orange'}).addTo(map);}
+});
+map.on('dblclick',e=>{if(addingRoute && routeTemp.length>1){routes.push({points:routeTemp});localStorage.setItem('dzRoutes',JSON.stringify(routes)); renderRoutes(); routeTemp=[]; addingRoute=false; alert('Route saved!');}});
+
+/* --- Night Mode --- */
+let night=false;
+document.getElementById('toggleNight').onclick=()=>{night=!night; document.getElementById('map').style.filter=night?'brightness(0.4) contrast(1.5)':'brightness(1)';};
+
+/* --- Zombie Audio --- */
+let soundOn=true;
+const zombie=new Audio('https://www.fesliyanstudios.com/play-mp3/387'); zombie.loop=true; zombie.volume=0.3; zombie.play();
+document.getElementById('toggleSound').onclick=()=>{soundOn=!soundOn; soundOn?zombie.play():zombie.pause();};
+</script>
+
+</body>
+</html>
