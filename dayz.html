@@ -11,40 +11,38 @@
 <script src="https://cdn.jsdelivr.net/npm/leaflet.heat/dist/leaflet-heat.js"></script>
 
 <style>
-html, body { margin:0; padding:0; height:100%; overflow:hidden; font-family:'Courier New', monospace; background:#111; }
-#map-container { position:relative; width:100%; height:100%; overflow:hidden; }
-#blur-bg { position:absolute; inset:0; background:url('chernarus.png') center/cover no-repeat; filter:blur(25px) brightness(0.35) contrast(1.2); transform:scale(1.1); z-index:0; }
-#map { position:absolute; inset:0; z-index:10; }
-#lore, #tip, #loot-panel { position:absolute; background:rgba(0,0,0,0.75); padding:0.8rem; border-radius:8px; color:#fff; z-index:20; max-width:300px; }
-#lore { top:10px; right:10px; }
-#tip { bottom:10px; left:50%; transform:translateX(-50%); }
-#loot-panel { top:10px; left:10px; max-width:220px; max-height:70vh; overflow-y:auto; }
-.leaflet-container { background:transparent !important; }
-.marker-military { background:red; width:14px; height:14px; border-radius:50%; display:block; border:2px solid #fff; }
-.marker-civilian { background:green; width:12px; height:12px; border-radius:50%; display:block; border:1px solid #fff; }
-@media(max-width:600px){
-  nav {flex-wrap:wrap;}
-  nav div {overflow-x:auto; display:flex;}
-}
+html, body {margin:0;padding:0;height:100%;font-family:'Courier New', monospace;background:#111;overflow:hidden;}
+#map-container{position:relative;width:100%;height:100%;overflow:hidden;}
+#blur-bg{position:absolute;inset:0;background:url('chernarus.png') center/cover no-repeat;filter:blur(25px) brightness(0.35) contrast(1.2);transform:scale(1.1);z-index:0;}
+#map{position:absolute;inset:0;z-index:10;}
+#lore,#tip,#loot-panel{position:absolute;background:rgba(0,0,0,0.75);padding:0.8rem;border-radius:8px;color:#fff;z-index:20;max-width:300px;}
+#lore{top:10px;right:10px;}
+#tip{bottom:10px;left:50%;transform:translateX(-50%);}
+#loot-panel{top:10px;left:10px;max-width:220px;max-height:70vh;overflow-y:auto;}
+.leaflet-container{background:transparent !important;}
+.marker-military{background:red;width:14px;height:14px;border-radius:50%;display:block;border:2px solid #fff;}
+.marker-civilian{background:green;width:12px;height:12px;border-radius:50%;display:block;border:1px solid #fff;}
+.route-line{color:orange;weight:3;}
+@media(max-width:600px){nav{flex-wrap:wrap;}nav div{overflow-x:auto;display:flex;}}
 </style>
 </head>
 <body>
 
 <nav class="bg-gray-800 p-4 flex justify-between items-center z-30 relative">
-  <h1 class="text-2xl font-bold text-red-600">DayZ Vanilla Chernarus Hub</h1>
-  <div class="flex space-x-2">
-    <button id="addPin" class="bg-red-600 px-3 py-2 rounded">Add Pin</button>
-    <button id="addRoute" class="bg-gray-700 px-3 py-2 rounded">Add Route</button>
-    <button id="clearAll" class="bg-gray-700 px-3 py-2 rounded">Clear All</button>
-    <button id="toggleNight" class="bg-gray-700 px-3 py-2 rounded">Night Mode</button>
-    <button id="toggleSound" class="bg-gray-700 px-3 py-2 rounded">Toggle Sound</button>
-    <button id="toggleHeat" class="bg-orange-600 px-3 py-2 rounded">Toggle Traffic</button>
-  </div>
+<h1 class="text-2xl font-bold text-red-600">DayZ Vanilla Chernarus Hub</h1>
+<div class="flex space-x-2">
+<button id="addPin" class="bg-red-600 px-3 py-2 rounded">Add Pin</button>
+<button id="addRoute" class="bg-gray-700 px-3 py-2 rounded">Add Route</button>
+<button id="clearAll" class="bg-gray-700 px-3 py-2 rounded">Clear All</button>
+<button id="toggleNight" class="bg-gray-700 px-3 py-2 rounded">Night Mode</button>
+<button id="toggleSound" class="bg-gray-700 px-3 py-2 rounded">Toggle Sound</button>
+<button id="toggleHeat" class="bg-orange-600 px-3 py-2 rounded">Toggle Traffic</button>
+</div>
 </nav>
 
 <div id="map-container">
-  <div id="blur-bg"></div>
-  <div id="map"></div>
+<div id="blur-bg"></div>
+<div id="map"></div>
 </div>
 
 <div id="lore">Hover over a city/military base for info...</div>
@@ -58,74 +56,74 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; font-family:'Cou
 
 <script>
 // --- MAP SETUP ---
-const mapWidth = 1500;
-const mapHeight = 1450;
-const map = L.map('map',{crs:L.CRS.Simple, minZoom:-2, maxZoom:6});
-const bounds = [[0,0],[mapHeight,mapWidth]];
-L.imageOverlay('chernarus.png', bounds).addTo(map);
+const mapWidth=1500,mapHeight=1450;
+const map=L.map('map',{crs:L.CRS.Simple,minZoom:-2,maxZoom:6});
+const bounds=[[0,0],[mapHeight,mapWidth]];
+L.imageOverlay('chernarus.png',bounds).addTo(map);
 map.fitBounds(bounds);
 
-// --- COORDINATE HELPER ---
-function toMapCoords(xPixel,yPixel){return [mapHeight - yPixel, xPixel];} // flip Y for Leaflet
+// --- COORD HELPERS ---
+function percentToPixel(xPercent,yPercent){return [mapHeight-(yPercent/100*mapHeight),xPercent/100*mapWidth];}
+function pixelToPercent(lat,lng){return {x:lng/mapWidth*100, y:(mapHeight-lat)/mapHeight*100};}
 
-// --- TOWNS & MILITARY BASES ---
-const towns = [
+// --- MARKERS DATA ---
+const towns=[
   {x:50,y:85,name:"Berezino",type:"civilian",lore:"Berezino is a coastal town with medium loot and high player traffic."},
   {x:75,y:67,name:"Chernogorsk",type:"civilian",lore:"Chernogorsk: industrial city, lots of urban loot and zombies."},
   {x:76,y:61,name:"Stary Sobor",type:"civilian",lore:"Stary Sobor: strategic inland hub, moderate loot."}
 ];
-const militaryBases = [
+const militaryBases=[
   {x:20,y:78,name:"Zelenogorsk Military Base",lore:"Top military loot, highly dangerous.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
   {x:35,y:80,name:"Kamensk Military Base",lore:"Strong military presence, good loot.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
   {x:15,y:80,name:"NWAF",lore:"North West Airfield, epic military loot, high risk.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
   {x:70,y:30,name:"Tisy Military Base",lore:"Tisy: northern airfield, high-tier loot.",sound:"https://www.fesliyanstudios.com/play-mp3/387"}
 ];
 
-// --- MARKERS ---
-const lootMarkers = [];
-function createMarker(obj){
-  const icon = L.divIcon({className: obj.type==="military"?"marker-military":"marker-civilian"});
-  const marker = L.marker(toMapCoords(obj.x,obj.y),{icon:icon}).addTo(map);
-  marker.on('mouseover',()=>{document.getElementById('lore').innerText=obj.name+": "+obj.lore; if(obj.sound) audioManager.play(obj.sound);});
-  marker.on('mouseout',()=>{document.getElementById('lore').innerText='Hover over a city/military base for info...'; audioManager.stop();});
-  marker.obj=obj;
-  return marker;
-}
-
-// --- AUDIO ---
+// --- AUDIO MANAGER ---
 const audioManager={current:null,play(url){this.stop();this.current=new Audio(url);this.current.volume=0.3;this.current.play();},stop(){if(this.current){this.current.pause();this.current=null;}}}
 
-// --- RENDER MARKERS ---
-towns.forEach(t=>lootMarkers.push(createMarker({...t,type:"civilian"})));
-militaryBases.forEach(m=>lootMarkers.push(createMarker({...m,type:"military"})));
+// --- MARKER RENDER ---
+const lootMarkers=[];
+function createMarker(obj){
+  const icon=L.divIcon({className:obj.type==="military"?"marker-military":"marker-civilian"});
+  const marker=L.marker(percentToPixel(obj.x,obj.y),{icon:icon}).addTo(map);
+  marker.on('mouseover',()=>{document.getElementById('lore').innerText=obj.name+": "+obj.lore;if(obj.sound)audioManager.play(obj.sound);});
+  marker.on('mouseout',()=>{document.getElementById('lore').innerText='Hover over a city/military base for info...';audioManager.stop();});
+  marker.obj=obj; lootMarkers.push(marker);
+}
+towns.forEach(t=>createMarker({...t,type:"civilian"}));
+militaryBases.forEach(m=>createMarker({...m,type:"military"}));
 
 // --- LOOT FILTERS ---
 document.getElementById('showMilitary').onchange=applyFilters;
 document.getElementById('showFood').onchange=applyFilters;
 document.getElementById('showWeapons').onchange=applyFilters;
 document.getElementById('showMedical').onchange=applyFilters;
-function applyFilters(){const showM=document.getElementById('showMilitary').checked; lootMarkers.forEach(m=>{if(m.obj.type==="military") m[showM?"addTo":"remove"]?.(map);});}
+function applyFilters(){
+  const showM=document.getElementById('showMilitary').checked;
+  lootMarkers.forEach(m=>{if(m.obj.type==="military") m[showM?"addTo":"remove"]?.(map);});
+}
 
 // --- PINS & ROUTES ---
 let pins=JSON.parse(localStorage.getItem('dzPins')||'[]');
 let routes=JSON.parse(localStorage.getItem('dzRoutes')||'[]');
-let addingPin=false, addingRoute=false, tempRoute=[];
-function renderPins(){pins.forEach(p=>L.marker(toMapCoords(p.x,p.y)).addTo(map).bindPopup(p.name));}
-function renderRoutes(){routes.forEach(r=>L.polyline(r.points.map(pt=>toMapCoords(pt.x,pt.y)),{color:"orange"}).addTo(map));}
-renderPins(); renderRoutes();
+let addingPin=false, addingRoute=false,tempRoute=[];
+function renderPins(){pins.forEach(p=>L.marker(percentToPixel(p.x,p.y)).addTo(map).bindPopup(p.name));}
+function renderRoutes(){routes.forEach(r=>L.polyline(r.points.map(pt=>percentToPixel(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map));}
+renderPins();renderRoutes();
 
 // --- CONTROLS ---
-document.getElementById('addPin').onclick=()=>{addingPin=!addingPin; addingRoute=false; alert("Click map to add pin");};
-document.getElementById('addRoute').onclick=()=>{addingRoute=!addingRoute; addingPin=false; tempRoute=[]; alert("Click map points, double-click to finish route");};
+document.getElementById('addPin').onclick=()=>{addingPin=!addingPin;addingRoute=false;alert("Click map to add pin");};
+document.getElementById('addRoute').onclick=()=>{addingRoute=!addingRoute;addingPin=false;tempRoute=[];alert("Click map points, double-click to finish route");};
 document.getElementById('clearAll').onclick=()=>{if(confirm("Clear all pins/routes?")){pins=[];routes=[];localStorage.clear();location.reload();}};
 
 // --- MAP EVENTS ---
 map.on('click',e=>{
-  const coords={x:e.latlng.lng,y:mapHeight-e.latlng.lat};
-  if(addingPin){const n=prompt("Pin name:");if(n){pins.push({...coords,name:n});localStorage.setItem('dzPins',JSON.stringify(pins)); renderPins();}}
-  if(addingRoute){tempRoute.push(coords); if(tempRoute.length>1)L.polyline(tempRoute.map(pt=>toMapCoords(pt.x,pt.y)),{color:"orange"}).addTo(map);}
+  const coords=pixelToPercent(e.latlng.lat,e.latlng.lng);
+  if(addingPin){const n=prompt("Pin name:");if(n){pins.push({...coords,name:n});localStorage.setItem('dzPins',JSON.stringify(pins));renderPins();}}
+  if(addingRoute){tempRoute.push(coords);if(tempRoute.length>1)L.polyline(tempRoute.map(pt=>percentToPixel(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map);}
 });
-map.on('dblclick',e=>{if(addingRoute && tempRoute.length>1){routes.push({points:tempRoute});localStorage.setItem('dzRoutes',JSON.stringify(routes));renderRoutes(); tempRoute=[]; addingRoute=false; alert("Route saved!");}});
+map.on('dblclick',e=>{if(addingRoute&&tempRoute.length>1){routes.push({points:tempRoute});localStorage.setItem('dzRoutes',JSON.stringify(routes));renderRoutes(); tempRoute=[]; addingRoute=false; alert("Route saved!");}});
 
 // --- NIGHT MODE ---
 let night=false;
@@ -134,22 +132,21 @@ document.getElementById('toggleNight').onclick=()=>{night=!night;document.getEle
 // --- AMBIENT SOUNDS ---
 let soundOn=true;
 const zombieAudio=new Audio("https://www.fesliyanstudios.com/play-mp3/387"); zombieAudio.loop=true; zombieAudio.volume=0.3; zombieAudio.play();
-document.getElementById('toggleSound').onclick=()=>{soundOn=!soundOn; soundOn?zombieAudio.play():zombieAudio.pause();}
+document.getElementById('toggleSound').onclick=()=>{soundOn=!soundOn;soundOn?zombieAudio.play():zombieAudio.pause();}
 
 // --- SURVIVAL TIPS ---
 const tips=["Stay hydrated; water is life.","Avoid high zombie populations at night.","Cities have the best loot but highest risk.","Military areas like airfields are worth the danger."];
 setInterval(()=>{document.getElementById("tip").innerText="Survival Tip: "+tips[Math.floor(Math.random()*tips.length)];},12000);
 
 // --- PLAYER TRAFFIC HEATMAP ---
-const trafficPoints = [
-  {x:50,y:85,intensity:0.9},{x:76,y:61,intensity:0.7},{x:15,y:80,intensity:1},{x:35,y:70,intensity:0.5},{x:20,y:78,intensity:0.6}
+const trafficPoints=[
+{x:50,y:85,intensity:0.9},{x:76,y:61,intensity:0.7},{x:15,y:80,intensity:1},{x:35,y:70,intensity:0.5},{x:20,y:78,intensity:0.6}
 ];
-const heatLayer = L.heatLayer(trafficPoints.map(p=>[mapHeight-p.y,p.x,p.intensity]),{
-  radius:50, blur:35, max:1,
-  gradient:{0.0:'green',0.5:'yellow',0.8:'orange',1.0:'red'}
+const heatLayer=L.heatLayer(trafficPoints.map(p=>percentToPixel(p.x,p.y).concat([p.intensity])),{
+radius:50,blur:40,max:1,gradient:{0.0:'green',0.5:'yellow',0.8:'orange',1.0:'red'}
 });
 let heatOn=false;
-document.getElementById('toggleHeat').onclick=()=>{heatOn=!heatOn; if(heatOn) heatLayer.addTo(map); else map.removeLayer(heatLayer);}
+document.getElementById('toggleHeat').onclick=()=>{heatOn=!heatOn;if(heatOn) heatLayer.addTo(map);else map.removeLayer(heatLayer);}
 </script>
 
 </body>
