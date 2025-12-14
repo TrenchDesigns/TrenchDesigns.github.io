@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DayZ Vanilla Chernarus Hub</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet.heat/dist/leaflet-heat.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-html, body {margin:0;padding:0;height:100%;font-family:'Courier New', monospace;background:#111;overflow:hidden;}
+html,body{margin:0;padding:0;height:100%;background:#111;font-family:'Courier New',monospace;overflow:hidden;}
 #map-container{position:relative;width:100%;height:100%;overflow:hidden;}
 #blur-bg{position:absolute;inset:0;background:url('chernarus.png') center/cover no-repeat;filter:blur(25px) brightness(0.35) contrast(1.2);transform:scale(1.1);z-index:0;}
 #map{position:absolute;inset:0;z-index:10;}
@@ -63,24 +63,20 @@ L.imageOverlay('chernarus.png',bounds).addTo(map);
 map.fitBounds(bounds);
 
 // --- COORD HELPERS ---
-function percentToLeaflet(xPercent,yPercent){
-  const x = xPercent / 100 * mapWidth;
-  const y = yPercent / 100 * mapHeight;
-  return [y, x]; // Leaflet [lat,lng] = [y,x]
-}
-function pixelToPercent(lat,lng){return {x:lng/mapWidth*100, y:lat/mapHeight*100};}
+function pixelToLeaflet(x,y){return [y,x];} // exact pixels
+function leafToPercent(lat,lng){return {x:lng/mapWidth*100,y:lat/mapHeight*100};}
 
-// --- MARKERS DATA ---
+// --- MARKERS DATA (Real map coordinates) ---
 const towns=[
-  {x:50,y:85,name:"Berezino",type:"civilian",lore:"Berezino is a coastal town with medium loot and high player traffic."},
-  {x:75,y:67,name:"Chernogorsk",type:"civilian",lore:"Chernogorsk: industrial city, lots of urban loot and zombies."},
-  {x:76,y:61,name:"Stary Sobor",type:"civilian",lore:"Stary Sobor: strategic inland hub, moderate loot."}
+{x:745,y:1230,name:"Berezino",type:"civilian",lore:"Berezino is a coastal town with medium loot and high player traffic."},
+{x:1120,y:970,name:"Chernogorsk",type:"civilian",lore:"Chernogorsk: industrial city, lots of urban loot and zombies."},
+{x:1150,y:885,name:"Stary Sobor",type:"civilian",lore:"Stary Sobor: strategic inland hub, moderate loot."}
 ];
 const militaryBases=[
-  {x:20,y:78,name:"Zelenogorsk Military Base",lore:"Top military loot, highly dangerous.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
-  {x:35,y:80,name:"Kamensk Military Base",lore:"Strong military presence, good loot.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
-  {x:15,y:80,name:"NWAF",lore:"North West Airfield, epic military loot, high risk.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
-  {x:70,y:30,name:"Tisy Military Base",lore:"Tisy: northern airfield, high-tier loot.",sound:"https://www.fesliyanstudios.com/play-mp3/387"}
+{x:300,y:1110,name:"Zelenogorsk Military Base",lore:"Top military loot, highly dangerous.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
+{x:525,y:1145,name:"Kamensk Military Base",lore:"Strong military presence, good loot.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
+{x:225,y:1160,name:"NWAF",lore:"North West Airfield, epic military loot, high risk.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
+{x:1050,y:435,name:"Tisy Military Base",lore:"Tisy: northern airfield, high-tier loot.",sound:"https://www.fesliyanstudios.com/play-mp3/387"}
 ];
 
 // --- AUDIO MANAGER ---
@@ -90,13 +86,13 @@ const audioManager={current:null,play(url){this.stop();this.current=new Audio(ur
 const lootMarkers=[];
 function createMarker(obj){
   const icon=L.divIcon({className:obj.type==="military"?"marker-military":"marker-civilian"});
-  const marker=L.marker(percentToLeaflet(obj.x,obj.y),{icon:icon}).addTo(map);
+  const marker=L.marker(pixelToLeaflet(obj.x,obj.y),{icon:icon}).addTo(map);
   marker.on('mouseover',()=>{document.getElementById('lore').innerText=obj.name+": "+obj.lore;if(obj.sound)audioManager.play(obj.sound);});
   marker.on('mouseout',()=>{document.getElementById('lore').innerText='Hover over a city/military base for info...';audioManager.stop();});
   marker.obj=obj; lootMarkers.push(marker);
 }
-towns.forEach(t=>createMarker({...t,type:"civilian"}));
-militaryBases.forEach(m=>createMarker({...m,type:"military"}));
+towns.forEach(t=>createMarker(t));
+militaryBases.forEach(m=>createMarker(m));
 
 // --- LOOT FILTERS ---
 document.getElementById('showMilitary').onchange=applyFilters;
@@ -112,8 +108,8 @@ function applyFilters(){
 let pins=JSON.parse(localStorage.getItem('dzPins')||'[]');
 let routes=JSON.parse(localStorage.getItem('dzRoutes')||'[]');
 let addingPin=false, addingRoute=false,tempRoute=[];
-function renderPins(){pins.forEach(p=>L.marker(percentToLeaflet(p.x,p.y)).addTo(map).bindPopup(p.name));}
-function renderRoutes(){routes.forEach(r=>L.polyline(r.points.map(pt=>percentToLeaflet(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map));}
+function renderPins(){pins.forEach(p=>L.marker(pixelToLeaflet(p.x,p.y)).addTo(map).bindPopup(p.name));}
+function renderRoutes(){routes.forEach(r=>L.polyline(r.points.map(pt=>pixelToLeaflet(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map));}
 renderPins();renderRoutes();
 
 // --- CONTROLS ---
@@ -123,9 +119,10 @@ document.getElementById('clearAll').onclick=()=>{if(confirm("Clear all pins/rout
 
 // --- MAP EVENTS ---
 map.on('click',e=>{
-  const coords=pixelToPercent(e.latlng.lat,e.latlng.lng);
-  if(addingPin){const n=prompt("Pin name:");if(n){pins.push({...coords,name:n});localStorage.setItem('dzPins',JSON.stringify(pins));renderPins();}}
-  if(addingRoute){tempRoute.push(coords);if(tempRoute.length>1)L.polyline(tempRoute.map(pt=>percentToLeaflet(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map);}
+  const coords=leafToPercent(e.latlng.lat,e.latlng.lng);
+  const px={x:e.latlng.lng,y:e.latlng.lat};
+  if(addingPin){const n=prompt("Pin name:");if(n){pins.push({...px,name:n});localStorage.setItem('dzPins',JSON.stringify(pins));renderPins();}}
+  if(addingRoute){tempRoute.push(px);if(tempRoute.length>1)L.polyline(tempRoute.map(pt=>pixelToLeaflet(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map);}
 });
 map.on('dblclick',e=>{if(addingRoute&&tempRoute.length>1){routes.push({points:tempRoute});localStorage.setItem('dzRoutes',JSON.stringify(routes));renderRoutes(); tempRoute=[]; addingRoute=false; alert("Route saved!");}});
 
@@ -144,9 +141,9 @@ setInterval(()=>{document.getElementById("tip").innerText="Survival Tip: "+tips[
 
 // --- PLAYER TRAFFIC HEATMAP ---
 const trafficPoints=[
-{x:50,y:85,intensity:0.9},{x:76,y:61,intensity:0.7},{x:15,y:80,intensity:1},{x:35,y:70,intensity:0.5},{x:20,y:78,intensity:0.6}
+{x:745,y:1230,intensity:0.9},{x:1150,y:885,intensity:0.7},{x:225,y:1160,intensity:1},{x:525,y:1145,intensity:0.5},{x:300,y:1110,intensity:0.6}
 ];
-const heatLayer=L.heatLayer(trafficPoints.map(p=>percentToLeaflet(p.x,p.y).concat([p.intensity])),{
+const heatLayer=L.heatLayer(trafficPoints.map(p=>pixelToLeaflet(p.x,p.y).concat([p.intensity])),{
 radius:50,blur:40,max:1,gradient:{0.0:'green',0.5:'yellow',0.8:'orange',1.0:'red'}
 });
 let heatOn=false;
