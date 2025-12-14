@@ -3,12 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DayZ Chernarus Hub – Official Xbox</title>
+<title>Chernarus Marker Calibration Tool</title>
 
-<!-- Libraries -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
 html,body{
@@ -16,229 +13,82 @@ html,body{
   padding:0;
   height:100%;
   background:#111;
-  overflow:hidden;
 }
-
-#map-container{
-  position:relative;
+#map{
   width:100%;
   height:100%;
 }
-
-#blur-bg{
-  position:absolute;
-  inset:0;
-  background:url('chernarus.png') center/cover no-repeat;
-  filter:blur(25px) brightness(0.35);
-  transform:scale(1.1);
-  z-index:0;
-}
-
-#map{
-  position:absolute;
-  inset:0;
-  z-index:10;
-}
-
-nav.navbar{
+#hud{
   position:fixed;
-  top:0;
-  width:100%;
-  z-index:9999;
-}
-
-.panel{
-  position:absolute;
+  top:10px;
+  left:10px;
   background:rgba(0,0,0,0.75);
-  color:#fff;
-  padding:0.6rem 0.8rem;
-  border-radius:8px;
-  z-index:20;
-  font-size:0.9rem;
+  color:#0f0;
+  font-family:monospace;
+  padding:8px 10px;
+  border-radius:6px;
+  z-index:1000;
 }
-
-#lore{top:70px;right:10px;max-width:280px;}
-#tip{bottom:10px;left:50%;transform:translateX(-50%);min-width:200px;text-align:center;}
-#loot-panel{top:70px;left:10px;max-width:200px;}
-
-.marker-military{
-  width:16px;
-  height:16px;
-  background:red;
-  border:2px solid #fff;
-  border-radius:50%;
-}
-
-.leaflet-container{background:transparent!important;}
+.leaflet-container{background:#000;}
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-dark bg-dark">
-  <div class="container-fluid">
-    <span class="navbar-brand">
-      <i class="fa-solid fa-skull-crossbones me-2"></i>DayZ Chernarus Hub
-    </span>
-    <div class="d-flex gap-2">
-      <button id="addPin" class="btn btn-danger btn-sm"><i class="fa-solid fa-map-pin"></i></button>
-      <button id="addRoute" class="btn btn-secondary btn-sm"><i class="fa-solid fa-route"></i></button>
-      <button id="toggleRisk" class="btn btn-danger btn-sm"><i class="fa-solid fa-triangle-exclamation"></i></button>
-      <button id="toggleHeat" class="btn btn-warning btn-sm"><i class="fa-solid fa-fire"></i></button>
-      <button id="toggleNight" class="btn btn-secondary btn-sm"><i class="fa-solid fa-moon"></i></button>
-      <button id="clearAll" class="btn btn-secondary btn-sm"><i class="fa-solid fa-trash"></i></button>
-    </div>
-  </div>
-</nav>
-
-<!-- MAP -->
-<div id="map-container">
-  <div id="blur-bg"></div>
-  <div id="map"></div>
+<div id="hud">
+  Click to add marker<br>
+  Drag to adjust<br>
+  Console logs X / Y
 </div>
 
-<!-- PANELS -->
-<div id="lore" class="panel">Hover a military site</div>
-<div id="tip" class="panel">Bearing: 0°</div>
+<div id="map"></div>
 
-<!-- JS -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/leaflet.heat/dist/leaflet-heat.js"></script>
 
 <script>
 // ---------------- MAP SETUP ----------------
-const MAP_W=1500, MAP_H=1450;
-const map=L.map('map',{crs:L.CRS.Simple,minZoom:-2,maxZoom:6,doubleClickZoom:false});
-const bounds=[[0,0],[MAP_H,MAP_W]];
+const MAP_W = 1500;
+const MAP_H = 1450;
+
+const map = L.map('map',{
+  crs: L.CRS.Simple,
+  minZoom: -2,
+  maxZoom: 6
+});
+
+const bounds = [[0,0],[MAP_H,MAP_W]];
 L.imageOverlay('chernarus.png',bounds).addTo(map);
 map.fitBounds(bounds);
 
-const px=(x,y)=>[y,x];
+// ---------------- MARKER HANDLING ----------------
+let markerCount = 0;
 
-// ---------------- MILITARY LOCATIONS ----------------
-const military=[
-  {x:175,y:1000,name:"Zelenogorsk",lore:"High traffic, aggressive PvP"},
-  {x:420,y:440,name:"NWAF",lore:"Extreme danger, constant overwatch"}
-];
+function logMarker(name, latlng){
+  const x = Math.round(latlng.lng);
+  const y = Math.round(latlng.lat);
 
-military.forEach(m=>{
-  const mk=L.marker(px(m.x,m.y),{
-    icon:L.divIcon({className:"marker-military"})
-  }).addTo(map);
-  mk.on("mouseover",()=>lore.innerText=`${m.name}: ${m.lore}`);
-  mk.on("mouseout",()=>lore.innerText="Hover a military site");
+  console.log(
+`MARKER ${name}
+x: ${x}
+y: ${y}
+--------------------`
+  );
+}
+
+map.on('click',e=>{
+  markerCount++;
+
+  const name = prompt(`Marker name #${markerCount}:`);
+  if(!name) return;
+
+  const m = L.marker(e.latlng,{draggable:true}).addTo(map);
+
+  logMarker(name,e.latlng);
+
+  m.on('dragend',ev=>{
+    logMarker(name,ev.target.getLatLng());
+  });
 });
-
-// ---------------- RISK OVERLAY ----------------
-const riskLayer=L.layerGroup([
-  L.circle([440,420],{radius:260,color:'red',fillOpacity:0.12}),
-  L.circle([1000,175],{radius:220,color:'red',fillOpacity:0.12}),
-  L.circle([1200,450],{radius:200,color:'red',fillOpacity:0.12}),
-  L.circle([300,900],{radius:240,color:'red',fillOpacity:0.12})
-]);
-let riskOn=false;
-toggleRisk.onclick=()=>{riskOn=!riskOn; riskOn?riskLayer.addTo(map):map.removeLayer(riskLayer);};
-
-// ---------------- HEATMAP ----------------
-const heat=L.heatLayer([
-  [440,420,1],
-  [1000,175,1]
-],{radius:80,blur:60});
-let heatOn=false;
-toggleHeat.onclick=()=>{heatOn=!heatOn; heatOn?heat.addTo(map):map.removeLayer(heat);};
-
-// ---------------- PINS & ROUTES ----------------
-let pins=JSON.parse(localStorage.getItem("dzPins")||"[]");
-let routes=JSON.parse(localStorage.getItem("dzRoutes")||"[]");
-
-pins.forEach(p=>L.marker(px(p.x,p.y)).addTo(map).bindPopup(p.name));
-routes.forEach(r=>L.polyline(r.points.map(pt=>px(pt.x,pt.y)),{color:"orange",weight:3}).addTo(map));
-
-let addingPin=false,addingRoute=false,tempRoute=[],tempLine=null;
-
-addPin.onclick=()=>{addingPin=true;addingRoute=false;};
-addRoute.onclick=()=>{addingRoute=true;addingPin=false;tempRoute=[];};
-
-map.on("click",e=>{
-  const pt={x:e.latlng.lng,y:e.latlng.lat};
-
-  if(addingPin){
-    const n=prompt("Pin name");
-    if(!n)return;
-    pins.push({...pt,name:n});
-    localStorage.setItem("dzPins",JSON.stringify(pins));
-    L.marker(px(pt.x,pt.y)).addTo(map).bindPopup(n);
-  }
-
-  if(addingRoute){
-    tempRoute.push(pt);
-    if(tempLine)map.removeLayer(tempLine);
-    tempLine=L.polyline(tempRoute.map(p=>px(p.x,p.y)),{color:"orange",weight:3}).addTo(map);
-  }
-});
-
-map.on("dblclick",()=>{
-  if(addingRoute && tempRoute.length>1){
-    routes.push({points:tempRoute});
-    localStorage.setItem("dzRoutes",JSON.stringify(routes));
-    addingRoute=false;
-    tempRoute=[];
-    tempLine=null;
-  }
-});
-
-// ---------------- DISTANCE TOOL ----------------
-let measure=[],measureLine=null;
-map.on("click",e=>{
-  if(measure.length===2){
-    measure=[]; if(measureLine)map.removeLayer(measureLine);
-    return;
-  }
-  measure.push(e.latlng);
-  if(measure.length===2){
-    const d=map.distance(measure[0],measure[1]).toFixed(0);
-    measureLine=L.polyline(measure,{color:'cyan'})
-      .addTo(map).bindPopup(`${d} m`).openPopup();
-  }
-});
-
-// ---------------- DEATH SPOTS ----------------
-let deaths=JSON.parse(localStorage.getItem("dzDeaths")||"[]");
-const drawDeath=d=>L.marker([d.y,d.x],{icon:L.divIcon({html:"☠️"})}).addTo(map);
-deaths.forEach(drawDeath);
-
-map.on("dblclick",e=>{
-  const d={x:e.latlng.lng,y:e.latlng.lat};
-  deaths.push(d);
-  localStorage.setItem("dzDeaths",JSON.stringify(deaths));
-  drawDeath(d);
-});
-
-// ---------------- NIGHT MODE ----------------
-let night=false;
-toggleNight.onclick=()=>{
-  night=!night;
-  document.getElementById("map-container").style.filter=
-    night?"brightness(0.28) contrast(1.5)":"none";
-};
-
-// ---------------- BEARING ----------------
-map.on("mousemove",e=>{
-  const c=map.getCenter();
-  const dx=e.latlng.lng-c.lng;
-  const dy=c.lat-e.latlng.lat;
-  const b=(Math.atan2(dx,dy)*180/Math.PI+360)%360;
-  tip.innerText=`Bearing: ${b.toFixed(0)}°`;
-});
-
-// ---------------- CLEAR ----------------
-clearAll.onclick=()=>{
-  if(confirm("Clear everything?")){
-    localStorage.clear();
-    location.reload();
-  }
-};
 </script>
 
 </body>
