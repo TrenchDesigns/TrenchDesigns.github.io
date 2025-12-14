@@ -11,7 +11,7 @@
 
 <style>
 html,body{margin:0;padding:0;height:100%;background:#111;overflow:hidden;}
-#map-container{position:relative;width:100%;height:100%;filter:none;}
+#map-container{position:relative;width:100%;height:100%;}
 #map{position:absolute;inset:0;z-index:10;}
 .navbar{position:fixed;top:0;width:100%;z-index:99999;}
 .navbar .btn{display:flex;align-items:center;gap:4px;transition:0.15s;}
@@ -19,7 +19,7 @@ html,body{margin:0;padding:0;height:100%;background:#111;overflow:hidden;}
 .btn-active{box-shadow:0 0 15px #ff4500!important;}
 .panel{
   position:absolute;
-  background:rgba(0,0,0,0.6);
+  background:rgba(0,0,0,0.65);
   color:#7CFC00;
   padding:0.7rem 0.9rem;
   border-radius:8px;
@@ -28,8 +28,8 @@ html,body{margin:0;padding:0;height:100%;background:#111;overflow:hidden;}
   font-size:0.9rem;
   text-shadow:0 0 3px #000;
 }
-#lore{top:70px;right:10px;max-width:260px;}
-#tip{bottom:10px;left:50%;transform:translateX(-50%);min-width:220px;text-align:center;}
+#lore{top:70px;right:10px;max-width:280px;}
+#tip{bottom:10px;left:50%;transform:translateX(-50%);min-width:260px;text-align:center;}
 .marker-military{
   width:18px;height:18px;
   background:red;
@@ -47,12 +47,12 @@ html,body{margin:0;padding:0;height:100%;background:#111;overflow:hidden;}
   width:14px;height:14px;
   background:yellow;
   border-radius:50%;
-  box-shadow:0 0 6px #ffff00,0 0 12px rgba(255,255,0,0.4);
+  box-shadow:0 0 8px #ffff00,0 0 16px rgba(255,255,0,0.6);
   animation: lootPulse 2.5s infinite;
 }
 @keyframes lootPulse{
   0%{box-shadow:0 0 6px #ffff00,0 0 12px rgba(255,255,0,0.4);}
-  50%{box-shadow:0 0 12px #ffff00,0 0 24px rgba(255,255,0,0.6);}
+  50%{box-shadow:0 0 14px #ffff00,0 0 28px rgba(255,255,0,0.7);}
   100%{box-shadow:0 0 6px #ffff00,0 0 12px rgba(255,255,0,0.4);}
 }
 .fog-overlay{
@@ -84,7 +84,6 @@ html,body{margin:0;padding:0;height:100%;background:#111;overflow:hidden;}
     <span class="navbar-brand"><i class="fa-solid fa-skull-crossbones me-2"></i>DayZ Chernarus Hub</span>
     <div class="d-flex gap-2">
       <button id="toggleHeat" class="btn btn-warning btn-sm"><i class="fa-solid fa-fire"></i> Thermal</button>
-      <button id="toggleNight" class="btn btn-secondary btn-sm"><i class="fa-solid fa-moon"></i> Night</button>
     </div>
   </div>
 </nav>
@@ -109,35 +108,37 @@ L.imageOverlay('chernarus.png',bounds).addTo(map);
 map.fitBounds(bounds);
 const px=(x,y)=>[y,x];
 
-// --- MILITARY MARKERS ---
+// --- MILITARY MARKERS WITH LORE ---
 const military=[
-  {x:214,y:454,name:"ZELENEGORSK MILITARY"},
-  {x:410,y:148,name:"BALOTA MILITARY"},
-  {x:152,y:260,name:"PAVLOVO MILITARY"},
-  {x:370,y:754,name:"VMC MILITARY"},
-  {x:784,y:1388,name:"KAMENSK MILITARY"},
-  {x:1120,y:1280,name:"NEAF MILITARY"},
-  {x:566,y:734,name:"STARY MILITARY"},
-  {x:264,y:1376,name:"TISY MILITARY"}
+  {x:214,y:454,name:"ZELENEGORSK MILITARY",lore:"Top military loot, high zombie spawn."},
+  {x:410,y:148,name:"BALOTA MILITARY",lore:"NW Airfield area, highly dangerous."},
+  {x:152,y:260,name:"PAVLOVO MILITARY",lore:"Loot spot near Pavlovo, moderate risk."},
+  {x:370,y:754,name:"VMC MILITARY",lore:"Vehicle Military Checkpoint, watch for ambush."},
+  {x:784,y:1388,name:"KAMENSK MILITARY",lore:"Remote area, high-tier loot."},
+  {x:1120,y:1280,name:"NEAF MILITARY",lore:"North East Airfield, epic loot, deadly."},
+  {x:566,y:734,name:"STARY MILITARY",lore:"Central high loot, watch corners."},
+  {x:264,y:1376,name:"TISY MILITARY",lore:"Tisy camp, high loot but far from cities."}
 ];
 military.forEach(m=>{
   const mk=L.marker(px(m.x,m.y),{icon:L.divIcon({className:"marker-military"})}).addTo(map);
-  mk.on("mouseover",()=>lore.innerText=m.name);
+  mk.on("mouseover",()=>lore.innerText=m.name+": "+m.lore);
   mk.on("mouseout",()=>lore.innerText="Hover a military site");
 });
 
 // --- LOOT HOTSPOTS ---
 const lootHotspots=[
-  {x:300,y:500},{x:600,y:800},{x:200,y:1200},{x:1000,y:1000}
+  {x:300,y:500,name:"Police Station"},{"x:600,y:800,name:"Hospital"},{"x:200,y:1200,name:"Factory"},{"x:1000,y:1000,name:"Farms"}
 ];
 lootHotspots.forEach(l=>{
   const mk=L.marker(px(l.x,l.y),{icon:L.divIcon({className:"loot-hotspot"})}).addTo(map);
+  mk.on("mouseover",()=>lore.innerText=l.name+": Loot hotspot!");
+  mk.on("mouseout",()=>lore.innerText="Hover a military site");
 });
 
 // --- HEATMAP ---
-const heat=L.heatLayer(military.map(m=>[m.y,m.x,1]),{
-  radius:60, blur:30, max:1,
-  gradient:{0:'rgba(0,0,0,0)',0.2:'rgba(0,0,255,0.6)',0.4:'rgba(0,255,0,0.7)',0.6:'rgba(255,255,0,0.8)',0.8:'rgba(255,165,0,0.9)',1:'rgba(255,0,0,1)'}
+const heat=L.heatLayer(military.map(m=>[m.y,m.x,1.5]),{
+  radius:50, blur:25, max:1.5,
+  gradient:{0:'rgba(0,0,0,0)',0.2:'rgba(0,0,255,0.6)',0.4:'rgba(0,255,0,0.7)',0.6:'rgba(255,255,0,0.85)',0.8:'rgba(255,165,0,0.9)',1:'rgba(255,0,0,1)'}
 });
 let heatOn=false;
 
@@ -154,7 +155,7 @@ function spawnZombie(){
 }
 setInterval(spawnZombie,1500);
 
-// --- SIMULATED PLAYER DOTS ---
+// --- PLAYER DOT TRAILS (THERMAL GLOW) ---
 const commonRoutes=[
   [{x:214,y:454},{x:410,y:148},{x:152,y:260},{x:566,y:734},{x:1120,y:1280}],
   [{x:410,y:148},{x:152,y:260},{x:214,y:454},{x:264,y:1376}],
@@ -175,7 +176,7 @@ function animatePlayerDots(){
 
     p.dot.setLatLng(end);
 
-    const segment=L.polyline([start,end],{color:p.color,weight:3,opacity:0.5}).addTo(map);
+    const segment=L.polyline([start,end],{color:p.color,weight:4,opacity:0.7, dashArray:"10,6"}).addTo(map);
     p.trail.push(segment);
     if(p.trail.length>10){ map.removeLayer(p.trail.shift()); }
 
@@ -185,12 +186,22 @@ function animatePlayerDots(){
 setInterval(animatePlayerDots,1200);
 
 // --- SURVIVAL TIPS ---
-const tips=["Stay hydrated; water is life.","Avoid high zombie populations at night.","Cities have best loot but highest risk.","Military areas are worth the danger."];
+const tips=[
+  "Stay hydrated; water is life.",
+  "Avoid high zombie populations at night.",
+  "Cities have best loot but highest risk.",
+  "Military areas are worth the danger.",
+  "Check rooftops for rare loot spawns.",
+  "Use bushes and tall grass to hide from snipers.",
+  "Always carry a melee weapon for stealth kills.",
+  "Be careful near airfields, player ambush hotspots.",
+  "Use vehicles sparingly; noise attracts attention.",
+  "Night travel is risky but less populated."
+];
 setInterval(()=>{tip.innerText="Survival Tip: "+tips[Math.floor(Math.random()*tips.length)];},12000);
 
 // --- BUTTONS ---
 toggleHeat.onclick=()=>{heatOn=!heatOn;heatOn?heat.addTo(map):map.removeLayer(heat);toggleHeat.classList.toggle('btn-active');};
-toggleNight.onclick=()=>{document.getElementById("map-container").style.filter=toggleNight.classList.toggle('btn-active')?"brightness(0.15) contrast(1.7) grayscale(0.3)":"none";};
 </script>
 </body>
 </html>
