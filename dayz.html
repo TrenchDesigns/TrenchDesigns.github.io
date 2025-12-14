@@ -8,110 +8,154 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.heat/dist/leaflet-heat.js"></script>
 
 <style>
-  #map { height: 80vh; }
-  .stencil { font-family: 'Courier New', Courier, monospace; }
-  #lore, #tip { position: absolute; background: rgba(0,0,0,0.7); padding: 0.8rem; border-radius: 6px; color:#fff; }
-  #lore { top: 10px; right: 10px; max-width: 280px; }
-  #tip { bottom: 10px; left: 50%; transform: translateX(-50%); }
+html, body { margin:0; padding:0; height:100%; overflow:hidden; font-family:'Courier New', monospace; background:#111; }
+#map-container { position:relative; width:100%; height:100%; overflow:hidden; }
+#blur-bg { position:absolute; inset:0; background:url('chernarus.png') center/cover no-repeat; filter:blur(25px) brightness(0.35) contrast(1.2); transform:scale(1.1); z-index:0; }
+#map { position:absolute; inset:0; z-index:10; }
+#lore, #tip, #loot-panel { position:absolute; background:rgba(0,0,0,0.75); padding:0.8rem; border-radius:8px; color:#fff; z-index:20; max-width:300px; }
+#lore { top:10px; right:10px; }
+#tip { bottom:10px; left:50%; transform:translateX(-50%); }
+#loot-panel { top:10px; left:10px; max-width:220px; max-height:70vh; overflow-y:auto; }
+.leaflet-container { background:transparent !important; }
+.marker-military { background:red; width:14px; height:14px; border-radius:50%; display:block; border:2px solid #fff; }
+.marker-civilian { background:green; width:12px; height:12px; border-radius:50%; display:block; border:1px solid #fff; }
 </style>
 </head>
-<body class="bg-gray-900 text-gray-200">
+<body>
 
-<nav class="bg-gray-800 p-4 flex justify-between items-center">
-  <h1 class="text-2xl font-bold text-red-600 stencil">DayZ Vanilla Chernarus Hub</h1>
+<nav class="bg-gray-800 p-4 flex justify-between items-center z-30 relative">
+  <h1 class="text-2xl font-bold text-red-600">DayZ Vanilla Chernarus Hub</h1>
   <div class="flex space-x-2">
     <button id="addPin" class="bg-red-600 px-3 py-2 rounded">Add Pin</button>
     <button id="addRoute" class="bg-gray-700 px-3 py-2 rounded">Add Route</button>
     <button id="clearAll" class="bg-gray-700 px-3 py-2 rounded">Clear All</button>
     <button id="toggleNight" class="bg-gray-700 px-3 py-2 rounded">Night Mode</button>
     <button id="toggleSound" class="bg-gray-700 px-3 py-2 rounded">Toggle Sound</button>
+    <button id="toggleHeat" class="bg-orange-600 px-3 py-2 rounded">Toggle Player Traffic</button>
   </div>
 </nav>
 
-<div id="map"></div>
-<div id="lore" class="stencil">Hover over a town for lore...</div>
-<div id="tip" class="stencil">Survival Tip: Start on the coast and plan inland!</div>
+<div id="map-container">
+  <div id="blur-bg"></div>
+  <div id="map"></div>
+</div>
+
+<div id="lore">Hover over a city/military base for info...</div>
+<div id="tip">Survival Tip: Coastal towns get looted fast — plan accordingly!</div>
+<div id="loot-panel"><strong>Loot Filter:</strong><br>
+<input type="checkbox" id="showMilitary" checked> Military<br>
+<input type="checkbox" id="showFood" checked> Food<br>
+<input type="checkbox" id="showWeapons" checked> Weapons<br>
+<input type="checkbox" id="showMedical" checked> Medical<br>
+</div>
 
 <script>
-/* --- Initialize Leaflet with improved zoom and bounds --- */
-const map = L.map('map', {
-  crs: L.CRS.Simple,
-  minZoom: -2,
-  maxZoom: 5,
-  maxBounds: [[0,0],[100,100]],
-  maxBoundsViscosity: 1.0
-});
-
+// Leaflet map setup
+const map = L.map('map',{crs:L.CRS.Simple, minZoom:-2, maxZoom:6, maxBounds:[[0,0],[100,100]], maxBoundsViscosity:1.0});
 const bounds = [[0,0],[100,100]];
 L.imageOverlay('chernarus.png', bounds).addTo(map);
 map.fitBounds(bounds);
 
-/* --- Loot Markers --- */
-const lootDefs = [
-  {x:80,y:15,name:'NW Airfield','type':'Military','rarity':'epic'},
-  {x:85,y:50,name:'Berezino Loot','type':'Food','rarity':'common'},
-  {x:40,y:30,name:'Electrozavodsk Loot','type':'Weapons','rarity':'rare'}
-];
-const rarityColor = {common:'green',rare:'yellow',epic:'red'};
-const lootMarkers=[];
-lootDefs.forEach(item=>{
-  const m=L.circleMarker([item.y,item.x],{color:rarityColor[item.rarity],radius:8})
-  .bindPopup(`<strong>${item.name}</strong><br>${item.type} (${item.rarity})`).addTo(map);
-  lootMarkers.push(m);
-});
-
-/* --- Towns & Lore --- */
+// Towns & Military Bases
 const towns = [
-  {x:80,y:15,name:'NW Airfield',lore:'Top military loot but extreme danger'},
-  {x:85,y:50,name:'Berezino',lore:'Coastal start town — early game loot'},
-  {x:40,y:30,name:'Electrozavodsk',lore:'City center — moderate risk'}
+  {x:85,y:50,name:"Berezino",type:"civilian",lore:"Berezino is a coastal town, medium loot, high player traffic."},
+  {x:67,y:75,name:"Chernogorsk",type:"civilian",lore:"Chernogorsk: industrial city with lots of urban loot and zombies."},
+  {x:61,y:76,name:"Stary Sobor",type:"civilian",lore:"Stary Sobor: strategic inland hub, moderate loot."}
 ];
-towns.forEach(t=>{
-  const m=L.marker([t.y,t.x]).addTo(map);
-  m.on('mouseover',()=>document.getElementById('lore').innerText=`${t.name}: ${t.lore}`);
-  m.on('mouseout',()=>document.getElementById('lore').innerText='Hover over a town for lore...');
-});
+const militaryBases = [
+  {x:78,y:20,name:"Zelenogorsk Military Base",lore:"Top military loot but highly dangerous.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
+  {x:80,y:35,name:"Kamensk Military Base",lore:"Strong military presence with good loot.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
+  {x:80,y:15,name:"NWAF",lore:"North West Airfield, epic military loot, high risk.",sound:"https://www.fesliyanstudios.com/play-mp3/387"},
+  {x:30,y:70,name:"Tisy Military Base",lore:"Tisy: northern airfield with high-tier loot.",sound:"https://www.fesliyanstudios.com/play-mp3/387"}
+];
+const lootMarkers=[];
 
-/* --- Persistent Pins & Routes --- */
-let pins = JSON.parse(localStorage.getItem('dzPins')||'[]');
-let routes = JSON.parse(localStorage.getItem('dzRoutes')||'[]');
-let addingPin=false, addingRoute=false, routeTemp=[];
+// Marker creation
+function createMarker(obj){
+  const icon = L.divIcon({className: obj.type==="military"?"marker-military":"marker-civilian"});
+  const marker = L.marker([obj.y,obj.x],{icon:icon}).addTo(map);
+  marker.on('mouseover',()=>{document.getElementById('lore').innerText=obj.name+": "+obj.lore; if(obj.sound){audioManager.play(obj.sound)}})
+  marker.on('mouseout',()=>{document.getElementById('lore').innerText='Hover over a city/military base for info...'; audioManager.stop();});
+  marker.obj=obj;
+  return marker;
+}
 
+// Audio Manager
+const audioManager = {
+  current:null,
+  play(url){this.stop(); this.current=new Audio(url); this.current.volume=0.3; this.current.play();},
+  stop(){if(this.current){this.current.pause(); this.current=null;}}
+};
+
+// Render markers
+towns.forEach(t=>{lootMarkers.push(createMarker({...t,type:"civilian"}));});
+militaryBases.forEach(m=>{lootMarkers.push(createMarker({...m,type:"military"}));});
+
+// Loot filters
+document.getElementById('showMilitary').onchange=applyFilters;
+document.getElementById('showFood').onchange=applyFilters;
+document.getElementById('showWeapons').onchange=applyFilters;
+document.getElementById('showMedical').onchange=applyFilters;
+function applyFilters(){
+  const showM=document.getElementById('showMilitary').checked;
+  lootMarkers.forEach(m=>{
+    if(m.obj.type==="military") m[showM?"addTo":"remove"]?.(map);
+  });
+}
+
+// Pins & Routes
+let pins=JSON.parse(localStorage.getItem('dzPins')||'[]');
+let routes=JSON.parse(localStorage.getItem('dzRoutes')||'[]');
+let addingPin=false, addingRoute=false, tempRoute=[];
 function renderPins(){pins.forEach(p=>L.marker([p.y,p.x]).addTo(map).bindPopup(p.name));}
-function renderRoutes(){routes.forEach(rt=>L.polyline(rt.points.map(pt=>[pt.y,pt.x]),{color:'red'}).addTo(map));}
+function renderRoutes(){routes.forEach(r=>L.polyline(r.points.map(pt=>[pt.y,pt.x]),{color:"orange"}).addTo(map));}
 renderPins(); renderRoutes();
 
-/* --- Survival Tips --- */
-const tips=[
-  "Stay hydrated and eat regularly.",
-  "Avoid high zombie density areas at night.",
-  "Check buildings for loot before camping outside.",
-  "Military zones are risky but rewarding.",
-  "Travel in groups for safety."
-];
-setInterval(()=>document.getElementById('tip').innerText="Survival Tip: "+tips[Math.floor(Math.random()*tips.length)],10000);
+// Controls
+document.getElementById('addPin').onclick=()=>{addingPin=!addingPin; addingRoute=false; alert("Click to add pin");};
+document.getElementById('addRoute').onclick=()=>{addingRoute=!addingRoute; addingPin=false; tempRoute=[]; alert("Click to add route points, double-click to finish");};
+document.getElementById('clearAll').onclick=()=>{if(confirm("Clear all pins/routes?")){pins=[];routes=[];localStorage.clear();location.reload();}};
 
-/* --- Map Click Handlers --- */
-document.getElementById('addPin').onclick=()=>{addingPin=!addingPin;addingRoute=false; alert('Click map to add pin');};
-document.getElementById('addRoute').onclick=()=>{addingRoute=!addingRoute;addingPin=false; routeTemp=[]; alert('Click to add route, double-click to finish');};
-document.getElementById('clearAll').onclick=()=>{if(confirm('Clear all pins/routes?')){pins=[];routes=[];localStorage.clear(); location.reload();}};
-
+// Map click events
 map.on('click',e=>{
-  if(addingPin){const n=prompt('Pin name:');if(n){pins.push({x:e.latlng.lng,y:e.latlng.lat,name:n});localStorage.setItem('dzPins',JSON.stringify(pins)); renderPins();}}
-  if(addingRoute){routeTemp.push({x:e.latlng.lng,y:e.latlng.lat});if(routeTemp.length>1)L.polyline(routeTemp.map(pt=>[pt.y,pt.x]),{color:'orange'}).addTo(map);}
+  if(addingPin){const n=prompt("Pin name:");if(n){pins.push({x:e.latlng.lng,y:e.latlng.lat,name:n});localStorage.setItem('dzPins',JSON.stringify(pins)); renderPins();}}
+  if(addingRoute){tempRoute.push({x:e.latlng.lng,y:e.latlng.lat}); if(tempRoute.length>1)L.polyline(tempRoute.map(pt=>[pt.y,pt.x]),{color:"orange"}).addTo(map);}
 });
-map.on('dblclick',e=>{if(addingRoute && routeTemp.length>1){routes.push({points:routeTemp});localStorage.setItem('dzRoutes',JSON.stringify(routes)); renderRoutes(); routeTemp=[]; addingRoute=false; alert('Route saved!');}});
+map.on('dblclick',e=>{if(addingRoute && tempRoute.length>1){routes.push({points:tempRoute});localStorage.setItem('dzRoutes',JSON.stringify(routes));renderRoutes(); tempRoute=[]; addingRoute=false; alert("Route saved!");}});
 
-/* --- Night Mode --- */
+// Night mode
 let night=false;
-document.getElementById('toggleNight').onclick=()=>{night=!night; document.getElementById('map').style.filter=night?'brightness(0.4) contrast(1.5)':'brightness(1)';};
+document.getElementById('toggleNight').onclick=()=>{
+  night=!night;
+  document.getElementById('map-container').style.filter=night?"brightness(0.3) contrast(1.6)":"none";
+};
 
-/* --- Zombie Audio --- */
+// Zombie & ambient sounds
 let soundOn=true;
-const zombie=new Audio('https://www.fesliyanstudios.com/play-mp3/387'); zombie.loop=true; zombie.volume=0.3; zombie.play();
-document.getElementById('toggleSound').onclick=()=>{soundOn=!soundOn; soundOn?zombie.play():zombie.pause();};
+const zombieAudio=new Audio("https://www.fesliyanstudios.com/play-mp3/387"); zombieAudio.loop=true; zombieAudio.volume=0.3; zombieAudio.play();
+document.getElementById('toggleSound').onclick=()=>{soundOn=!soundOn; soundOn?zombieAudio.play():zombieAudio.pause();}
+
+// Survival tips
+const tips=["Stay hydrated; water is life.","Avoid high zombie populations at night.","Cities have the best loot but highest risk.","Military areas like airfields are worth the danger."];
+setInterval(()=>{document.getElementById("tip").innerText="Survival Tip: "+tips[Math.floor(Math.random()*tips.length)];},12000);
+
+// Player traffic heatmap
+const trafficPoints = [
+  [50, 85, 0.9], // Berezino
+  [76, 61, 0.7], // Stary Sobor
+  [15, 80, 1],   // NWAF
+  [35, 30, 0.3], // Kamensk
+  [78, 20, 0.6]  // Zelenogorsk Military
+];
+const heatLayer = L.heatLayer(trafficPoints,{radius:25,blur:15,maxZoom:6});
+let heatOn=false;
+document.getElementById('toggleHeat').onclick=()=>{
+  heatOn=!heatOn;
+  if(heatOn) heatLayer.addTo(map); else map.removeLayer(heatLayer);
+};
 </script>
 
 </body>
