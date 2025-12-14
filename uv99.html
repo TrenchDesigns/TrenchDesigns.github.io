@@ -7,94 +7,145 @@
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --primary: #0d6efd;
       --primary-light: #66b2ff;
       --light-bg: #f8f9fa;
-      --card-bg: #ffffff;
-      --accent: #0d6efd;
+      --card-bg: rgba(255,255,255,0.85);
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: 'Inter', sans-serif;
       scroll-behavior: smooth;
       background: var(--light-bg);
       color: #333;
     }
 
     /* Navbar */
-    .navbar {
-      background-color: #fff;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .navbar-brand { color: var(--primary); font-weight: 700; }
-    .nav-link { color: #333 !important; font-weight: 500; }
-    .nav-link:hover { color: var(--primary) !important; }
+    .navbar { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08);}
+    .navbar-brand { color: var(--primary); font-weight: 700; font-size:1.5rem;}
+    .nav-link { color: #333 !important; font-weight: 500; transition: color .3s;}
+    .nav-link:hover { color: var(--primary) !important;}
 
     /* Hero */
     .hero {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      position: relative;
+      height: 60vh;
+      min-height: 400px;
       color: #fff;
       text-align: center;
-      padding: 8rem 1rem 6rem;
-      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0 1rem;
     }
-    .hero h1 { font-weight: 700; }
-    .hero p { font-size: 1.2rem; margin-top: 1rem; }
+    .hero h1 { font-weight: 700; font-size: 2.5rem; margin-bottom: 1rem; }
+    .hero p { font-size: 1.2rem; margin-bottom: 1.5rem; }
     .hero .btn-primary {
-      background: #fff;
-      color: var(--primary);
-      font-weight: 600;
-      border-radius: 50px;
-      padding: 0.75rem 2rem;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .hero .btn-primary:hover { transform: translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,0.15); }
-
-    /* Section Titles */
-    .section-title { font-weight: 700; margin-bottom: 2rem; text-align: center; }
-    .section-title::after { content:''; width:60px; height:4px; background: var(--primary); display:block; margin:0.5rem auto 0; border-radius:2px; }
-
-    /* Cards / Services */
-    .service-card {
-      background: var(--card-bg);
-      border-radius: 1rem;
-      padding: 2rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      text-align: center;
+      background: #fff; color: var(--primary); font-weight:600;
+      border-radius:50px; padding:0.7rem 2rem; font-size:1rem;
       transition: transform .3s, box-shadow .3s;
     }
-    .service-card:hover { transform: translateY(-6px); box-shadow:0 18px 40px rgba(0,0,0,0.14); }
-    .service-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; }
+    .hero .btn-primary:hover { transform: translateY(-4px); box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset:0;
+      background: linear-gradient(135deg, #0d6efd, #66b2ff);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      z-index: -2;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position:0% 50%;}
+      50% { background-position:100% 50%;}
+      100% { background-position:0% 50%;}
+    }
+
+    .particle {
+      position: absolute;
+      border-radius:50%;
+      background: rgba(255,255,255,0.4);
+      pointer-events:none;
+      animation: floatParticle linear infinite;
+    }
+    @keyframes floatParticle {
+      0% { transform: translateY(0) scale(1); opacity:0.5;}
+      50% { transform: translateY(-50px) scale(1.2); opacity:1;}
+      100% { transform: translateY(0) scale(1); opacity:0.5;}
+    }
+
+    /* Section Titles */
+    .section-title { font-weight:700; text-align:center; margin-bottom:2rem; font-size:2rem; position:relative;}
+    .section-title::after { content:''; width:60px; height:4px; background: var(--primary); display:block; margin:0.5rem auto 0; border-radius:2px;}
+
+    /* Services Cards */
+    .service-card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      border-radius:1.5rem;
+      padding:2rem;
+      text-align:center;
+      transition: transform .3s, box-shadow .3s, background .3s;
+      box-shadow:0 10px 25px rgba(0,0,0,0.08);
+      opacity:0;
+      transform: translateY(20px);
+    }
+    .service-card.show { opacity:1; transform: translateY(0); }
+    .service-card:hover {
+      transform: translateY(-10px);
+      box-shadow:0 25px 50px rgba(0,0,0,0.15);
+      background: rgba(255,255,255,0.95);
+    }
+    .service-card i { font-size:2.5rem; color: var(--primary); margin-bottom:1rem;}
 
     /* About */
-    #about p { max-width: 700px; margin: auto; font-size: 1.1rem; line-height: 1.6; }
+    #about { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:2rem; margin-bottom:4rem; }
+    #about .about-text { max-width:600px; font-size:1.1rem; line-height:1.6; opacity:0; transform: translateY(20px); transition: all .8s ease;}
+    #about .about-text.show { opacity:1; transform: translateY(0);}
+    #about .about-image { max-width:500px; border-radius:1rem; box-shadow:0 15px 35px rgba(0,0,0,0.1); opacity:0; transform: translateY(20px); transition: all .8s ease;}
+    #about .about-image.show { opacity:1; transform: translateY(0); }
 
     /* Contact */
-    .contact-card { background: var(--card-bg); border-radius: 1rem; padding: 2rem; box-shadow:0 10px 25px rgba(0,0,0,0.08); }
-    .btn-submit { background: var(--primary); color:#fff; border:none; border-radius: 50px; padding:0.75rem 2rem; transition: transform .2s; }
-    .btn-submit:hover { transform: translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.15); }
+    .contact-card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      padding:2rem;
+      border-radius:1.5rem;
+      box-shadow:0 10px 25px rgba(0,0,0,0.08);
+      opacity:0;
+      transform: translateY(20px);
+      transition: all .8s ease;
+    }
+    .contact-card.show { opacity:1; transform: translateY(0);}
+    .btn-submit {
+      background: var(--primary); color:#fff; border:none;
+      border-radius:50px; padding:0.8rem 2.2rem; transition: transform .3s;
+    }
+    .btn-submit:hover { transform: translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,0.2); }
 
     /* Footer */
     footer { background: var(--primary); color:#fff; padding:3rem 1rem; text-align:center; }
-    footer a { color:#fff; font-size:1.5rem; margin:0 0.5rem; transition: transform .2s; }
+    footer a { color:#fff; font-size:1.5rem; margin:0 0.5rem; transition: transform .2s;}
     footer a:hover { transform: scale(1.2); }
 
-    /* Smooth scroll offset for fixed navbar */
-    :target::before {
-      content:"";
-      display:block;
-      height:70px;
-      margin-top:-70px;
-      visibility:hidden;
-    }
+    /* Smooth scroll offset */
+    :target::before { content:""; display:block; height:70px; margin-top:-70px; visibility:hidden; }
 
-    @media(max-width:768px){ .hero { padding:6rem 1rem 4rem;} }
+    @media(max-width:768px){
+      .hero h1 { font-size:2.2rem;}
+      #about { flex-direction:column;}
+      #about .about-image { max-width:90%;}
+    }
   </style>
 </head>
 <body>
@@ -116,16 +167,16 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
+  <!-- Hero -->
   <section class="hero" id="top">
     <div class="container">
       <h1>UV99 Car Window Tinting</h1>
-      <p>Premium window tinting for cars across the Gold Coast & Brisbane region.</p>
-      <a href="#contact" class="btn btn-primary mt-4"><i class="fas fa-envelope me-2"></i>Book Now</a>
+      <p>Protect. Cool. Privacy. Serving Gold Coast & Brisbane.</p>
+      <a href="#contact" class="btn btn-primary"><i class="fas fa-envelope me-2"></i>Book Now</a>
     </div>
   </section>
 
-  <!-- Services Section -->
+  <!-- Services -->
   <section class="container my-5" id="services">
     <h2 class="section-title">Our Services</h2>
     <div class="row g-4">
@@ -133,33 +184,36 @@
         <div class="service-card">
           <i class="fas fa-car-side"></i>
           <h5 class="mt-3">Standard Tint</h5>
-          <p>High-quality tint that reduces heat and glare while protecting your interior.</p>
+          <p>High-quality tint reducing heat and glare while protecting your interior.</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="service-card">
           <i class="fas fa-sun"></i>
           <h5 class="mt-3">Premium UV Protection</h5>
-          <p>Advanced UV-blocking films that protect your skin and car interior from sun damage.</p>
+          <p>Advanced UV-blocking films protecting skin and interior from sun damage.</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="service-card">
           <i class="fas fa-shield-alt"></i>
           <h5 class="mt-3">Privacy & Security</h5>
-          <p>Enhanced privacy for passengers and protection for valuables inside your vehicle.</p>
+          <p>Enhanced passenger privacy and protection for valuables inside your vehicle.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- About Section -->
+  <!-- About -->
   <section class="container my-5" id="about">
-    <h2 class="section-title">About UV99</h2>
-    <p>UV99 is owned by Beau, providing professional car window tinting services across the Gold Coast and Brisbane city surrounds. Our focus is on quality, reliability, and customer satisfaction. Whether you need heat reduction, UV protection, or privacy, UV99 has you covered.</p>
+    <div class="about-text">
+      <h2 class="section-title">About UV99</h2>
+      <p>UV99 is owned by Beau, providing professional car window tinting across the Gold Coast and Brisbane. We prioritize quality, reliability, and customer satisfaction. Protect your car and yourself with our premium tinting solutions.</p>
+    </div>
+    <img src="https://images.unsplash.com/photo-1605902711622-cfb43c443f6d?auto=format&fit=crop&w=800&q=80" alt="Car Tinting" class="about-image">
   </section>
 
-  <!-- Contact Section -->
+  <!-- Contact -->
   <section class="container my-5" id="contact">
     <h2 class="section-title">Contact Us</h2>
     <div class="row justify-content-center">
@@ -194,7 +248,7 @@
     </div>
   </footer>
 
-  <!-- Bootstrap JS -->
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Close mobile navbar on link click
@@ -206,6 +260,32 @@
         }
       });
     });
+
+    // Hero particles
+    const hero = document.querySelector('.hero');
+    const particleCount = 30;
+    for(let i=0;i<particleCount;i++){
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      const size = Math.random()*6+4;
+      particle.style.width = particle.style.height = `${size}px`;
+      particle.style.left = `${Math.random()*100}%`;
+      particle.style.top = `${Math.random()*100}%`;
+      particle.style.animationDuration = `${Math.random()*15+5}s`;
+      particle.style.animationDelay = `${Math.random()*5}s`;
+      hero.appendChild(particle);
+    }
+
+    // Fade-in on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('show');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.service-card, .about-text, .about-image, .contact-card').forEach(el => observer.observe(el));
   </script>
 
 </body>
