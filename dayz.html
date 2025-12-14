@@ -35,14 +35,20 @@
 <div id="tip" class="stencil">Survival Tip: Start on the coast and plan inland!</div>
 
 <script>
-/* --- Initialize Leaflet with static Chernarus overlay --- */
-const map = L.map('map', {crs:L.CRS.Simple, minZoom:-1, maxZoom:2});
+/* --- Initialize Leaflet with improved zoom and bounds --- */
+const map = L.map('map', {
+  crs: L.CRS.Simple,
+  minZoom: -2,
+  maxZoom: 5,
+  maxBounds: [[0,0],[100,100]],
+  maxBoundsViscosity: 1.0
+});
 
 const bounds = [[0,0],[100,100]];
 L.imageOverlay('chernarus.png', bounds).addTo(map);
 map.fitBounds(bounds);
 
-/* --- Loot + Towns --- */
+/* --- Loot Markers --- */
 const lootDefs = [
   {x:80,y:15,name:'NW Airfield','type':'Military','rarity':'epic'},
   {x:85,y:50,name:'Berezino Loot','type':'Food','rarity':'common'},
@@ -56,6 +62,7 @@ lootDefs.forEach(item=>{
   lootMarkers.push(m);
 });
 
+/* --- Towns & Lore --- */
 const towns = [
   {x:80,y:15,name:'NW Airfield',lore:'Top military loot but extreme danger'},
   {x:85,y:50,name:'Berezino',lore:'Coastal start town — early game loot'},
