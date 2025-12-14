@@ -74,6 +74,8 @@
       justify-content: center;
       color: var(--primary);
       font-weight: 600;
+      text-align: center;
+      padding: 0 0.5rem;
     }
 
     .badge-custom {
@@ -207,29 +209,41 @@
   <!-- Portfolio + Animations -->
   <script>
     const grid = document.getElementById('portfolioGrid');
-    const categories = ['landing', 'business', 'experiment'];
 
-    for (let i = 2; i <= 31; i++) {
-      const category = categories[i % categories.length];
+    const portfolioItems = [
+      { url: "https://trenchdesigns.github.io/index4.html", title: "Consultation Demo", category: "business" },
+      { url: "https://trenchdesigns.github.io/index10.html", title: "Cloud Host Demo", category: "business" },
+      { url: "https://trenchdesigns.github.io/index13.html", title: "Another Cloud Demo", category: "business" },
+      { url: "https://trenchdesigns.github.io/index14.html", title: "ANOTHER CLOUD DEMO", category: "business" },
+      { url: "https://trenchdesigns.github.io/index18.html", title: "Bootstrap Store DEMO", category: "landing" },
+      { url: "https://trenchdesigns.github.io/index22.html", title: "Digital Solutions Demo", category: "landing" },
+      { url: "https://trenchdesigns.github.io/index23.html", title: "Game Server Host Demo", category: "experiment" },
+      { url: "https://trenchdesigns.github.io/index24.html", title: "Game Server Host Demo", category: "experiment" },
+      { url: "https://trenchdesigns.github.io/index27.html", title: "Game Server Host Demo", category: "experiment" },
+      { url: "https://trenchdesigns.github.io/index28.html", title: "Game Server Host Demo", category: "experiment" },
+      { url: "https://trenchdesigns.github.io/index30.html", title: "Game Server Host Demo", category: "experiment" },
+      { url: "https://trenchdesigns.github.io/uv99.html", title: "Car Window Tinting Business Demo", category: "business" }
+    ];
 
+    portfolioItems.forEach(item => {
       const col = document.createElement('div');
       col.className = 'col-12 col-md-6 col-lg-4 portfolio-item';
-      col.dataset.category = category;
+      col.dataset.category = item.category;
 
       col.innerHTML = `
         <div class="card portfolio-card h-100">
-          <div class="thumb">Design ${i}</div>
+          <div class="thumb">${item.title}</div>
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Website Design ${i}</h5>
-            <span class="badge badge-custom mb-2 text-capitalize">${category}</span>
+            <h5 class="card-title">${item.title}</h5>
+            <span class="badge badge-custom mb-2 text-capitalize">${item.category}</span>
             <p class="card-text text-muted">Responsive website concept built with modern web standards.</p>
-            <a href="https://trenchdesigns.github.io/index${i}.html" target="_blank" class="btn btn-primary mt-auto">Visit Design</a>
+            <a href="${item.url}" target="_blank" class="btn btn-primary mt-auto">Visit Design</a>
           </div>
         </div>
       `;
 
       grid.appendChild(col);
-    }
+    });
 
     // Filter logic
     document.querySelectorAll('[data-filter]').forEach(btn => {
