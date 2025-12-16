@@ -3,51 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DayZ Tactical Companion – Live Map</title>
+<title>DayZ Tactical Companion – Tactical Map</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
 html, body {
-  margin:0; height:100%; overflow:hidden; font-family:system-ui, monospace; color:#fff;
+  margin:0; height:100%; overflow:hidden;
+  font-family:system-ui, monospace; background:#080808; color:#eee;
 }
-body::before {
-  content:"";
-  position:fixed; inset:0;
-  background: url('https://images.unsplash.com/photo-1615814091181-f7ab5f9f4e0e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8ZGF5enh8fHx8fHwxNjk3NjU3NDEx&ixlib=rb-4.0.3&q=80&w=1920') center/cover no-repeat;
-  filter: blur(8px) brightness(0.35);
-  z-index:-1;
+#map { position:absolute; inset:0; background:#111; }
+.navbar { z-index:1000; background:#111 !important; border-bottom:1px solid #333; }
+.navbar .navbar-brand { color:#ff5555; font-weight:bold; }
+.panel {
+  position:absolute; background:rgba(10,10,10,0.9);
+  color:#ddd; border:1px solid #333; padding:10px 14px;
+  border-radius:6px; font-size:14px; z-index:500; text-shadow:0 0 4px #000;
 }
-#map { position:absolute; inset:0; background: transparent; }
-.navbar { z-index:1000; background:rgba(28,28,28,0.85) !important; border-bottom:1px solid #333;}
-.panel { position:absolute; background:rgba(30,30,30,0.95); color:#fff; border:1px solid #555;
-  padding:10px 14px; border-radius:6px; font-size:14px; z-index:500; text-shadow:0 0 4px #000; }
 #info {top:70px; right:12px; max-width:280px;}
 #tip {bottom:10px; left:50%; transform:translateX(-50%); min-width:260px; text-align:center;}
-#legend {bottom:10px; right:10px; background:rgba(20,20,20,0.85); padding:8px 12px; border-radius:6px; font-size:13px; z-index:500;}
+#legend {bottom:10px; left:10px; background:rgba(20,20,20,0.9); padding:8px 12px; border-radius:6px; font-size:13px;}
+.leaflet-control-layers-expanded {
+  background:rgba(20,20,20,0.95); color:#eee; border:1px solid #444;
+}
+.leaflet-control-layers-selector { accent-color:#ff4444; }
 </style>
 </head>
 <body>
 
 <nav class="navbar navbar-dark px-3">
-  <span class="navbar-brand small">DayZ Tactical Companion</span>
+  <span class="navbar-brand">🧭 DayZ Tactical Companion</span>
   <div class="ms-auto d-flex gap-2">
-    <button id="toggleThermal" class="btn btn-sm btn-outline-danger">Thermal</button>
-    <button id="toggleSpawnTool" class="btn btn-sm btn-outline-warning">Marker Tool</button>
+    <button id="toggleThermal" class="btn btn-sm btn-outline-danger">Thermal Vision</button>
+    <button id="toggleSpawnTool" class="btn btn-sm btn-outline-warning">Place Marker</button>
   </div>
 </nav>
 
 <div id="map"></div>
-<div id="info" class="panel">Hover a military location</div>
-<div id="tip" class="panel">Survival Tip: Always check rooftops for loot.</div>
+
+<div id="info" class="panel">Hover a military location for details</div>
+<div id="tip" class="panel">Survival Tip: Stay sharp!</div>
 <div id="legend" class="panel">
-  <strong>Legend:</strong><br>
-  🛡️ Military<br>
-  <span style="color:#ffcc00;">&#9679;</span> Solo Player<br>
-  <span style="color:#ff5555;">&#9679;</span> Group<br>
-  <span style="color:#ff8800;">&#9679;</span> Custom Marker<br>
-  Heat = Player activity density
+  <strong>Legend</strong><br>
+  🛡️ Military Zones<br>
+  🔶 Explorer Players<br>
+  🔵 Cautious Survivors<br>
+  🔴 Aggressive Players<br>
+  🟠 Custom Marker<br>
+  🔥 Heat = Player activity
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -57,28 +61,77 @@ body::before {
 // --- MAP SETUP ---
 const MAP_W=1500, MAP_H=1450;
 const map=L.map('map',{crs:L.CRS.Simple,minZoom:-2,maxZoom:6});
-const bounds=[[0,0],[MAP_H,MAP_W]];
-L.imageOverlay('chernarus.png',bounds).addTo(map);
-map.fitBounds(bounds);
+L.imageOverlay('chernarus.png',[[0,0],[MAP_H,MAP_W]]).addTo(map);
+map.fitBounds([[0,0],[MAP_H,MAP_W]]);
 const px=(x,y)=>[y,x];
 
-// --- SVG icon for military markers ---
-const svgShield=`<svg width="28" height="28" viewBox="0 0 512 512">
-  <path d="M256 0l256 96v192c0 213.3-146.7 320-256 320S0 501.3 0 288V96L256 0z"
-    fill="#ff4444" stroke="#fff" stroke-width="24"/>
-  <circle cx="256" cy="192" r="64" fill="#fff"/>
-</svg>`;
+// --- LAYERS ---
+const militaryLayer=L.layerGroup().addTo(map);
+const playerLayer   =L.layerGroup().addTo(map);
+const heatLayer     =L.heatLayer([], {radius:80, blur:45, max:3});
+const customMarkerLayer=L.layerGroup().addTo(map);
 
-function createMilitaryIcon(){
-  return L.divIcon({
-    html: svgShield,
-    className: "",
-    iconSize:[28,28],
-    iconAnchor:[14,14]
+L.control.layers(null,{
+  "Military Zones": militaryLayer,
+  "Players": playerLayer,
+  "Heatmap": heatLayer,
+  "Custom Markers": customMarkerLayer
+},{collapsed:false,position:'topright'}).addTo(map);
+
+// --- ICON HELPERS ---
+function svgToDataUrl(svg){return "data:image/svg+xml;base64,"+btoa(svg);}
+
+// Military icon (larger)
+const militaryIconBaseSize=32;
+const militarySvg=`<svg xmlns="http://www.w3.org/2000/svg" width="${militaryIconBaseSize}" height="${militaryIconBaseSize}">
+  <path d="M16 0l16 6.4v12.8c0 16-11.2 24-16 24s-16-8-16-24V6.4L16 0z"
+    fill="#ff4444" stroke="#000" stroke-width="2"/>
+  <circle cx="16" cy="10" r="6" fill="#fff"/>
+</svg>`;
+function createMilitaryIcon(size){
+  return L.icon({
+    iconUrl: svgToDataUrl(militarySvg),
+    iconSize:[size,size],
+    iconAnchor:[size/2,size],
+    popupAnchor:[0,-size*0.7]
   });
 }
 
-// --- MILITARY MARKERS ---
+// Player icons per archetype
+const playerIcons={
+  EXPLORER: L.icon({
+    iconUrl: svgToDataUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+      <circle cx="11" cy="11" r="10" fill="#ffcc00" stroke="#000" stroke-width="2"/>
+    </svg>`),
+    iconSize:[22,22], iconAnchor:[11,22], popupAnchor:[0,-18]
+  }),
+  CAUTIOUS: L.icon({
+    iconUrl: svgToDataUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+      <circle cx="9" cy="9" r="8" fill="#3399ff" stroke="#000" stroke-width="2"/>
+    </svg>`),
+    iconSize:[18,18], iconAnchor:[9,18], popupAnchor:[0,-14]
+  }),
+  AGGRESSIVE: L.icon({
+    iconUrl: svgToDataUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26">
+      <circle cx="13" cy="13" r="12" fill="#ff4444" stroke="#000" stroke-width="2"/>
+    </svg>`),
+    iconSize:[26,26], iconAnchor:[13,26], popupAnchor:[0,-18]
+  })
+};
+
+function chooseArchetype(){
+  const r=Math.random();
+  return r<0.4?"EXPLORER":(r<0.75?"CAUTIOUS":"AGGRESSIVE");
+}
+
+const customMarkerIcon=L.icon({
+  iconUrl: svgToDataUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+    <path fill="#ff8800" d="M14 2C9 2 5 6 5 10c0 6 9 15 9 15s9-9 9-15c0-4-4-8-9-8z"/>
+  </svg>`),
+  iconSize:[28,28], iconAnchor:[14,28], popupAnchor:[0,-20]
+});
+
+// --- MILITARY DATA ---
 const MILITARY=[
   {x:214,y:454,name:"Zelenogorsk"},
   {x:410,y:148,name:"Balota"},
@@ -93,109 +146,99 @@ const MILITARY=[
 const risk={}, markers={};
 MILITARY.forEach(m=>{
   risk[m.name]=0;
-  const mk=L.marker(px(m.x,m.y),{icon:createMilitaryIcon()}).addTo(map);
+  const mk=L.marker(px(m.x,m.y),{icon:createMilitaryIcon(militaryIconBaseSize)}).addTo(militaryLayer);
   markers[m.name]=mk;
-  mk.on("mouseover",()=>{info.innerHTML=`<strong>${m.name}</strong><br>Activity: ${risk[m.name].toFixed(1)}`;});
-  mk.on("mouseout",()=>{info.innerText="Hover a military location";});
+  mk.on("mouseover",()=>info.innerHTML=`<strong>${m.name}</strong><br>Risk: ${risk[m.name].toFixed(1)}`);
+  mk.on("mouseout",()=>info.innerText="Hover a military location for details");
 });
 
-// --- HEATMAP ---
-const heat=L.heatLayer([], {
-  radius:80, blur:45, max:3,
-  gradient:{0:'transparent',0.4:'#0033ff',0.6:'#00ff66',0.75:'#ffff00',0.9:'#ff6600',1:'#ff0000'}
-});
+// --- AGENT LOGIC & MOVEMENT ---
+const players=[];
+let playerCount=0;
 
-// --- SPAWN & WAYPOINTS ---
-const SPAWN_ZONES=[
-  {x:850,y:250,weight:0.18},{x:600,y:400,weight:0.14},{x:1120,y:1280,weight:0.08},
-  {x:214,y:454,weight:0.08},{x:410,y:148,weight:0.07},{x:784,y:1388,weight:0.06},
-  {x:264,y:1376,weight:0.06},{x:372,y:1004,weight:0.15},{x:342,y:762,weight:0.10},
-  {x:400,y:700,weight:0.05},{x:750,y:750,weight:0.05},{x:MAP_W/2,y:MAP_H/2,weight:0.05}
-];
 function weightedRandomSpawn(){
-  const total=SPAWN_ZONES.reduce((a,z)=>a+z.weight,0);
+  const zones=[
+    {x:850,y:250,weight:0.18},{x:600,y:400,weight:0.14},
+    {x:1120,y:1280,weight:0.08},{x:214,y:454,weight:0.08},
+    {x:410,y:148,weight:0.07},{x:784,y:1388,weight:0.06},
+    {x:264,y:1376,weight:0.06},{x:372,y:1004,weight:0.15},
+    {x:342,y:762,weight:0.10},{x:400,y:700,weight:0.05},
+    {x:750,y:750,weight:0.05},{x:MAP_W/2,y:MAP_H/2,weight:0.05}
+  ];
+  let total=0; zones.forEach(z=>total+=z.weight);
   let r=Math.random()*total;
-  for(let z of SPAWN_ZONES){
-    if(r<z.weight) return {x:z.x+Math.random()*150-75, y:z.y+Math.random()*150-75};
-    r-=z.weight;
-  }
+  for(let z of zones){ if(r<z.weight) return {x:z.x+(Math.random()*150-75),y:z.y+(Math.random()*150-75)}; r-=z.weight; }
   return {x:Math.random()*MAP_W,y:Math.random()*MAP_H};
 }
+
 function generateWaypoints(target){
-  const spawn=weightedRandomSpawn(), segments=2+Math.floor(Math.random()*4);
-  const pts=[spawn];
+  const start=weightedRandomSpawn(), pts=[start];
+  const segments=2+Math.floor(Math.random()*4);
   for(let i=1;i<segments;i++){
-    const f=i/segments, ang=Math.random()*Math.PI*2;
+    const frac=i/segments, ang=Math.random()*Math.PI*2;
     pts.push({
-      x: spawn.x+(target.x-spawn.x)*f+Math.cos(ang)*120*Math.random(),
-      y: spawn.y+(target.y-spawn.y)*f+Math.sin(ang)*120*Math.random()
+      x:start.x+(target.x-start.x)*frac+Math.cos(ang)*120*Math.random(),
+      y:start.y+(target.y-start.y)*frac+Math.sin(ang)*120*Math.random()
     });
   }
-  pts.push(target);
-  return pts;
+  pts.push(target); return pts;
 }
 
-// --- PLAYER SPAWN & MOVEMENT ---
-const players=[]; let playerCount=0;
 function spawnPlayer(isGroup=false){
+  const kind=chooseArchetype();
   const target=MILITARY[Math.floor(Math.random()*MILITARY.length)];
-  const size=isGroup?2+Math.floor(Math.random()*3):1;
   const waypoints=generateWaypoints(target);
+  const size=isGroup?2+Math.floor(Math.random()*3):1;
   for(let i=0;i<size;i++){
     const jitter={x:Math.random()*6-3,y:Math.random()*6-3,phase:Math.random()*Math.PI*2};
     const start=waypoints[0];
-    const dot=L.circleMarker(px(start.x+jitter.x,start.y+jitter.y),{
-      radius:6,
-      color:'#000',
-      weight:1,
-      fillColor:isGroup?'#ff5555':'#ffcc00',
-      fillOpacity:0.9
-    }).addTo(map).bindPopup(`Player ${++playerCount}`);
+    const dot=L.marker(px(start.x+jitter.x,start.y+jitter.y),{icon:playerIcons[kind]}).addTo(playerLayer)
+      .bindPopup(`Player ${++playerCount} (${kind})`);
     const speed=0.0006+Math.random()*0.0012;
-    players.push({dot,waypoints,seg:0,step:0,jitter,speed,alive:true,trail:[],group:isGroup});
+    players.push({dot,waypoints,seg:0,step:0,jitter,speed,alive:true});
   }
 }
+
 function movePlayers(){
   players.forEach(p=>{
     if(!p.alive) return;
-    if(p.seg>=p.waypoints.length-1) return;
-    const f=p.waypoints[p.seg], t=p.waypoints[p.seg+1];
-    const x=f.x+(t.x-f.x)*p.step+Math.sin(p.jitter.phase)*p.jitter.x;
-    const y=f.y+(t.y-f.y)*p.step+Math.cos(p.jitter.phase)*p.jitter.y;
+    if(p.seg>=p.waypoints.length-1)return;
+    const from=p.waypoints[p.seg], to=p.waypoints[p.seg+1];
+    const x=from.x+(to.x-from.x)*p.step+Math.sin(p.jitter.phase)*p.jitter.x;
+    const y=from.y+(to.y-from.y)*p.step+Math.cos(p.jitter.phase)*p.jitter.y;
     p.dot.setLatLng(px(x,y));
-    heat.addLatLng([y,x,0.25]);
+    heatLayer.addLatLng([y,x,0.25]);
+    MILITARY.forEach(m=>{ if(Math.hypot(m.x-x,m.y-y)<220) risk[m.name]+=0.015; });
     p.step+=p.speed; p.jitter.phase+=0.03;
     if(p.step>=1){p.step=0; p.seg++;}
   });
   requestAnimationFrame(movePlayers);
 }
-requestAnimationFrame(movePlayers);
+
 for(let i=0;i<25;i++) spawnPlayer(Math.random()<0.35);
+requestAnimationFrame(movePlayers);
 
-// --- Survival Tips ---
+// risk decay
+setInterval(()=>{
+  Object.keys(risk).forEach(k=>{ risk[k]=Math.max(0,risk[k]-0.02);
+    markers[k].setIcon(createMilitaryIcon(32+Math.floor(risk[k]*10)); });
+  });
+},3000);
+
+// survival tips
 const tips=[
-  "Stay hydrated; water is life.",
-  "Avoid high zombie populations at night.",
-  "Cities have best loot but highest risk.",
-  "Military areas are worth the danger.",
-  "Check rooftops for rare loot spawns.",
-  "Use bushes and tall grass to hide from snipers.",
-  "Always carry a melee weapon for stealth kills.",
-  "Be careful near airfields, player ambush hotspots.",
-  "Use vehicles sparingly; noise attracts attention.",
-  "Night travel is risky but less populated."
+  "Avoid running in open fields.","Check rooftops for ambushes.","Use terrain wisely."
 ];
-setInterval(()=>{tip.innerText="Survival Tip: "+tips[Math.floor(Math.random()*tips.length)];},12000);
+setInterval(()=>{ tip.innerText="Tip: "+tips[Math.floor(Math.random()*tips.length)]; },10000);
 
-// --- Toggles ---
-let thermal=false;
-toggleThermal.onclick=()=>{thermal=!thermal; thermal?heat.addTo(map):map.removeLayer(heat);};
-let markerTool=false;
+// toggles
+let thermal=false, markerTool=false;
+toggleThermal.onclick=()=>{thermal=!thermal; thermal?heatLayer.addTo(map):map.removeLayer(heatLayer);};
 toggleSpawnTool.onclick=()=>{markerTool=!markerTool;};
-map.on("click",e=>{if(!markerTool)return; const c=map.layerPointToLatLng(map.latLngToLayerPoint(e.latlng));
-  L.marker([c.lat,c.lng]).addTo(map).bindPopup(`X:${c.lng.toFixed(1)},Y:${c.lat.toFixed(1)}`);
+map.on("click",e=>{ if(!markerTool)return;
+  L.marker([e.latlng.lat,e.latlng.lng],{icon:customMarkerIcon}).addTo(customMarkerLayer)
+   .bindPopup(`Custom: ${e.latlng.lng.toFixed(1)}, ${e.latlng.lat.toFixed(1)}`);
 });
 </script>
 </body>
 </html>
-
