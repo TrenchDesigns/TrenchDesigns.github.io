@@ -10,19 +10,55 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
 <style>
-html, body {margin:0; height:100%; overflow:hidden; background:#111; font-family:system-ui, monospace;}
-#map {position:absolute; inset:0; background:#222;}
-.navbar {z-index:1000; background:#1b2a1b !important; border-bottom:1px solid #333; box-shadow:0 2px 8px rgba(0,0,0,0.5);}
-.panel {position:absolute; background:rgba(25,35,25,0.95); color:#f0f0d0; border:1px solid #555;
-padding:10px 14px; border-radius:6px; font-size:14px; z-index:500; text-shadow:0 0 4px #000;}
+html, body {
+  margin:0; height:100%; overflow:hidden; font-family:system-ui, monospace; color:#fff;
+}
+
+/* Cinematic DayZ background */
+body::before {
+  content:"";
+  position:fixed; inset:0;
+  background: url('https://images.unsplash.com/photo-1615814091181-f7ab5f9f4e0e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8ZGF5enh8fHx8fHwxNjk3NjU3NDEx&ixlib=rb-4.0.3&q=80&w=1920') center/cover no-repeat;
+  filter: blur(8px) brightness(0.35);
+  z-index:-1;
+}
+
+#map { position:absolute; inset:0; background: transparent; }
+
+.navbar {
+  z-index:1000;
+  background:rgba(28,28,28,0.85) !important;
+  border-bottom:1px solid #333;
+  box-shadow:0 2px 8px rgba(0,0,0,0.5);
+}
+
+.panel {
+  position:absolute; background:rgba(30,30,30,0.95);
+  color:#fff; border:1px solid #555;
+  padding:10px 14px; border-radius:6px;
+  font-size:14px; z-index:500; text-shadow:0 0 4px #000;
+}
+
 #info {top:70px; right:12px; max-width:280px;}
 #tip {bottom:10px; left:50%; transform:translateX(-50%); min-width:260px; text-align:center;}
-#legend {bottom:10px; right:10px; background:rgba(20,25,20,0.85); padding:8px 12px; border-radius:6px; font-size:13px; z-index:500;}
-.marker-military {width:16px; height:16px; background:#cc3333; border:2px solid #fff; border-radius:50%;
-box-shadow:0 0 12px #ff4444,0 0 24px rgba(255,0,0,0.6);}
-.player-dot {width:6px; height:6px; border-radius:50%; background:#ffdd77; box-shadow:0 0 10px rgba(255,220,120,0.9); transition: transform 0.1s linear;}
-.group-dot {width:6px; height:6px; border-radius:50%; background:#ff7755; box-shadow:0 0 12px rgba(255,120,85,1);}
-.thermal-overlay {pointer-events:none; position:absolute; inset:0; background:rgba(50,120,0,0.08); z-index:400; mix-blend-mode:overlay;}
+#legend {bottom:10px; right:10px; background:rgba(20,20,20,0.85); padding:8px 12px; border-radius:6px; font-size:13px; z-index:500;}
+
+.player-dot {width:6px; height:6px; border-radius:50%; background:#ffcc00; box-shadow:0 0 10px rgba(255,200,50,0.9); transition: transform 0.1s linear;}
+.group-dot {width:6px; height:6px; border-radius:50%; background:#ff5555; box-shadow:0 0 12px rgba(255,80,80,1);}
+.thermal-overlay {pointer-events:none; position:absolute; inset:0; background:rgba(255,50,50,0.12); z-index:400; mix-blend-mode:overlay;}
+
+/* Military markers */
+.marker-military {
+  font-size: 20px;
+  color:#ff4444;
+  text-shadow: 0 0 6px #ff0000,0 0 12px rgba(255,0,0,0.6);
+  transition: transform 0.3s, text-shadow 0.3s;
+  pointer-events:none;
+  display:inline-block;
+}
+.marker-div-icon {
+  display:inline-block;
+}
 </style>
 </head>
 <body>
@@ -31,7 +67,7 @@ box-shadow:0 0 12px #ff4444,0 0 24px rgba(255,0,0,0.6);}
   <span class="navbar-brand small"><i class="fa-solid fa-skull-crossbones me-2"></i>DayZ Tactical Companion</span>
   <div class="ms-auto d-flex gap-2">
     <button id="toggleThermal" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-fire"></i> Thermal</button>
-    <button id="toggleMarker" class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-map-pin"></i> Marker Tool</button>
+    <button id="toggleSpawnTool" class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-map-pin"></i> Marker Tool</button>
   </div>
 </nav>
 
@@ -41,9 +77,10 @@ box-shadow:0 0 12px #ff4444,0 0 24px rgba(255,0,0,0.6);}
 <div id="tip" class="panel">Survival Tip: Always check rooftops for loot.</div>
 <div id="legend" class="panel">
   <strong>Legend:</strong><br>
-  <span style="color:#cc3333;">&#9679;</span> Military<br>
-  <span style="color:#ffdd77;">&#9679;</span> Solo Player<br>
-  <span style="color:#ff7755;">&#9679;</span> Group<br>
+  <span style="color:#ff4444;">&#9679;</span> Military<br>
+  <span style="color:#ffcc00;">&#9679;</span> Solo Player<br>
+  <span style="color:#ff5555;">&#9679;</span> Group<br>
+  <span style="color:#ff8800;">&#9679;</span> Custom Marker<br>
   Heat = Player activity density
 </div>
 
@@ -52,173 +89,122 @@ box-shadow:0 0 12px #ff4444,0 0 24px rgba(255,0,0,0.6);}
 
 <script>
 // --- MAP SETUP ---
-const MAP_W = 1500, MAP_H = 1450;
-const map = L.map('map', {crs:L.CRS.Simple, minZoom:-2, maxZoom:6});
-const bounds = [[0,0],[MAP_H,MAP_W]];
-L.imageOverlay('chernarus.png', bounds).addTo(map);
+const MAP_W=1500, MAP_H=1450;
+const map=L.map('map',{crs:L.CRS.Simple,minZoom:-2,maxZoom:6});
+const bounds=[[0,0],[MAP_H,MAP_W]];
+L.imageOverlay('chernarus.png',bounds).addTo(map);
 map.fitBounds(bounds);
-const px = (x,y)=>[y,x];
+const px=(x,y)=>[y,x];
 
 // --- MILITARY MARKERS ---
-const MILITARY = [
+const MILITARY=[
   {x:214,y:454,name:"Zelenogorsk"},
   {x:410,y:148,name:"Balota"},
   {x:152,y:260,name:"Pavlovo"},
   {x:566,y:734,name:"Stary"},
   {x:784,y:1388,name:"Kamensk"},
   {x:1120,y:1280,name:"NEAF"},
-  {x:264,y:1376,name:"Tisy"}
+  {x:264,y:1376,name:"Tisy"},
+  {x:372,y:1004,name:"NWAF"},
+  {x:342,y:762,name:"VMC"}
 ];
-const risk = {};
+const risk={};
+const markers={};
 MILITARY.forEach(m=>{
   risk[m.name]=0;
-  const mk = L.marker(px(m.x,m.y), {icon:L.divIcon({className:"marker-military"})}).addTo(map);
-  mk.on("mouseover", ()=>{info.innerHTML=`<strong>${m.name}</strong><br>Activity: ${risk[m.name].toFixed(1)}`;});
-  mk.on("mouseout", ()=>{info.innerText="Hover a military location";});
+  const mk=L.marker(px(m.x,m.y),{
+    icon:L.divIcon({
+      html:`<i class="fa-solid fa-shield marker-military"></i>`,
+      className:'marker-div-icon',
+      iconSize:[24,24],
+      iconAnchor:[12,12]
+    })
+  }).addTo(map);
+  markers[m.name]=mk;
+  mk.on("mouseover",()=>{info.innerHTML=`<strong>${m.name}</strong><br>Activity: ${risk[m.name].toFixed(1)}`;});
+  mk.on("mouseout",()=>{info.innerText="Hover a military location";});
 });
 
 // --- HEATMAP ---
-const heat = L.heatLayer([], {
-  radius:80, 
-  blur:45, 
-  max:3, 
-  gradient:{
-    0:'transparent',
-    0.4:'#004400',
-    0.6:'#88cc44',
-    0.75:'#ffff44',
-    0.9:'#ff8822',
-    1:'#cc2222'
-  }
-});
+const heat=L.heatLayer([],{radius:80,blur:45,max:3,gradient:{0:'transparent',0.4:'#0033ff',0.6:'#00ff66',0.75:'#ffff00',0.9:'#ff6600',1:'#ff0000'}});
 
-// --- SPAWN ZONES & RANDOM SPAWN ---
-const SPAWN_ZONES = [
+// --- SPAWN ZONES ---
+const SPAWN_ZONES=[
   {x:850,y:250,weight:0.18},{x:600,y:400,weight:0.14},{x:1120,y:1280,weight:0.08},
   {x:214,y:454,weight:0.08},{x:410,y:148,weight:0.07},{x:784,y:1388,weight:0.06},
-  {x:264,y:1376,weight:0.06},{x:400,y:700,weight:0.05},{x:750,y:750,weight:0.05},
-  {x:MAP_W/2,y:MAP_H/2,weight:0.05}
+  {x:264,y:1376,weight:0.06},{x:372,y:1004,weight:0.15},{x:342,y:762,weight:0.10},
+  {x:400,y:700,weight:0.05},{x:750,y:750,weight:0.05},{x:MAP_W/2,y:MAP_H/2,weight:0.05}
 ];
-function weightedRandomSpawn() {
-  const total = SPAWN_ZONES.reduce((a,z)=>a+z.weight,0);
-  let r = Math.random()*total;
-  for (let z of SPAWN_ZONES) {
-    if(r < z.weight) return {x:z.x + Math.random()*150-75, y:z.y + Math.random()*150-75};
-    r -= z.weight;
-  }
-  return {x:MAP_W/2 + Math.random()*300-150, y:MAP_H/2 + Math.random()*300-150};
+
+function weightedRandomSpawn(){
+  const total=SPAWN_ZONES.reduce((a,z)=>a+z.weight,0);
+  let r=Math.random()*total;
+  for(let z of SPAWN_ZONES){if(r<z.weight) return {x:z.x+Math.random()*150-75,y:z.y+Math.random()*150-75}; r-=z.weight;}
+  return {x:Math.random()*MAP_W,y:Math.random()*MAP_H};
 }
 
-// --- WAYPOINT GENERATION ---
 function generateWaypoints(target){
-  const spawn = weightedRandomSpawn();
-  const segments = 2+Math.floor(Math.random()*4);
-  const points = [spawn];
+  const spawn=weightedRandomSpawn(); const segments=2+Math.floor(Math.random()*4);
+  const points=[spawn];
   for(let i=1;i<segments;i++){
-    const fraction = i/segments;
-    const angle = Math.random()*Math.PI*2;
-    points.push({
-      x: spawn.x + (target.x-spawn.x)*fraction + Math.cos(angle)*120*Math.random(),
-      y: spawn.y + (target.y-spawn.y)*fraction + Math.sin(angle)*120*Math.random()
-    });
+    const fraction=i/segments; const angle=Math.random()*Math.PI*2;
+    points.push({x:spawn.x+(target.x-spawn.x)*fraction+Math.cos(angle)*120*Math.random(),y:spawn.y+(target.y-spawn.y)*fraction+Math.sin(angle)*120*Math.random()});
   }
-  points.push(target);
-  return points;
+  points.push(target); return points;
 }
 
 // --- PLAYER SPAWN & MOVEMENT ---
-const players = [];
-let playerCount = 0;
+const players=[]; let playerCount=0;
 function spawnPlayer(isGroup=false){
-  const target = MILITARY[Math.floor(Math.random()*MILITARY.length)];
-  const size = isGroup ? 2 + Math.floor(Math.random()*3) : 1;
-  const waypoints = generateWaypoints(target);
+  const target=MILITARY[Math.floor(Math.random()*MILITARY.length)];
+  const size=isGroup?2+Math.floor(Math.random()*3):1;
+  const waypoints=generateWaypoints(target);
   for(let i=0;i<size;i++){
-    const jitter = {x:Math.random()*6-3, y:Math.random()*6-3, phase:Math.random()*Math.PI*2};
-    const start = waypoints[0];
-    const dot = L.circleMarker(px(start.x+jitter.x, start.y+jitter.y),{
-      radius:4, color:isGroup?'#ff7755':'#ffdd77', fillOpacity:1
-    }).addTo(map).bindPopup(`Player ${++playerCount}`);
-    const speed = 0.0006 + Math.random()*0.0012;
-    players.push({dot, waypoints, seg:0, step:0, jitter, speed, alive:true, trail:[], group:isGroup});
+    const jitter={x:Math.random()*6-3,y:Math.random()*6-3,phase:Math.random()*Math.PI*2};
+    const start=waypoints[0];
+    const dot=L.circleMarker(px(start.x+jitter.x,start.y+jitter.y),{radius:4,color:isGroup?'#ff5555':'#ffcc00',fillOpacity:1}).addTo(map).bindPopup(`Player ${++playerCount}`);
+    const speed=0.0006+Math.random()*0.0012;
+    players.push({dot,waypoints,seg:0,step:0,jitter,speed,alive:true,trail:[],group:isGroup});
   }
 }
+
 function movePlayers(){
   players.forEach(p=>{
-    if(!p.alive) return;
-    if(p.seg >= p.waypoints.length-1) return;
-    const from = p.waypoints[p.seg];
-    const to = p.waypoints[p.seg+1];
-    const x = from.x + (to.x-from.x)*p.step + Math.sin(p.jitter.phase)*p.jitter.x;
-    const y = from.y + (to.y-from.y)*p.step + Math.cos(p.jitter.phase)*p.jitter.y;
-    p.dot.setLatLng(px(x,y));
-    heat.addLatLng([y,x,0.25]);
-    MILITARY.forEach(m=>{if(Math.hypot(m.x-x,m.y-y)<220) risk[m.name]+=0.01;});
-    const trailSegment = L.circleMarker(px(x,y), {radius:2, color:p.group?'#ff7755':'#ffdd77', opacity:0.4}).addTo(map);
-    p.trail.push(trailSegment);
-    if(p.trail.length>6){ map.removeLayer(p.trail.shift()); }
-    players.forEach(other=>{
-      if(other===p || !other.alive) return;
-      const posOther = other.waypoints[Math.min(other.seg,other.waypoints.length-1)];
-      if(Math.hypot(posOther.x-x,posOther.y-y)<10 && Math.random()<0.02){
-        other.alive=false;
-        map.removeLayer(other.dot);
-      }
+    if(!p.alive) return; if(p.seg>=p.waypoints.length-1) return;
+    const from=p.waypoints[p.seg], to=p.waypoints[p.seg+1];
+    const x=from.x+(to.x-from.x)*p.step+Math.sin(p.jitter.phase)*p.jitter.x;
+    const y=from.y+(to.y-from.y)*p.step+Math.cos(p.jitter.phase)*p.jitter.y;
+    p.dot.setLatLng(px(x,y)); heat.addLatLng([y,x,0.25]);
+    MILITARY.forEach(m=>{
+      const dist=Math.hypot(m.x-x,m.y-y);
+      if(dist<220) risk[m.name]+=0.02;
+      const intensity=Math.min(1,risk[m.name]/2); const scale=1+intensity*0.5; const glow=6+intensity*12;
+      const el=markers[m.name].getElement();
+      if(el){ el.style.transform=`scale(${scale})`; el.style.textShadow=`0 0 ${glow}px #ff0000,0 0 ${glow*2}px rgba(255,0,0,0.6)`;}
     });
-    p.step+=p.speed; 
-    p.jitter.phase+=0.03;
-    if(p.step>=1){p.step=0; p.seg++;}
+    const trailSegment=L.circleMarker(px(x,y),{radius:2,color:p.group?'#ff5555':'#ffcc00',opacity:0.4}).addTo(map);
+    p.trail.push(trailSegment); if(p.trail.length>6) map.removeLayer(p.trail.shift());
+    players.forEach(other=>{if(other===p||!other.alive) return; const posOther=other.waypoints[Math.min(other.seg,other.waypoints.length-1)]; if(Math.hypot(posOther.x-x,posOther.y-y)<10&&Math.random()<0.02){other.alive=false;map.removeLayer(other.dot);}}); 
+    p.step+=p.speed; p.jitter.phase+=0.03; if(p.step>=1){p.step=0;p.seg++;}
   });
   requestAnimationFrame(movePlayers);
 }
+
 requestAnimationFrame(movePlayers);
 for(let i=0;i<25;i++) spawnPlayer(Math.random()<0.35);
-setInterval(()=>{
-  const activePlayers = players.filter(p=>p.alive).length;
-  if(activePlayers<30) spawnPlayer(Math.random()<0.5);
-  else if(activePlayers<60 && Math.random()<0.3) spawnPlayer(Math.random()<0.35);
-},8000);
+setInterval(()=>{const active=players.filter(p=>p.alive).length;if(active<30) spawnPlayer(Math.random()<0.5);else if(active<60&&Math.random()<0.3) spawnPlayer(Math.random()<0.35);},8000);
 setInterval(()=>{Object.keys(risk).forEach(k=>risk[k]=Math.max(0,risk[k]-0.03));},3000);
 
 // --- SURVIVAL TIPS ---
-const tips = [
-  "Stay hydrated; water is life.",
-  "Avoid high zombie populations at night.",
-  "Cities have best loot but highest risk.",
-  "Military areas are worth the danger.",
-  "Check rooftops for rare loot spawns.",
-  "Use bushes and tall grass to hide from snipers.",
-  "Always carry a melee weapon for stealth kills.",
-  "Be careful near airfields, player ambush hotspots.",
-  "Use vehicles sparingly; noise attracts attention.",
-  "Night travel is risky but less populated."
-];
+const tips=["Stay hydrated; water is life.","Avoid high zombie populations at night.","Cities have best loot but highest risk.","Military areas are worth the danger.","Check rooftops for rare loot spawns.","Use bushes and tall grass to hide from snipers.","Always carry a melee weapon for stealth kills.","Be careful near airfields, player ambush hotspots.","Use vehicles sparingly; noise attracts attention.","Night travel is risky but less populated."];
 setInterval(()=>{tip.innerText="Survival Tip: "+tips[Math.floor(Math.random()*tips.length)];},12000);
 
-// --- TOGGLE THERMAL ---
+// --- TOGGLES ---
 let thermal=false;
-toggleThermal.onclick=()=>{
-  thermal=!thermal;
-  thermal?heat.addTo(map):map.removeLayer(heat);
-  document.getElementById("thermalOverlay").style.display=thermal?"block":"none";
-};
-
-// --- MARKER PLACEMENT TOOL ---
-let markerToolActive = false;
-toggleMarker.onclick=()=>{
-  markerToolActive=!markerToolActive;
-  toggleMarker.classList.toggle("active", markerToolActive);
-};
-map.on('click', e=>{
-  if(markerToolActive){
-    const x = e.latlng.lng.toFixed(1);
-    const y = e.latlng.lat.toFixed(1);
-    L.marker([y,x]).addTo(map)
-      .bindPopup(`X: ${x}, Y: ${y}`)
-      .openPopup();
-    console.log(`Marker at X: ${x}, Y: ${y}`);
-  }
-});
+toggleThermal.onclick=()=>{thermal=!thermal; thermal?heat.addTo(map):map.removeLayer(heat); document.getElementById("thermalOverlay").style.display=thermal?"block":"none";};
+let markerTool=false;
+toggleSpawnTool.onclick=()=>{markerTool=!markerTool; toggleSpawnTool.classList.toggle("active",markerTool);};
+map.on("click",(e)=>{if(!markerTool) return; const coords=map.layerPointToLatLng(map.latLngToLayerPoint(e.latlng)); L.marker([coords.lat,coords.lng],{icon:L.divIcon({html:'<div class="marker-custom"></div>',className:''})}).addTo(map).bindPopup(`X: ${coords.lng.toFixed(1)}, Y: ${coords.lat.toFixed(1)}`);});
 </script>
 </body>
 </html>
