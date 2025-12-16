@@ -11,18 +11,18 @@
 
 <style>
 html, body {margin:0; height:100%; overflow:hidden; background:#111; font-family:system-ui, monospace;}
-#map {position:absolute; inset:0;}
-.navbar {z-index:1000; background:#1c1c1c !important; border-bottom:1px solid #333; box-shadow:0 2px 8px rgba(0,0,0,0.5);}
-.panel {position:absolute; background:rgba(30,30,30,0.95); color:#fff; border:1px solid #555;
+#map {position:absolute; inset:0; background:#222;}
+.navbar {z-index:1000; background:#1b2a1b !important; border-bottom:1px solid #333; box-shadow:0 2px 8px rgba(0,0,0,0.5);}
+.panel {position:absolute; background:rgba(25,35,25,0.95); color:#f0f0d0; border:1px solid #555;
 padding:10px 14px; border-radius:6px; font-size:14px; z-index:500; text-shadow:0 0 4px #000;}
 #info {top:70px; right:12px; max-width:280px;}
 #tip {bottom:10px; left:50%; transform:translateX(-50%); min-width:260px; text-align:center;}
-#legend {bottom:10px; right:10px; background:rgba(20,20,20,0.85); padding:8px 12px; border-radius:6px; font-size:13px; z-index:500;}
-.marker-military {width:16px; height:16px; background:#ff4444; border:2px solid #fff; border-radius:50%;
-box-shadow:0 0 12px #ff6666,0 0 24px rgba(255,0,0,0.6);}
-.player-dot {width:6px; height:6px; border-radius:50%; background:#ffcc00; box-shadow:0 0 10px rgba(255,200,50,0.9); transition: transform 0.1s linear;}
-.group-dot {width:6px; height:6px; border-radius:50%; background:#ff5555; box-shadow:0 0 12px rgba(255,80,80,1);}
-.thermal-overlay {pointer-events:none; position:absolute; inset:0; background:rgba(255,50,50,0.12); z-index:400; mix-blend-mode:overlay;}
+#legend {bottom:10px; right:10px; background:rgba(20,25,20,0.85); padding:8px 12px; border-radius:6px; font-size:13px; z-index:500;}
+.marker-military {width:16px; height:16px; background:#cc3333; border:2px solid #fff; border-radius:50%;
+box-shadow:0 0 12px #ff4444,0 0 24px rgba(255,0,0,0.6);}
+.player-dot {width:6px; height:6px; border-radius:50%; background:#ffdd77; box-shadow:0 0 10px rgba(255,220,120,0.9); transition: transform 0.1s linear;}
+.group-dot {width:6px; height:6px; border-radius:50%; background:#ff7755; box-shadow:0 0 12px rgba(255,120,85,1);}
+.thermal-overlay {pointer-events:none; position:absolute; inset:0; background:rgba(50,120,0,0.08); z-index:400; mix-blend-mode:overlay;}
 </style>
 </head>
 <body>
@@ -31,8 +31,8 @@ box-shadow:0 0 12px #ff6666,0 0 24px rgba(255,0,0,0.6);}
   <span class="navbar-brand small"><i class="fa-solid fa-skull-crossbones me-2"></i>DayZ Tactical Companion</span>
   <div class="ms-auto d-flex gap-2">
     <button id="toggleThermal" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-fire"></i> Thermal</button>
+    <button id="toggleMarker" class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-map-pin"></i> Marker Tool</button>
   </div>
-</div>
 </nav>
 
 <div id="map"></div>
@@ -41,9 +41,9 @@ box-shadow:0 0 12px #ff6666,0 0 24px rgba(255,0,0,0.6);}
 <div id="tip" class="panel">Survival Tip: Always check rooftops for loot.</div>
 <div id="legend" class="panel">
   <strong>Legend:</strong><br>
-  <span style="color:#ff4444;">&#9679;</span> Military<br>
-  <span style="color:#ffcc00;">&#9679;</span> Solo Player<br>
-  <span style="color:#ff5555;">&#9679;</span> Group<br>
+  <span style="color:#cc3333;">&#9679;</span> Military<br>
+  <span style="color:#ffdd77;">&#9679;</span> Solo Player<br>
+  <span style="color:#ff7755;">&#9679;</span> Group<br>
   Heat = Player activity density
 </div>
 
@@ -78,23 +78,27 @@ MILITARY.forEach(m=>{
 });
 
 // --- HEATMAP ---
-const heat = L.heatLayer([], {radius:80, blur:45, max:3, gradient:{0:'transparent',0.4:'#0033ff',0.6:'#00ff66',0.75:'#ffff00',0.9:'#ff6600',1:'#ff0000'}});
+const heat = L.heatLayer([], {
+  radius:80, 
+  blur:45, 
+  max:3, 
+  gradient:{
+    0:'transparent',
+    0.4:'#004400',
+    0.6:'#88cc44',
+    0.75:'#ffff44',
+    0.9:'#ff8822',
+    1:'#cc2222'
+  }
+});
 
-// --- SPAWN ZONES & WEIGHTING ---
+// --- SPAWN ZONES & RANDOM SPAWN ---
 const SPAWN_ZONES = [
-  {x:850,y:250,weight:0.18}, // Cherno
-  {x:600,y:400,weight:0.14}, // Electro
-  {x:1120,y:1280,weight:0.08}, // NEAF
-  {x:214,y:454,weight:0.08}, // Zelenogorsk
-  {x:410,y:148,weight:0.07}, // Balota
-  {x:784,y:1388,weight:0.06}, // Kamensk
-  {x:264,y:1376,weight:0.06}, // Tisy
-  {x:400,y:700,weight:0.05}, // Pavlovo
-  {x:750,y:750,weight:0.05}, // Stary
-  {x:MAP_W/2,y:MAP_H/2,weight:0.05} // inland roaming
+  {x:850,y:250,weight:0.18},{x:600,y:400,weight:0.14},{x:1120,y:1280,weight:0.08},
+  {x:214,y:454,weight:0.08},{x:410,y:148,weight:0.07},{x:784,y:1388,weight:0.06},
+  {x:264,y:1376,weight:0.06},{x:400,y:700,weight:0.05},{x:750,y:750,weight:0.05},
+  {x:MAP_W/2,y:MAP_H/2,weight:0.05}
 ];
-
-// --- RANDOMIZED SPAWN ---
 function weightedRandomSpawn() {
   const total = SPAWN_ZONES.reduce((a,z)=>a+z.weight,0);
   let r = Math.random()*total;
@@ -125,7 +129,6 @@ function generateWaypoints(target){
 // --- PLAYER SPAWN & MOVEMENT ---
 const players = [];
 let playerCount = 0;
-
 function spawnPlayer(isGroup=false){
   const target = MILITARY[Math.floor(Math.random()*MILITARY.length)];
   const size = isGroup ? 2 + Math.floor(Math.random()*3) : 1;
@@ -134,34 +137,26 @@ function spawnPlayer(isGroup=false){
     const jitter = {x:Math.random()*6-3, y:Math.random()*6-3, phase:Math.random()*Math.PI*2};
     const start = waypoints[0];
     const dot = L.circleMarker(px(start.x+jitter.x, start.y+jitter.y),{
-      radius:4, color:isGroup?'#ff5555':'#ffcc00', fillOpacity:1
+      radius:4, color:isGroup?'#ff7755':'#ffdd77', fillOpacity:1
     }).addTo(map).bindPopup(`Player ${++playerCount}`);
     const speed = 0.0006 + Math.random()*0.0012;
     players.push({dot, waypoints, seg:0, step:0, jitter, speed, alive:true, trail:[], group:isGroup});
   }
 }
-
-// --- PLAYER MOVEMENT LOOP ---
 function movePlayers(){
   players.forEach(p=>{
     if(!p.alive) return;
     if(p.seg >= p.waypoints.length-1) return;
-
     const from = p.waypoints[p.seg];
     const to = p.waypoints[p.seg+1];
     const x = from.x + (to.x-from.x)*p.step + Math.sin(p.jitter.phase)*p.jitter.x;
     const y = from.y + (to.y-from.y)*p.step + Math.cos(p.jitter.phase)*p.jitter.y;
-
     p.dot.setLatLng(px(x,y));
     heat.addLatLng([y,x,0.25]);
     MILITARY.forEach(m=>{if(Math.hypot(m.x-x,m.y-y)<220) risk[m.name]+=0.01;});
-
-    // Trail fading
-    const trailSegment = L.circleMarker(px(x,y), {radius:2, color:p.group?'#ff5555':'#ffcc00', opacity:0.4}).addTo(map);
+    const trailSegment = L.circleMarker(px(x,y), {radius:2, color:p.group?'#ff7755':'#ffdd77', opacity:0.4}).addTo(map);
     p.trail.push(trailSegment);
     if(p.trail.length>6){ map.removeLayer(p.trail.shift()); }
-
-    // Conflict chance
     players.forEach(other=>{
       if(other===p || !other.alive) return;
       const posOther = other.waypoints[Math.min(other.seg,other.waypoints.length-1)];
@@ -170,7 +165,6 @@ function movePlayers(){
         map.removeLayer(other.dot);
       }
     });
-
     p.step+=p.speed; 
     p.jitter.phase+=0.03;
     if(p.step>=1){p.step=0; p.seg++;}
@@ -178,18 +172,12 @@ function movePlayers(){
   requestAnimationFrame(movePlayers);
 }
 requestAnimationFrame(movePlayers);
-
-// --- INITIAL SPAWN ---
-for(let i=0;i<25;i++) spawnPlayer(Math.random()<0.35); // mixed groups & solos
-
-// --- POPULATION MAINTENANCE ---
+for(let i=0;i<25;i++) spawnPlayer(Math.random()<0.35);
 setInterval(()=>{
   const activePlayers = players.filter(p=>p.alive).length;
   if(activePlayers<30) spawnPlayer(Math.random()<0.5);
   else if(activePlayers<60 && Math.random()<0.3) spawnPlayer(Math.random()<0.35);
 },8000);
-
-// --- RISK DECAY ---
 setInterval(()=>{Object.keys(risk).forEach(k=>risk[k]=Math.max(0,risk[k]-0.03));},3000);
 
 // --- SURVIVAL TIPS ---
@@ -207,13 +195,30 @@ const tips = [
 ];
 setInterval(()=>{tip.innerText="Survival Tip: "+tips[Math.floor(Math.random()*tips.length)];},12000);
 
-// --- THERMAL TOGGLE ---
+// --- TOGGLE THERMAL ---
 let thermal=false;
 toggleThermal.onclick=()=>{
   thermal=!thermal;
   thermal?heat.addTo(map):map.removeLayer(heat);
   document.getElementById("thermalOverlay").style.display=thermal?"block":"none";
 };
+
+// --- MARKER PLACEMENT TOOL ---
+let markerToolActive = false;
+toggleMarker.onclick=()=>{
+  markerToolActive=!markerToolActive;
+  toggleMarker.classList.toggle("active", markerToolActive);
+};
+map.on('click', e=>{
+  if(markerToolActive){
+    const x = e.latlng.lng.toFixed(1);
+    const y = e.latlng.lat.toFixed(1);
+    L.marker([y,x]).addTo(map)
+      .bindPopup(`X: ${x}, Y: ${y}`)
+      .openPopup();
+    console.log(`Marker at X: ${x}, Y: ${y}`);
+  }
+});
 </script>
 </body>
 </html>
