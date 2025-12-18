@@ -3,88 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chernarus Map</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<title>CHERNOMAP</title>
 <style>
-  body, html { margin:0; padding:0; height:100%; font-family: Arial, sans-serif; background:#111; }
-  #map { width: 100vw; height: 100vh; }
-  .legend {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-  .legend div { margin-bottom: 4px; }
-  .legend span { display:inline-block; width:12px; height:12px; margin-right:6px; vertical-align:middle; }
+body { margin:0; font-family: Arial, sans-serif; background:#111; color:#fff; display:flex; flex-direction:column; align-items:center; }
+#map-container { position: relative; width: 1500px; height: 1356px; background: url('CHERNOMAP.webp') no-repeat center/cover; border:2px solid #fff; margin-top:20px; }
+.marker { position:absolute; width:16px; height:16px; border-radius:50%; transform:translate(-50%,-50%); cursor:pointer; opacity:0.9; transition: transform 0.2s ease, opacity 0.3s ease; }
+.marker:hover { transform: translate(-50%,-50%) scale(1.5); opacity:1; }
+.tooltip { position:absolute; background: rgba(0,0,0,0.8); padding:4px 8px; border-radius:4px; pointer-events:none; font-size:12px; white-space:nowrap; display:none; z-index:10; }
+#legend { margin-top:20px; display:flex; flex-wrap:wrap; gap:12px; }
+.legend-item { display:flex; align-items:center; gap:6px; }
+.legend-color { width:16px; height:16px; border-radius:50%; }
 </style>
 </head>
 <body>
-<div id="map"></div>
-<div class="legend">
-  <div><span style="background:yellow"></span> City/Town/Village</div>
-  <div><span style="background:red"></span> Military</div>
-  <div><span style="background:blue"></span> Airfield</div>
-  <div><span style="background:green"></span> POI</div>
-  <div><span style="background:orange"></span> Industrial</div>
-  <div><span style="background:purple"></span> Island</div>
-</div>
+<h1>CHERNOMAP</h1>
+<div id="map-container"></div>
+<div id="legend"></div>
+<div class="tooltip" id="tooltip"></div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // Map Setup
-  const mapWidth = 1500;   // Your actual map size
-  const mapHeight = 1356;
-  const map = L.map('map', {
-    crs: L.CRS.Simple,
-    minZoom: -2,
-    maxZoom: 2
-  });
+// Map size
+const mapWidth = 1500;
+const mapHeight = 1356;
 
-  const bounds = [[0,0],[mapHeight,mapWidth]];
-  L.imageOverlay('CHERNOMAP.webp', bounds).addTo(map);
-  map.fitBounds(bounds);
+// Marker colors
+const markerColors = {
+    'City':'#007bff','Town':'#00ffff','Village':'#00ff00','Military':'#ff0000','Minor Military':'#ff4d4d',
+    'POI':'#ffff00','Minor POI':'#ffff66','Airfield':'#ffa500','Industrial':'#800080','Shipwreck':'#00cccc','Island':'#ffffff'
+};
 
-  // Locations Array (scaled to your map size)
-  const locations = [
-    { English_Name: 'Chernogorsk', Coordinates: '6675, 2674', Type: 'City' },
-    { English_Name: 'Elektrozavodsk', Coordinates: '10309, 2175', Type: 'City' },
-    { English_Name: 'Berezino', Coordinates: '12604, 9791', Type: 'City' },
-    { English_Name: 'Tisy Military Base', Coordinates: '1558, 13935', Type: 'Military' },
-    { English_Name: 'Northwest Airfield (NWAF)', Coordinates: '4455, 10376', Type: 'Airfield' }
-    // Add all other locations here
-  ];
+// Full locations array
+const locations = [
+    { ID: 1, English_Name: 'Chernogorsk', Native_Name: 'Черногорск', Coordinates: '6675,2674', Type: 'City', Map: 'Chernarus' },
+    { ID: 2, English_Name: 'Elektrozavodsk', Native_Name: 'Электрозаводск', Coordinates: '10309,2175', Type: 'City', Map: 'Chernarus' },
+    { ID: 3, English_Name: 'Berezino', Native_Name: 'Березино', Coordinates: '12604,9791', Type: 'City', Map: 'Chernarus' },
+    { ID: 4, English_Name: 'Zelenogorsk', Native_Name: 'Зеленогорск', Coordinates: '2663,5201', Type: 'City', Map: 'Chernarus' },
+    { ID: 5, English_Name: 'Novaya Petrovka', Native_Name: 'Новая Петровка', Coordinates: '3465,13065', Type: 'City', Map: 'Chernarus' },
+    { ID: 6, English_Name: 'Stary Sobor', Native_Name: 'Старый Собор', Coordinates: '6139,7781', Type: 'Village', Map: 'Chernarus' },
+    { ID: 7, English_Name: 'Novy Sobor', Native_Name: 'Новый Собор', Coordinates: '7114,7695', Type: 'Village', Map: 'Chernarus' },
+    { ID: 8, English_Name: 'Kabanino', Native_Name: 'Кабанино', Coordinates: '5325,8599', Type: 'Village', Map: 'Chernarus' },
+    { ID: 9, English_Name: 'Vybor', Native_Name: 'Выбор', Coordinates: '3869,8945', Type: 'Town', Map: 'Chernarus' },
+    { ID: 10, English_Name: 'Tisy Military Base', Native_Name: '', Coordinates: '1558,13935', Type: 'Military', Map: 'Chernarus' },
+    { ID: 11, English_Name: 'Northwest Airfield (NWAF)', Native_Name: '', Coordinates: '4455,10376', Type: 'Airfield', Map: 'Chernarus' },
+    { ID: 12, English_Name: 'Balota Airfield', Native_Name: '', Coordinates: '5049,2499', Type: 'Airfield', Map: 'Chernarus' },
+    { ID: 13, English_Name: 'Krasnostav', Native_Name: 'Красностав', Coordinates: '11134,12343', Type: 'Town', Map: 'Chernarus' },
+    { ID: 14, English_Name: 'Svetloyarsk', Native_Name: 'Светлоярск', Coordinates: '13938,13324', Type: 'City', Map: 'Chernarus' },
+    { ID: 15, English_Name: 'Severograd', Native_Name: 'Североград', Coordinates: '7988,12798', Type: 'City', Map: 'Chernarus' },
+    { ID: 16, English_Name: 'Kamyshovo', Native_Name: 'Камышово', Coordinates: '12077,3481', Type: 'Village', Map: 'Chernarus' },
+    { ID: 17, English_Name: 'Solnichniy', Native_Name: 'Солничный', Coordinates: '13421,6231', Type: 'Town', Map: 'Chernarus' },
+    { ID: 18, English_Name: 'Gorka', Native_Name: 'Горка', Coordinates: '9557,8824', Type: 'Town', Map: 'Chernarus' },
+    { ID: 19, English_Name: 'Staroye', Native_Name: 'Староё', Coordinates: '10037,5438', Type: 'Village', Map: 'Chernarus' },
+    { ID: 20, English_Name: 'Dubrovka', Native_Name: 'Дубровка', Coordinates: '10378,9726', Type: 'Village', Map: 'Chernarus' },
+    { ID: 21, English_Name: 'Khelm', Native_Name: 'Хелм', Coordinates: '12293,10863', Type: 'Village', Map: 'Chernarus' },
+    { ID: 23, English_Name: 'Gvozdno', Native_Name: 'Гвоздно', Coordinates: '8556,11871', Type: 'Village', Map: 'Chernarus' },
+    { ID: 24, English_Name: 'Mogilevka', Native_Name: 'Могилевка', Coordinates: '7635,5231', Type: 'Village', Map: 'Chernarus' },
+    { ID: 25, English_Name: 'Vyshnoye', Native_Name: 'Вышное', Coordinates: '6605,6119', Type: 'Village', Map: 'Chernarus' },
+    { ID: 26, English_Name: 'Guglovo', Native_Name: 'Гуглово', Coordinates: '8426,6699', Type: 'Village', Map: 'Chernarus' },
+    { ID: 27, English_Name: 'Shakhovka', Native_Name: 'Шаховка', Coordinates: '9684,6611', Type: 'Village', Map: 'Chernarus' },
+    { ID: 28, English_Name: 'Tulga', Native_Name: 'Тулга', Coordinates: '12702,4438', Type: 'Village', Map: 'Chernarus' },
+    { ID: 29, English_Name: 'Pavlovo', Native_Name: 'Павлово', Coordinates: '1768,3923', Type: 'Village', Map: 'Chernarus' },
+    { ID: 30, English_Name: 'Komarovo', Native_Name: 'Комарово', Coordinates: '3561,2497', Type: 'Village', Map: 'Chernarus' },
+    { ID: 31, English_Name: 'Kamenka', Native_Name: 'Каменка', Coordinates: '1819,2267', Type: 'Village', Map: 'Chernarus' },
+    { ID: 32, English_Name: 'Myshkino', Native_Name: 'Мышкино', Coordinates: '2046,7376', Type: 'Village', Map: 'Chernarus' },
+    { ID: 33, English_Name: 'Pogorevka', Native_Name: 'Погоревка', Coordinates: '4470,6495', Type: 'Village', Map: 'Chernarus' },
+    { ID: 34, English_Name: 'Pustoshka', Native_Name: 'Пустошка', Coordinates: '3092,7787', Type: 'Village', Map: 'Chernarus' },
+    { ID: 35, English_Name: 'Lopatino', Native_Name: 'Лопатино', Coordinates: '2653,10005', Type: 'Village', Map: 'Chernarus' },
+    { ID: 36, English_Name: 'Grishino', Native_Name: 'Гришино', Coordinates: '6021,10290', Type: 'Village', Map: 'Chernarus' },
+    { ID: 37, English_Name: 'Vavilovo', Native_Name: 'Вавилово', Coordinates: '2113,11008', Type: 'Village', Map: 'Chernarus' },
+    { ID: 38, English_Name: 'Sinystok', Native_Name: 'Синисток', Coordinates: '1429,11891', Type: 'Village', Map: 'Chernarus' },
+    { ID: 39, English_Name: 'Topolniki', Native_Name: 'Топольники', Coordinates: '2887,12472', Type: 'Village', Map: 'Chernarus' },
+    { ID: 40, English_Name: 'Zaprudnoye', Native_Name: 'Запрудное', Coordinates: '5160,12808', Type: 'Village', Map: 'Chernarus' },
+    // ... paste the rest of your locations from ID 41 to 270 here
+];
 
-  // Scale coordinates from original (16000x16000) to 1500x1356
-  const scaleX = mapWidth / 16000;
-  const scaleY = mapHeight / 16000;
+// Scale coordinates to 1500x1356
+function scaleCoords(coords){
+    let [x,y] = coords.split(',').map(Number);
+    let maxX = 15200; // approximate max X of map
+    let maxY = 15200; // approximate max Y of map
+    return { x:(x/maxX)*mapWidth, y:(y/maxY)*mapHeight };
+}
 
-  // Color by type
-  const typeColors = {
-    'City':'yellow', 'Town':'yellow', 'Village':'yellow',
-    'Military':'red', 'Minor Military':'red',
-    'Airfield':'blue',
-    'POI':'green', 'Minor POI':'green',
-    'Industrial':'orange',
-    'Island':'purple'
-  };
+const mapContainer = document.getElementById('map-container');
+const tooltip = document.getElementById('tooltip');
 
-  // Add markers
-  locations.forEach(loc => {
-    const [origX, origY] = loc.Coordinates.split(',').map(Number);
-    const x = origX * scaleX;
-    const y = origY * scaleY;
-    const color = typeColors[loc.Type] || 'white';
-    const marker = L.circleMarker([y, x], {
-      radius: 5,       // smaller markers
-      color: color,
-      fillOpacity: 0.9
-    }).addTo(map);
-    marker.bindTooltip(`<b>${loc.English_Name}</b><br>${loc.Type}`);
-  });
+// Add markers
+locations.forEach(loc=>{
+    const marker = document.createElement('div');
+    marker.classList.add('marker');
+    marker.style.background = markerColors[loc.Type] || '#fff';
+    const {x,y} = scaleCoords(loc.Coordinates);
+    marker.style.left = `${x}px`;
+    marker.style.top = `${y}px`;
+
+    marker.addEventListener('mouseenter', e=>{
+        tooltip.style.display='block';
+        tooltip.innerHTML=`${loc.English_Name}${loc.Native_Name? ' ('+loc.Native_Name+')' : ''}`;
+    });
+    marker.addEventListener('mousemove', e=>{
+        tooltip.style.left = e.pageX + 10 + 'px';
+        tooltip.style.top = e.pageY + 10 + 'px';
+    });
+    marker.addEventListener('mouseleave', ()=>{
+        tooltip.style.display='none';
+    });
+
+    mapContainer.appendChild(marker);
+});
+
+// Add legend
+const legend = document.getElementById('legend');
+Object.keys(markerColors).forEach(type=>{
+    const item = document.createElement('div');
+    item.classList.add('legend-item');
+    const colorBox = document.createElement('div');
+    colorBox.classList.add('legend-color');
+    colorBox.style.background=markerColors[type];
+    item.appendChild(colorBox);
+    const label = document.createElement('span');
+    label.textContent=type;
+    item.appendChild(label);
+    legend.appendChild(item);
+});
 </script>
 </body>
 </html>
