@@ -4,118 +4,123 @@
 <meta charset="UTF-8">
 <title>Chernarus Map</title>
 <style>
-  body { font-family: Arial, sans-serif; background: #222; color: #eee; }
-  #mapContainer { position: relative; width: 1500px; height: 1356px; margin: auto; background: url('your-map.png') no-repeat; background-size: cover; border: 2px solid #555;}
+  body { margin: 0; font-family: sans-serif; }
+  #map-container { position: relative; width: 1500px; height: 1356px; margin: 0 auto; background: url('CHERNOMAP.webp') no-repeat top left; background-size: cover; border: 2px solid #333; }
   .marker {
-      position: absolute;
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      border: 2px solid #fff;
-      text-align: center;
-      font-size: 10px;
-      color: #fff;
-      font-weight: bold;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+    border: 2px solid #fff;
   }
-  .legend {
-      margin: 20px auto;
-      width: 300px;
-      background: #333;
-      padding: 10px;
-      border: 2px solid #555;
+  .City { background: red; }
+  .Town { background: orange; }
+  .Village { background: yellow; }
+  .Military { background: black; }
+  .Minor\ Military { background: gray; }
+  .Airfield { background: blue; }
+  .POI { background: purple; }
+  .Minor\ POI { background: pink; }
+  .Industrial { background: brown; }
+  .Island { background: teal; }
+  .tooltip {
+    position: absolute;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    font-size: 12px;
+    display: none;
+    z-index: 1000;
   }
-  .legend div { margin: 5px 0; }
-  .city { background: red; }
-  .town { background: orange; }
-  .village { background: yellow; }
-  .military { background: blue; }
-  .airfield { background: cyan; }
-  .poi { background: purple; }
-  .industrial { background: gray; }
-  .island { background: teal; }
-  .shipwreck { background: white; }
-  .minor { border: 2px dashed #fff; }
+  #legend {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  #legend div { margin-bottom: 4px; }
+  #legend span { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: middle; }
 </style>
 </head>
 <body>
 
-<h1 style="text-align:center;">Chernarus Map</h1>
-<div id="mapContainer"></div>
-
-<div class="legend">
-  <strong>Legend</strong>
-  <div><span class="marker city"></span> City</div>
-  <div><span class="marker town"></span> Town</div>
-  <div><span class="marker village"></span> Village</div>
-  <div><span class="marker military"></span> Military Base</div>
-  <div><span class="marker airfield"></span> Airfield</div>
-  <div><span class="marker poi"></span> POI</div>
-  <div><span class="marker industrial"></span> Industrial</div>
-  <div><span class="marker island"></span> Island</div>
-  <div><span class="marker shipwreck"></span> Shipwreck</div>
-  <div><span class="marker minor"></span> Minor / Secondary</div>
+<div id="map-container">
+  <div id="tooltip" class="tooltip"></div>
+  <div id="legend">
+    <div><span style="background:red;"></span> City</div>
+    <div><span style="background:orange;"></span> Town</div>
+    <div><span style="background:yellow;"></span> Village</div>
+    <div><span style="background:black;"></span> Military</div>
+    <div><span style="background:gray;"></span> Minor Military</div>
+    <div><span style="background:blue;"></span> Airfield</div>
+    <div><span style="background:purple;"></span> POI</div>
+    <div><span style="background:pink;"></span> Minor POI</div>
+    <div><span style="background:brown;"></span> Industrial</div>
+    <div><span style="background:teal;"></span> Island</div>
+  </div>
 </div>
 
 <script>
-// Paste your full dataset here
+const mapWidth = 1500;
+const mapHeight = 1356;
+
+// These are the original maximum coordinates from your dataset
+const originalMaxX = 23921; // debug island far right
+const originalMaxY = 15165; // stary yar far bottom
+
+// Scaling function
+function scaleCoord(x, y) {
+  return {
+    x: x / originalMaxX * mapWidth,
+    y: y / originalMaxY * mapHeight
+  };
+}
+
+// All your locations
 const locations = [
     { ID: 1, English_Name: 'Chernogorsk', Native_Name: 'Черногорск', Coordinates: '6675,2674', Type: 'City' },
     { ID: 2, English_Name: 'Elektrozavodsk', Native_Name: 'Электрозаводск', Coordinates: '10309,2175', Type: 'City' },
     { ID: 3, English_Name: 'Berezino', Native_Name: 'Березино', Coordinates: '12604,9791', Type: 'City' },
-    { ID: 10, English_Name: 'Tisy Military Base', Native_Name: '', Coordinates: '1558,13935', Type: 'Military' },
-    { ID: 11, English_Name: 'Northwest Airfield (NWAF)', Native_Name: '', Coordinates: '4455,10376', Type: 'Airfield' },
-    { ID: 12, English_Name: 'Balota Airfield', Native_Name: '', Coordinates: '5049,2499', Type: 'Airfield' },
-    // ... include all other locations here
+    { ID: 4, English_Name: 'Zelenogorsk', Native_Name: 'Зеленогорск', Coordinates: '2663,5201', Type: 'City' },
+    { ID: 5, English_Name: 'Novaya Petrovka', Native_Name: 'Новая Петровка', Coordinates: '3465,13065', Type: 'City' },
+    { ID: 6, English_Name: 'Stary Sobor', Native_Name: 'Старый Собор', Coordinates: '6139,7781', Type: 'Village' },
+    // Add the rest of your 200+ locations here in the same format
 ];
 
-// Scaling
-const mapWidth = 1500;
-const mapHeight = 1356;
-
-const xs = locations.map(l => Number(l.Coordinates.split(',')[0]));
-const ys = locations.map(l => Number(l.Coordinates.split(',')[1]));
-
-const minX = Math.min(...xs);
-const maxX = Math.max(...xs);
-const minY = Math.min(...ys);
-const maxY = Math.max(...ys);
-
-function scaleCoords(coordStr) {
-    let [x, y] = coordStr.split(',').map(Number);
-    let px = ((x - minX) / (maxX - minX)) * mapWidth;
-    let py = mapHeight - ((y - minY) / (maxY - minY)) * mapHeight; // flip Y so north is top
-    return { x: px, y: py };
-}
-
-const mapContainer = document.getElementById('mapContainer');
+const mapContainer = document.getElementById('map-container');
+const tooltip = document.getElementById('tooltip');
 
 locations.forEach(loc => {
-    const { x, y } = scaleCoords(loc.Coordinates);
+    const [x, y] = loc.Coordinates.split(',').map(Number);
+    const scaled = scaleCoord(x, y);
+
     const marker = document.createElement('div');
-    marker.classList.add('marker');
+    marker.className = `marker ${loc.Type.replace(' ', '\\ ')}`;
+    marker.style.left = `${scaled.x}px`;
+    marker.style.top = `${scaled.y}px`;
 
-    // Assign color by type
-    switch(loc.Type.toLowerCase()) {
-        case 'city': marker.classList.add('city'); break;
-        case 'town': marker.classList.add('town'); break;
-        case 'village': marker.classList.add('village'); break;
-        case 'military': marker.classList.add('military'); break;
-        case 'airfield': marker.classList.add('airfield'); break;
-        case 'poi': marker.classList.add('poi'); break;
-        case 'industrial': marker.classList.add('industrial'); break;
-        case 'island': marker.classList.add('island'); break;
-        case 'shipwreck': marker.classList.add('shipwreck'); break;
-        case 'minor military':
-        case 'minor poi':
-            marker.classList.add('minor'); break;
-        default: marker.style.background = 'magenta';
-    }
+    marker.addEventListener('mouseenter', () => {
+        tooltip.style.display = 'block';
+        tooltip.innerText = `${loc.English_Name} ${loc.Native_Name ? '('+loc.Native_Name+')' : ''}`;
+    });
+    marker.addEventListener('mousemove', e => {
+        tooltip.style.left = e.pageX + 10 + 'px';
+        tooltip.style.top = e.pageY + 10 + 'px';
+    });
+    marker.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+    });
 
-    marker.style.left = `${x}px`;
-    marker.style.top = `${y}px`;
-    marker.title = loc.English_Name;
     mapContainer.appendChild(marker);
 });
 </script>
+
 </body>
 </html>
