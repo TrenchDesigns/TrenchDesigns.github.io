@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CHERNOMAP – Full Calibration</title>
+<title>CHERNOMAP – Final Polished Map</title>
 
 <style>
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #111;
+    background: #0d0d0d;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -17,7 +17,8 @@ body {
 }
 
 h1 {
-    margin: 10px 0;
+    margin: 12px 0 6px 0;
+    letter-spacing: 1px;
 }
 
 /* MAP */
@@ -27,213 +28,186 @@ h1 {
     height: 1356px;
     background: url('CHERNOMAP.webp') no-repeat top left;
     background-size: cover;
-    border: 2px solid #fff;
-    cursor: crosshair;
+    border: 2px solid #666;
+    box-shadow: 0 0 25px rgba(0,0,0,0.8);
 }
 
-/* CROSSHAIR */
-.cross-x, .cross-y {
+/* MARKERS */
+.marker {
     position: absolute;
-    pointer-events: none;
-    background: rgba(255,255,255,0.35);
-    z-index: 5;
-}
-.cross-x { height: 1px; width: 100%; }
-.cross-y { width: 1px; height: 100%; }
-
-/* PIN */
-.pin {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: red;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    pointer-events: none;
-}
-
-/* PANEL */
-#panel {
-    width: 520px;
-    margin: 15px 0;
-    background: #1a1a1a;
-    border: 1px solid #444;
-    padding: 12px;
-}
-
-#panel h2 {
-    text-align: center;
-    margin: 0 0 8px 0;
-}
-
-#instruction, #progress, #coords {
-    text-align: center;
-    margin-bottom: 6px;
-}
-
-#coords {
-    font-family: monospace;
-}
-
-button {
-    padding: 6px 10px;
-    margin: 4px;
     cursor: pointer;
+    opacity: 0.9;
+    transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-textarea {
-    width: 100%;
-    height: 260px;
-    background: #000;
-    color: #0f0;
-    font-family: monospace;
-    margin-top: 8px;
+.marker:hover {
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 1;
+}
+
+/* TOOLTIP */
+#tooltip {
+    position: fixed;
+    background: rgba(0,0,0,0.85);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    pointer-events: none;
+    display: none;
+    z-index: 50;
+    white-space: nowrap;
+}
+
+/* LEGEND */
+#legend {
+    margin: 14px 0 18px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
 }
 </style>
 </head>
 
 <body>
 
-<h1>CHERNOMAP – FULL SETTLEMENT CALIBRATION</h1>
+<h1>CHERNOMAP</h1>
 
-<div id="map-container">
-    <div class="cross-x" id="crossX"></div>
-    <div class="cross-y" id="crossY"></div>
-</div>
-
-<div id="panel">
-    <h2>Calibration Panel</h2>
-    <div id="progress">Idle</div>
-    <div id="instruction">Press Start</div>
-    <div id="coords">X: — | Y: —</div>
-
-    <button id="start">Start</button>
-    <button id="undo" disabled>Undo</button>
-    <button id="copy" disabled>Copy Results</button>
-
-    <textarea id="output" readonly></textarea>
-</div>
+<div id="map-container"></div>
+<div id="legend"></div>
+<div id="tooltip"></div>
 
 <script>
-/* ===== COMPLETE CHERNARUS LOCATION LIST ===== */
+/* ===== MAP DATA (CALIBRATED) ===== */
 const locations = [
-/* CITIES */
-'Chernogorsk','Elektrozavodsk','Berezino','Zelenogorsk','Novaya Petrovka','Novodmitrovsk',
-
-/* TOWNS */
-'Severograd','Vybor','Grishino','Gorka','Solnichniy','Staroye','Mogilevka',
-'Krasnostav','Svetlojarsk','Nadezhdino','Kozlovka','Pavlovo',
-
-/* VILLAGES */
-'Balota','Bor','Drozhino','Dubrovka','Guglovo','Kabanino','Kamyshovo',
-'Khelm','Komarovo','Lopatino','Msta','Myshkino','Orlovets','Petrovka',
-'Polana','Prigorodki','Pulkovo','Pusta','Rogovo','Shakhovka',
-'Sosnovka','Stary Sobor','Novy Sobor','Tulga','Vyshnoye',
-'Chernaya Polyana','Zvir','Sinystok','Topolniki','Kalinovka',
-
-/* MILITARY */
-'Tisy Military Base','Pavlovo Military','Kamensk Military','Myshkino Tents',
-'Zelenogorsk Military','Stary Sobor Military','Novy Sobor Military',
-
-/* AIRFIELDS */
-'Northwest Airfield (NWAF)','Balota Airfield','Krasnostav Airstrip'
+    {name:'Balota',x:453,y:1188,type:'Village'},
+    {name:'Balota Airfield',x:479,y:1197,type:'Airfield'},
+    {name:'Berezino',x:1149,y:536,type:'City'},
+    {name:'Bor',x:323,y:1046,type:'Village'},
+    {name:'Chernaya Polyana',x:1179,y:167,type:'Village'},
+    {name:'Chernogorsk',x:621,y:1176,type:'City'},
+    {name:'Drozhino',x:328,y:973,type:'Village'},
+    {name:'Dubrovka',x:978,y:521,type:'Village'},
+    {name:'Elektrozavodsk',x:971,y:1224,type:'City'},
+    {name:'Gorka',x:899,y:604,type:'Town'},
+    {name:'Grishino',x:566,y:473,type:'Town'},
+    {name:'Guglovo',x:797,y:796,type:'Village'},
+    {name:'Kabanino',x:502,y:627,type:'Village'},
+    {name:'Kalinovka',x:713,y:192,type:'Village'},
+    {name:'Kamensk Military',x:737,y:73,type:'Military'},
+    {name:'Kamyshovo',x:1121,y:1088,type:'Village'},
+    {name:'Khelm',x:1141,y:409,type:'Village'},
+    {name:'Komarovo',x:344,y:1188,type:'Village'},
+    {name:'Kozlovka',x:421,y:987,type:'Village'},
+    {name:'Krasnostav',x:1036,y:296,type:'Town'},
+    {name:'Krasnostav Airstrip',x:1132,y:266,type:'Airfield'},
+    {name:'Lopatino',x:268,y:506,type:'Village'},
+    {name:'Mogilevka',x:717,y:944,type:'Town'},
+    {name:'Msta',x:1064,y:909,type:'Village'},
+    {name:'Myshkino',x:212,y:744,type:'Village'},
+    {name:'Myshkino Tents',x:122,y:748,type:'Military'},
+    {name:'Nadezhdino',x:559,y:977,type:'Village'},
+    {name:'Northwest Airfield (NWAF)',x:418,y:453,type:'Airfield'},
+    {name:'Novaya Petrovka',x:323,y:222,type:'City'},
+    {name:'Novodmitrovsk',x:1076,y:112,type:'City'},
+    {name:'Novy Sobor',x:673,y:713,type:'Village'},
+    {name:'Orlovets',x:1127,y:743,type:'Village'},
+    {name:'Pavlovo',x:179,y:1077,type:'Village'},
+    {name:'Pavlovo Military',x:213,y:1104,type:'Military'},
+    {name:'Polana',x:997,y:651,type:'Village'},
+    {name:'Prigorodki',x:698,y:1116,type:'Village'},
+    {name:'Pulkovo',x:467,y:898,type:'Village'},
+    {name:'Pusta',x:866,y:1072,type:'Village'},
+    {name:'Rogovo',x:452,y:787,type:'Village'},
+    {name:'Severograd',x:741,y:261,type:'Town'},
+    {name:'Shakhovka',x:877,y:823,type:'Village'},
+    {name:'Sinystok',x:149,y:314,type:'Village'},
+    {name:'Solnichniy',x:1232,y:833,type:'Town'},
+    {name:'Sosnovka',x:247,y:834,type:'Village'},
+    {name:'Staroye',x:924,y:909,type:'Town'},
+    {name:'Stary Sobor',x:587,y:723,type:'Village'},
+    {name:'Stary Sobor Military',x:607,y:701,type:'Military'},
+    {name:'Svetlojarsk',x:1292,y:211,type:'Town'},
+    {name:'Tisy Military Base',x:157,y:139,type:'Military'},
+    {name:'Topolniki',x:287,y:254,type:'Village'},
+    {name:'Tulga',x:1196,y:998,type:'Village'},
+    {name:'Vybor',x:372,y:603,type:'Town'},
+    {name:'Vyshnoye',x:633,y:862,type:'Village'},
+    {name:'Zelenogorsk',x:263,y:934,type:'City'},
+    {name:'Zelenogorsk Military',x:243,y:951,type:'Military'},
+    {name:'Zvir',x:62,y:928,type:'Village'}
 ];
 
-/* SORT FOR CONSISTENCY */
-const calibrationList = locations.sort();
+/* ===== COLORS ===== */
+const colors = {
+    City: '#1e90ff',
+    Town: '#00ffff',
+    Village: '#00ff66',
+    Military: '#ff3333',
+    Airfield: '#ffa500'
+};
 
-/* ===== STATE ===== */
-let index = -1;
-let active = false;
-let results = [];
-let pins = [];
-
-/* ===== ELEMENTS ===== */
+/* ===== RENDER ===== */
 const map = document.getElementById('map-container');
-const crossX = document.getElementById('crossX');
-const crossY = document.getElementById('crossY');
-const instruction = document.getElementById('instruction');
-const progress = document.getElementById('progress');
-const coords = document.getElementById('coords');
-const output = document.getElementById('output');
-const startBtn = document.getElementById('start');
-const undoBtn = document.getElementById('undo');
-const copyBtn = document.getElementById('copy');
+const tooltip = document.getElementById('tooltip');
 
-/* ===== CROSSHAIR ===== */
-map.addEventListener('mousemove', e => {
-    const r = map.getBoundingClientRect();
-    const x = Math.round(e.clientX - r.left);
-    const y = Math.round(e.clientY - r.top);
+locations.forEach(loc => {
+    const m = document.createElement('div');
+    m.className = 'marker';
+    m.style.left = loc.x + 'px';
+    m.style.top = loc.y + 'px';
+    m.style.background = colors[loc.type];
 
-    crossX.style.top = y + 'px';
-    crossY.style.left = x + 'px';
-    coords.textContent = `X: ${x} | Y: ${y}`;
+    m.addEventListener('mouseenter', () => {
+        tooltip.style.display = 'block';
+        tooltip.innerHTML = `<strong>${loc.name}</strong><br>${loc.type}`;
+    });
+
+    m.addEventListener('mousemove', e => {
+        tooltip.style.left = e.clientX + 12 + 'px';
+        tooltip.style.top = e.clientY + 12 + 'px';
+    });
+
+    m.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+    });
+
+    map.appendChild(m);
 });
 
-/* ===== START ===== */
-startBtn.addEventListener('click', () => {
-    active = true;
-    index = 0;
-    results = [];
-    output.value = '';
-    pins.forEach(p => p.remove());
-    pins = [];
+/* ===== LEGEND ===== */
+const legend = document.getElementById('legend');
+Object.entries(colors).forEach(([type,color]) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
 
-    instruction.textContent = `Click on: ${calibrationList[index]}`;
-    progress.textContent = `1 / ${calibrationList.length}`;
-    undoBtn.disabled = false;
-    copyBtn.disabled = true;
-});
+    const dot = document.createElement('div');
+    dot.className = 'legend-dot';
+    dot.style.background = color;
 
-/* ===== CLICK RECORD ===== */
-map.addEventListener('click', e => {
-    if (!active) return;
+    const label = document.createElement('span');
+    label.textContent = type;
 
-    const r = map.getBoundingClientRect();
-    const x = Math.round(e.clientX - r.left);
-    const y = Math.round(e.clientY - r.top);
-
-    const name = calibrationList[index];
-    results.push({ name, x, y });
-    output.value += `${name}: ${x},${y}\n`;
-
-    const pin = document.createElement('div');
-    pin.className = 'pin';
-    pin.style.left = x + 'px';
-    pin.style.top = y + 'px';
-    map.appendChild(pin);
-    pins.push(pin);
-
-    index++;
-
-    if (index < calibrationList.length) {
-        instruction.textContent = `Click on: ${calibrationList[index]}`;
-        progress.textContent = `${index + 1} / ${calibrationList.length}`;
-    } else {
-        instruction.textContent = 'Calibration complete ✔';
-        progress.textContent = `${calibrationList.length} / ${calibrationList.length}`;
-        active = false;
-        copyBtn.disabled = false;
-    }
-});
-
-/* ===== UNDO ===== */
-undoBtn.addEventListener('click', () => {
-    if (results.length === 0) return;
-    results.pop();
-    pins.pop().remove();
-    index--;
-    output.value = results.map(r => `${r.name}: ${r.x},${r.y}`).join('\n') + '\n';
-    instruction.textContent = `Click on: ${calibrationList[index]}`;
-    progress.textContent = `${index + 1} / ${calibrationList.length}`;
-});
-
-/* ===== COPY ===== */
-copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(output.value);
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => copyBtn.textContent = 'Copy Results', 1500);
+    item.appendChild(dot);
+    item.appendChild(label);
+    legend.appendChild(item);
 });
 </script>
 
