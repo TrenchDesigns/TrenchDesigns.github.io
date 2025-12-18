@@ -9,185 +9,138 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-html,body{
-  margin:0;height:100%;overflow:hidden;
-  font-family:system-ui, monospace;
-  background:#080808;color:#eee;
+html, body {
+  height: 100%; margin: 0; overflow: hidden;
+  font-family: system-ui, monospace;
+  background-color: #080808;
+  color: #eee;
 }
-#map{position:absolute;inset:0}
+#map { position: absolute; inset: 0; z-index: 1; }
 
-/* NAV */
-.navbar{
-  z-index:1000;
-  background:#111!important;
-  border-bottom:1px solid #333;
+/* Thermal mode */
+.thermal .leaflet-image-layer {
+  filter: grayscale(1) brightness(.55) contrast(1.4);
 }
-.navbar-brand{color:#ff5555;font-weight:bold}
-
-/* PANELS */
-.panel{
-  position:absolute;
-  background:rgba(10,10,10,.92);
-  border:1px solid #333;
-  padding:10px 14px;
-  border-radius:6px;
-  font-size:14px;
-  z-index:600;
-  text-shadow:0 0 4px #000;
+.thermal .leaflet-pane.thermal canvas {
+  filter: contrast(1.7) brightness(1.3) saturate(2)
+          drop-shadow(0 0 14px rgba(255,80,0,.95));
 }
-#info{top:70px;right:12px;max-width:260px}
-#tip{bottom:10px;left:50%;transform:translateX(-50%)}
+.leaflet-pane.thermal { opacity: 0; transition: opacity .6s ease; }
+.thermal .leaflet-pane.thermal { opacity: 1; }
 
-/* LEGEND */
-#legend{
-  position:fixed;bottom:10px;left:10px;
-  background:rgba(20,20,20,.92);
-  padding:12px;border-radius:6px;
-  font-size:13px;z-index:9999
-}
-.legend-item{display:flex;align-items:center;margin-bottom:6px}
-.legend-item img{width:18px;height:18px;margin-right:8px}
-
-/* ===== THERMAL MODE ===== */
-.thermal .leaflet-image-layer{
-  filter:grayscale(1) brightness(.55) contrast(1.4);
+/* Noise overlay */
+#noise {
+  pointer-events: none;
+  position: fixed; inset: 0; z-index: 1200;
+  opacity: .08;
+  background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGZpbHRlciBpZD0ibm9pc2UiPjxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIuNiIgbnVtT2N0YXZlcz0iMSIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iLjMiLz48L3N2Zz4=");
 }
 
-/* glowing heat canvas */
-.thermal .leaflet-pane.thermal canvas{
-  filter:
-    contrast(1.7)
-    brightness(1.3)
-    saturate(2)
-    drop-shadow(0 0 14px rgba(255,80,0,.95));
+/* Panels & Legend */
+#info, #tip {
+  position: absolute;
+  z-index: 1000;
+  background: rgba(20,20,20,.9);
+  padding: .8rem 1rem;
+  border-radius: .5rem;
+  font-size: .875rem;
+  box-shadow: 0 0 10px #000;
+}
+#info { top: 80px; right: 20px; max-width: 280px; }
+#tip { bottom: 20px; left: 50%; transform: translateX(-50%); }
+
+#legend {
+  position: fixed; bottom: 20px; left: 20px;
+  background: rgba(20,20,20,.9);
+  padding: 1rem;
+  border-radius: .5rem;
+  font-size: .85rem;
+  z-index: 1100;
 }
 
-/* fade-in */
-.leaflet-pane.thermal{
-  opacity:0;
-  transition:opacity .6s ease;
-}
-.thermal .leaflet-pane.thermal{
-  opacity:1;
-}
-
-/* noise overlay */
-#noise{
-  pointer-events:none;
-  position:fixed;inset:0;
-  z-index:1200;
-  opacity:0;
-  background:url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGZpbHRlciBpZD0ibm9pc2UiPjxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIuNiIgbnVtT2N0YXZlcz0iMSIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iLjMiLz48L3N2Zz4=");
-}
-.thermal #noise{opacity:.08}
+.legend-item { display: flex; align-items: center; margin-bottom: 0.5rem; }
+.legend-item img { width: 22px; height: 22px; margin-right: 8px; }
 
 /* Leaflet UI */
-.leaflet-control-layers-expanded{
-  background:rgba(20,20,20,.95);
-  color:#eee;border:1px solid #444;
+.leaflet-control-layers-expanded {
+  background: rgba(20,20,20,.95);
+  color: #eee; border: 1px solid #444;
 }
-.leaflet-control-layers-selector{accent-color:#ff4444}
+.leaflet-control-layers-selector { accent-color: #ff4444; }
+
 </style>
 </head>
 
 <body>
 
-<nav class="navbar navbar-dark px-3">
-  <span class="navbar-brand">🧭 DayZ Tactical Companion</span>
-  <div class="ms-auto d-flex gap-2">
-    <button id="toggleThermal" class="btn btn-sm btn-outline-danger">Thermal</button>
-    <button id="toggleMarker" class="btn btn-sm btn-outline-warning">Marker</button>
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-dark fixed-top shadow-sm">
+  <div class="container-fluid">
+    <span class="navbar-brand fw-bold text-danger">🧭 DayZ Tactical Companion</span>
+    <div class="d-flex gap-2">
+      <button id="toggleThermal" class="btn btn-outline-danger btn-sm">Thermal</button>
+      <button id="toggleMarker" class="btn btn-outline-warning btn-sm">Marker</button>
+    </div>
   </div>
 </nav>
 
+<!-- MAP -->
 <div id="map"></div>
 <div id="noise"></div>
 
+<!-- INFO PANEL -->
+<div id="info">Hover military zone</div>
+<div id="tip">Tip: Stay low.</div>
+
+<!-- LEGEND -->
 <div id="legend">
-  <strong>Legend</strong><br><br>
+  <h6 class="text-light mb-2">Legend</h6>
   <div class="legend-item"><img id="lg-mil"> Military</div>
   <div class="legend-item"><img id="lg-exp"> Explorer</div>
   <div class="legend-item"><img id="lg-cau"> Cautious</div>
   <div class="legend-item"><img id="lg-agg"> Aggressive</div>
   <div class="legend-item"><img id="lg-cus"> Custom</div>
-  <div style="font-size:12px;margin-top:6px;">🔥 Heat = activity</div>
+  <div class="mt-2" style="font-size:.75rem;">🔥 Heat = activity</div>
 </div>
-
-<div id="info" class="panel">Hover military zone</div>
-<div id="tip" class="panel">Tip: Stay low.</div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet.heat/dist/leaflet-heat.js"></script>
 
 <script>
-/* ========== CONFIG ========== */
-const CFG={
-  W:1500,H:1450,
-  MAX:90,
-  HEAT_PUSH:500,
-  KILL_DIST:900,
-  BODY_COOL:0.995
-};
+/* ===== CONFIG ===== */
+const CFG={ W:1500,H:1450, MAX:90, HEAT_PUSH:500, KILL_DIST:900, BODY_COOL:0.995 };
 
-/* ========== ICONS ========== */
-const svg={
-  mil:`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-    <path d="M16 0l16 6v16c0 16-11 24-16 24S0 38 0 22V6L16 0z"
-      fill="#ff4444" stroke="#000" stroke-width="2"/>
-    <circle cx="16" cy="10" r="6" fill="#fff"/></svg>`,
-  exp:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22">
-    <circle cx="11" cy="11" r="10" fill="#ffcc00" stroke="#000" stroke-width="2"/></svg>`,
-  cau:`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-    <circle cx="9" cy="9" r="8" fill="#3399ff" stroke="#000" stroke-width="2"/></svg>`,
-  agg:`<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26">
-    <circle cx="13" cy="13" r="12" fill="#ff4444" stroke="#000" stroke-width="2"/></svg>`,
-  cus:`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28">
-    <path fill="#ff8800" d="M14 2C9 2 5 6 5 10c0 6 9 15 9 15s9-9 9-15c0-4-4-8-9-8z"/></svg>`
-};
+/* ===== ICONS ===== */
+const svg={mil:`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M16 0l16 6v16c0 16-11 24-16 24S0 38 0 22V6L16 0z" fill="#ff4444" stroke="#000" stroke-width="2"/><circle cx="16" cy="10" r="6" fill="#fff"/></svg>`,
+exp:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"><circle cx="11" cy="11" r="10" fill="#ffcc00" stroke="#000" stroke-width="2"/></svg>`,
+cau:`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"><circle cx="9" cy="9" r="8" fill="#3399ff" stroke="#000" stroke-width="2"/></svg>`,
+agg:`<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="12" fill="#ff4444" stroke="#000" stroke-width="2"/></svg>`,
+cus:`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><path fill="#ff8800" d="M14 2C9 2 5 6 5 10c0 6 9 15 9 15s9-9 9-15c0-4-4-8-9-8z"/></svg>`};
 const url=s=>"data:image/svg+xml;base64,"+btoa(s);
 
-/* ========== MAP ========== */
+/* ===== MAP ===== */
 const map=L.map("map",{crs:L.CRS.Simple,minZoom:-2,maxZoom:6});
 L.imageOverlay("chernarus.png",[[0,0],[CFG.H,CFG.W]]).addTo(map);
 map.fitBounds([[0,0],[CFG.H,CFG.W]]);
 const px=(x,y)=>[y,x];
+map.createPane("thermal"); map.getPane("thermal").style.zIndex=450;
 
-/* panes */
-map.createPane("thermal");
-map.getPane("thermal").style.zIndex=450;
+/* ===== ICONS ===== */
+const icons={mil:L.icon({iconUrl:url(svg.mil),iconSize:[32,32],iconAnchor:[16,32]}),
+exp:L.icon({iconUrl:url(svg.exp),iconSize:[22,22],iconAnchor:[11,22]}),
+cau:L.icon({iconUrl:url(svg.cau),iconSize:[18,18],iconAnchor:[9,18]}),
+agg:L.icon({iconUrl:url(svg.agg),iconSize:[26,26],iconAnchor:[13,26]}),
+cus:L.icon({iconUrl:url(svg.cus),iconSize:[28,28],iconAnchor:[14,28]})};
+["mil","exp","cau","agg","cus"].forEach(k=>document.getElementById("lg-"+k).src=url(svg[k]));
 
-/* ========== ICONS ========== */
-const icons={
-  mil:L.icon({iconUrl:url(svg.mil),iconSize:[32,32],iconAnchor:[16,32]}),
-  exp:L.icon({iconUrl:url(svg.exp),iconSize:[22,22],iconAnchor:[11,22]}),
-  cau:L.icon({iconUrl:url(svg.cau),iconSize:[18,18],iconAnchor:[9,18]}),
-  agg:L.icon({iconUrl:url(svg.agg),iconSize:[26,26],iconAnchor:[13,26]}),
-  cus:L.icon({iconUrl:url(svg.cus),iconSize:[28,28],iconAnchor:[14,28]})
-};
-["mil","exp","cau","agg","cus"].forEach(k=>{
-  document.getElementById("lg-"+k).src=url(svg[k]);
-});
-
-/* ========== LAYERS ========== */
+/* ===== LAYERS ===== */
 const milLayer=L.layerGroup().addTo(map);
 const plyLayer=L.layerGroup().addTo(map);
 const cusLayer=L.layerGroup().addTo(map);
-const heat=L.heatLayer([],{
-  radius:80,blur:45,max:3,pane:"thermal"
-});
+const heat=L.heatLayer([],{radius:80,blur:45,max:3,pane:"thermal"});
 
-/* ========== MILITARY ========== */
-const MIL=[
-  {x:214,y:454,n:"Zelenogorsk"},
-  {x:410,y:148,n:"Balota"},
-  {x:152,y:260,n:"Pavlovo"},
-  {x:566,y:734,n:"Stary"},
-  {x:784,y:1388,n:"Kamensk"},
-  {x:1120,y:1280,n:"NEAF"},
-  {x:264,y:1376,n:"Tisy"},
-  {x:372,y:1004,n:"NWAF"},
-  {x:342,y:762,n:"VMC"}
-];
+/* ===== MILITARY ===== */
+const MIL=[{x:214,y:454,n:"Zelenogorsk"},{x:410,y:148,n:"Balota"},{x:152,y:260,n:"Pavlovo"},{x:566,y:734,n:"Stary"},{x:784,y:1388,n:"Kamensk"},{x:1120,y:1280,n:"NEAF"},{x:264,y:1376,n:"Tisy"},{x:372,y:1004,n:"NWAF"},{x:342,y:762,n:"VMC"}];
 const risk={};
 MIL.forEach(m=>{
   risk[m.n]=0;
@@ -196,102 +149,42 @@ MIL.forEach(m=>{
   mk.on("mouseout",()=>info.innerText="Hover military zone");
 });
 
-/* ========== PLAYERS ========== */
-const players=[];
-let heatBuf=[];
-
-setInterval(()=>{
-  if(heatBuf.length){
-    heat.addLatLngs(heatBuf);
-    heatBuf=[];
-  }
-},CFG.HEAT_PUSH);
-
-const types={
-  exp:{spd:.0015},
-  cau:{spd:.001},
-  agg:{spd:.0018}
-};
-
+/* ===== PLAYERS ===== */
+const players=[]; let heatBuf=[];
+setInterval(()=>{if(heatBuf.length){heat.addLatLngs(heatBuf);heatBuf=[];}},CFG.HEAT_PUSH);
+const types={exp:{spd:.0015},cau:{spd:.001},agg:{spd:.0018}};
 function rnd(){return{x:Math.random()*CFG.W,y:Math.random()*CFG.H};}
-
-function spawn(){
-  if(players.length>=CFG.MAX) return;
-  const k=Object.keys(types)[Math.floor(Math.random()*3)];
-  const t=MIL[Math.floor(Math.random()*MIL.length)];
-  const s=rnd();
-  const dot=L.marker(px(s.x,s.y),{icon:icons[k]}).addTo(plyLayer);
-  players.push({
-    dot,type:k,start:s,target:t,step:0,alive:true,heat:1
-  });
-}
+function spawn(){if(players.length>=CFG.MAX) return; const k=Object.keys(types)[Math.floor(Math.random()*3)]; const t=MIL[Math.floor(Math.random()*MIL.length)]; const s=rnd(); const dot=L.marker(px(s.x,s.y),{icon:icons[k]}).addTo(plyLayer); players.push({dot,type:k,start:s,target:t,step:0,alive:true,heat:1});}
 for(let i=0;i<30;i++) spawn();
 
-/* ========== LOOP ========== */
+/* ===== LOOP ===== */
 let last=performance.now();
 function loop(ts){
   const d=(ts-last)/16.67; last=ts;
   MIL.forEach(m=>risk[m.n]=0);
-
   players.forEach(p=>{
-    if(!p.alive){
-      p.heat*=CFG.BODY_COOL;
-    }else{
-      p.step+=types[p.type].spd*d;
-      if(p.step>=1){
-        p.start=rnd(); p.step=0;
-      }
-    }
-
+    if(!p.alive){p.heat*=CFG.BODY_COOL;}else{p.step+=types[p.type].spd*d;if(p.step>=1){p.start=rnd();p.step=0;}}
     const x=p.start.x+(p.target.x-p.start.x)*p.step;
     const y=p.start.y+(p.target.y-p.start.y)*p.step;
     p.dot.setLatLng(px(x,y));
     heatBuf.push([y,x,p.heat]);
-
-    MIL.forEach(m=>{
-      if((x-m.x)**2+(y-m.y)**2<8000) risk[m.n]++;
-    });
-
-    if(p.type==="agg" && p.alive){
-      players.forEach(o=>{
-        if(o!==p && o.alive){
-          const a=p.dot.getLatLng(),b=o.dot.getLatLng();
-          if((a.lat-b.lat)**2+(a.lng-b.lng)**2<CFG.KILL_DIST){
-            o.alive=false;
-            o.heat=1.5;
-          }
-        }
-      });
-    }
+    MIL.forEach(m=>{if((x-m.x)**2+(y-m.y)**2<8000) risk[m.n]++;});
+    if(p.type==="agg" && p.alive){players.forEach(o=>{if(o!==p && o.alive){const a=p.dot.getLatLng(),b=o.dot.getLatLng();if((a.lat-b.lat)**2+(a.lng-b.lng)**2<CFG.KILL_DIST){o.alive=false;o.heat=1.5;}}});}
   });
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
-/* ========== UI ========== */
-let thermal=false,mark=false;
-toggleThermal.onclick=()=>{
-  thermal=!thermal;
-  document.body.classList.toggle("thermal",thermal);
-  thermal?heat.addTo(map):map.removeLayer(heat);
-};
+/* ===== UI ===== */
+let thermal=false, mark=false;
+toggleThermal.onclick=()=>{thermal=!thermal; document.body.classList.toggle("thermal",thermal); thermal?heat.addTo(map):map.removeLayer(heat);};
 toggleMarker.onclick=()=>mark=!mark;
+map.on("click",e=>{if(!mark) return; L.marker(e.latlng,{icon:icons.cus}).addTo(cusLayer).bindPopup("Custom Marker");});
 
-map.on("click",e=>{
-  if(!mark) return;
-  L.marker(e.latlng,{icon:icons.cus})
-    .addTo(cusLayer)
-    .bindPopup("Custom Marker");
-});
-
-/* tips */
-const tips=[
-  "Avoid hotspots.",
-  "Bodies stay warm.",
-  "Thermal sees movement.",
-  "Aggressive players hunt."
-];
+/* ===== TIPS ===== */
+const tips=["Avoid hotspots.","Bodies stay warm.","Thermal sees movement.","Aggressive players hunt."];
 setInterval(()=>tip.innerText="Tip: "+tips[Math.floor(Math.random()*tips.length)],10000);
 </script>
+
 </body>
 </html>
