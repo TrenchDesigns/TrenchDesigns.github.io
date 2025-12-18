@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CHERNOMAP – Full Calibration</title>
+<title>CHERNOMAP – Interactive Map</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 body {
@@ -11,11 +11,10 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     background: #111;
     color: #fff;
-    overflow-x: hidden;
 }
 
 .navbar-custom {
-    background: rgba(30, 30, 30, 0.7);
+    background: rgba(30,30,30,0.7);
     backdrop-filter: blur(12px);
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
@@ -27,7 +26,7 @@ body {
     margin: 20px auto;
     border: 2px solid #fff;
     overflow: hidden;
-    cursor: crosshair;
+    cursor: grab;
 }
 
 #map-container {
@@ -41,68 +40,23 @@ body {
     transform-origin: center center;
 }
 
-.cross-x, .cross-y {
-    position: absolute;
-    pointer-events: none;
-    background: rgba(255,255,255,0.35);
-    z-index: 5;
-}
-.cross-x { height: 1px; width: 100%; }
-.cross-y { width: 1px; height: 100%; }
-
 .pin {
     position: absolute;
-    width: 10px;
-    height: 10px;
-    background: red;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: pointer;
+    border: 2px solid #fff;
+    transition: transform 0.2s;
     z-index: 10;
 }
 
-#panel {
-    width: 520px;
-    margin: 15px auto;
-    background: rgba(26,26,26,0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid #444;
-    padding: 12px;
-    border-radius: 15px;
+.pin:hover {
+    transform: translate(-50%, -50%) scale(1.5);
 }
 
-#panel h2 {
-    text-align: center;
-    margin: 0 0 8px 0;
-}
-
-#instruction, #progress, #coords {
-    text-align: center;
-    margin-bottom: 6px;
-}
-
-#coords {
-    font-family: monospace;
-}
-
-button {
-    padding: 6px 10px;
-    margin: 4px;
-    cursor: pointer;
-}
-
-textarea {
-    width: 100%;
-    height: 260px;
-    background: #000;
-    color: #0f0;
-    font-family: monospace;
-    margin-top: 8px;
-    border-radius: 8px;
-    padding: 6px;
-}
-
-/* Thermal canvas */
 #heatmap-canvas {
     position: absolute;
     top: 0;
@@ -110,42 +64,60 @@ textarea {
     width: 1500px;
     height: 1356px;
     pointer-events: none;
-    z-index: 8;
+    z-index: 5;
+}
+
+#control-panel {
+    width: 500px;
+    margin: 20px auto;
+    background: rgba(26,26,26,0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    padding: 15px;
+}
+
+#control-panel h2 {
+    text-align: center;
+}
+
+.toggle-btn {
+    margin: 5px;
 }
 </style>
 </head>
-
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">CHERNOMAP</a>
-    <button class="btn btn-outline-light" id="toggleHeat">Toggle Thermal Mode</button>
-  </div>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">CHERNOMAP</a>
+        <button class="btn btn-outline-light" id="toggleHeat">Toggle Thermal Heatmap</button>
+    </div>
 </nav>
 
 <div id="map-wrapper">
     <canvas id="heatmap-canvas"></canvas>
-    <div id="map-container">
-        <div class="cross-x" id="crossX"></div>
-        <div class="cross-y" id="crossY"></div>
-    </div>
+    <div id="map-container"></div>
 </div>
 
-<div id="panel">
-    <h2>Calibration Panel</h2>
-    <div id="progress">Idle</div>
-    <div id="instruction">Press Start</div>
-    <div id="coords">X: — | Y: —</div>
-
-    <button class="btn btn-primary" id="start">Start</button>
-    <button class="btn btn-warning" id="undo" disabled>Undo</button>
-    <button class="btn btn-success" id="copy" disabled>Copy Results</button>
-
-    <textarea id="output" readonly></textarea>
+<div id="control-panel">
+    <h2>Map Controls</h2>
+    <button class="btn btn-primary toggle-btn" id="zoomIn">Zoom In</button>
+    <button class="btn btn-primary toggle-btn" id="zoomOut">Zoom Out</button>
+    <button class="btn btn-secondary toggle-btn" id="resetView">Reset View</button>
 </div>
 
 <script>
+const mapContainer = document.getElementById('map-container');
+const heatCanvas = document.getElementById('heatmap-canvas');
+const ctx = heatCanvas.getContext('2d');
+const toggleHeatBtn = document.getElementById('toggleHeat');
+let showHeat = true;
+let scale = 1;
+let offsetX = 0;
+let offsetY = 0;
+let isDragging = false;
+let startX, startY;
+
 /* ===== LOCATIONS ===== */
 const locations = [
 {n:'Balota',x:453,y:1188},{n:'Balota Airfield',x:479,y:1197},{n:'Berezino',x:1149,y:536},{n:'Bor',x:323,y:1046},
@@ -178,107 +150,60 @@ const thermalWeights = {
   'Berezino': 3
 };
 
-/* ===== STATE ===== */
-let index=-1, active=false, results=[], pins=[], thermalMode=true;
-const map = document.getElementById('map-container');
-const crossX = document.getElementById('crossX');
-const crossY = document.getElementById('crossY');
-const instruction = document.getElementById('instruction');
-const progress = document.getElementById('progress');
-const coords = document.getElementById('coords');
-const output = document.getElementById('output');
-const startBtn = document.getElementById('start');
-const undoBtn = document.getElementById('undo');
-const copyBtn = document.getElementById('copy');
-const toggleHeat = document.getElementById('toggleHeat');
-
-const heatCanvas = document.getElementById('heatmap-canvas');
-const ctx = heatCanvas.getContext('2d');
-
-/* ===== CROSSHAIR & COORDS ===== */
-map.addEventListener('mousemove', e=>{
-    const r=map.getBoundingClientRect();
-    const x=Math.round(e.clientX - r.left);
-    const y=Math.round(e.clientY - r.top);
-    crossX.style.top = y+'px';
-    crossY.style.left = x+'px';
-    coords.textContent = `X: ${x} | Y: ${y}`;
-});
-
-/* ===== START CALIBRATION ===== */
-startBtn.addEventListener('click', ()=>{
-    active=true; index=0; results=[]; output.value=''; pins.forEach(p=>p.remove()); pins=[];
-    instruction.textContent=`Click on: ${locations[index].n}`;
-    progress.textContent=`1 / ${locations.length}`;
-    undoBtn.disabled=false; copyBtn.disabled=true;
-});
-
-/* ===== CLICK RECORD ===== */
-map.addEventListener('click', e=>{
-    if(!active) return;
-    const r=map.getBoundingClientRect();
-    const x=Math.round(e.clientX - r.left);
-    const y=Math.round(e.clientY - r.top);
-    const loc=locations[index];
-    results.push({name: loc.n,x,y});
-    output.value+=`${loc.n}: ${x},${y}\n`;
-    const pin=document.createElement('div');
-    pin.className='pin'; pin.style.left=x+'px'; pin.style.top=y+'px';
-    map.appendChild(pin); pins.push(pin);
-    index++;
-    if(index<locations.length){
-        instruction.textContent=`Click on: ${locations[index].n}`;
-        progress.textContent=`${index+1} / ${locations.length}`;
-    } else {
-        instruction.textContent='Calibration complete ✔';
-        progress.textContent=`${locations.length} / ${locations.length}`;
-        active=false; copyBtn.disabled=false;
-    }
-    drawThermal();
-});
-
-/* ===== UNDO ===== */
-undoBtn.addEventListener('click', ()=>{
-    if(results.length===0) return;
-    results.pop();
-    pins.pop().remove();
-    index--;
-    output.value = results.map(r=>`${r.name}: ${r.x},${r.y}`).join('\n')+'\n';
-    instruction.textContent=`Click on: ${locations[index].n}`;
-    progress.textContent=`${index+1} / ${locations.length}`;
-    drawThermal();
-});
-
-/* ===== COPY RESULTS ===== */
-copyBtn.addEventListener('click', ()=>{
-    navigator.clipboard.writeText(output.value);
-    copyBtn.textContent='Copied!';
-    setTimeout(()=>copyBtn.textContent='Copy Results',1500);
-});
-
-/* ===== TOGGLE THERMAL ===== */
-toggleHeat.addEventListener('click', ()=>{
-    thermalMode=!thermalMode;
-    drawThermal();
+/* ===== PINS ===== */
+locations.forEach(loc=>{
+    const pin = document.createElement('div');
+    pin.className='pin';
+    pin.style.left = loc.x+'px';
+    pin.style.top = loc.y+'px';
+    pin.title = loc.n;
+    mapContainer.appendChild(pin);
 });
 
 /* ===== THERMAL RENDER ===== */
-function drawThermal(){
+function drawHeatmap(){
     ctx.clearRect(0,0,heatCanvas.width,heatCanvas.height);
+    if(!showHeat) return;
     locations.forEach(l=>{
-        const weight = thermalMode ? (thermalWeights[l.n]||1) : 1;
-        const radius = 70 * weight;
-        const alpha = 0.12 * weight;
-        const grad = ctx.createRadialGradient(l.x,l.y,0,l.x,l.y,radius);
+        const weight = thermalWeights[l.n]||1;
+        const radius = 50*weight*scale;
+        const alpha = 0.1*weight;
+        const grad = ctx.createRadialGradient(l.x*scale+offsetX,l.y*scale+offsetY,0,l.x*scale+offsetX,l.y*scale+offsetY,radius);
         grad.addColorStop(0,'rgba(255,0,0,'+alpha+')');
         grad.addColorStop(1,'rgba(255,0,0,0)');
-        ctx.fillStyle=grad;
-        ctx.fillRect(l.x-radius,l.y-radius,radius*2,radius*2);
+        ctx.fillStyle = grad;
+        ctx.fillRect(l.x*scale+offsetX-radius,l.y*scale+offsetY-radius,radius*2,radius*2);
     });
 }
 
+/* ===== ZOOM & PAN ===== */
+document.getElementById('zoomIn').addEventListener('click',()=>{scale*=1.2; drawHeatmap();});
+document.getElementById('zoomOut').addEventListener('click',()=>{scale/=1.2; drawHeatmap();});
+document.getElementById('resetView').addEventListener('click',()=>{
+    scale=1; offsetX=0; offsetY=0; drawHeatmap();
+});
+
+mapContainer.addEventListener('mousedown',e=>{
+    isDragging=true; startX=e.clientX-offsetX; startY=e.clientY-offsetY;
+});
+document.addEventListener('mouseup',()=>{isDragging=false;});
+document.addEventListener('mousemove',e=>{
+    if(!isDragging) return;
+    offsetX=e.clientX-startX;
+    offsetY=e.clientY-startY;
+    mapContainer.style.transform=`translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    drawHeatmap();
+});
+
+/* ===== TOGGLE HEAT ===== */
+toggleHeatBtn.addEventListener('click',()=>{
+    showHeat=!showHeat;
+    drawHeatmap();
+});
+
 /* ===== INIT ===== */
-drawThermal();
+mapContainer.style.transform=`translate(0px,0px) scale(1)`;
+drawHeatmap();
 </script>
 </body>
 </html>
