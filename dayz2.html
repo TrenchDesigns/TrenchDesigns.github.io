@@ -2,123 +2,139 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Chernarus Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHERNOMAP Click-to-Generate</title>
 <style>
-  body { margin: 0; font-family: sans-serif; }
-  #map-container { position: relative; width: 1500px; height: 1356px; margin: 0 auto; background: url('CHERNOMAP.webp') no-repeat top left; background-size: cover; border: 2px solid #333; }
-  .marker {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    width: 12px;
-    height: 12px;
-    cursor: pointer;
-    border: 2px solid #fff;
-  }
-  .City { background: red; }
-  .Town { background: orange; }
-  .Village { background: yellow; }
-  .Military { background: black; }
-  .Minor\ Military { background: gray; }
-  .Airfield { background: blue; }
-  .POI { background: purple; }
-  .Minor\ POI { background: pink; }
-  .Industrial { background: brown; }
-  .Island { background: teal; }
-  .tooltip {
-    position: absolute;
-    background: rgba(0,0,0,0.8);
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 4px;
-    pointer-events: none;
-    font-size: 12px;
-    display: none;
-    z-index: 1000;
-  }
-  #legend {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: rgba(255,255,255,0.9);
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 14px;
-  }
-  #legend div { margin-bottom: 4px; }
-  #legend span { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: middle; }
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+    }
+
+    #map-container {
+        position: relative;
+        width: 1500px;
+        height: 1356px;
+        background: url('CHERNOMAP.webp') no-repeat top left;
+        border: 2px solid #fff;
+        margin-top: 20px;
+    }
+
+    .marker {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        background: red;
+    }
+
+    #panel {
+        margin-top: 20px;
+        padding: 10px;
+        background: #222;
+        width: 90%;
+        max-width: 800px;
+        border: 2px solid #fff;
+    }
+
+    #panel button {
+        margin: 4px;
+    }
+
+    #log p {
+        margin: 2px 0;
+        font-family: monospace;
+    }
 </style>
 </head>
 <body>
 
-<div id="map-container">
-  <div id="tooltip" class="tooltip"></div>
-  <div id="legend">
-    <div><span style="background:red;"></span> City</div>
-    <div><span style="background:orange;"></span> Town</div>
-    <div><span style="background:yellow;"></span> Village</div>
-    <div><span style="background:black;"></span> Military</div>
-    <div><span style="background:gray;"></span> Minor Military</div>
-    <div><span style="background:blue;"></span> Airfield</div>
-    <div><span style="background:purple;"></span> POI</div>
-    <div><span style="background:pink;"></span> Minor POI</div>
-    <div><span style="background:brown;"></span> Industrial</div>
-    <div><span style="background:teal;"></span> Island</div>
-  </div>
+<h1>CHERNOMAP Coordinate Generator</h1>
+
+<div id="map-container"></div>
+
+<div id="panel">
+    <button id="startBtn">Start Clicking Cities</button>
+    <p id="currentCity">Current City: -</p>
+    <div id="log"></div>
 </div>
 
 <script>
-const mapWidth = 1500;
-const mapHeight = 1356;
-
-// These are the original maximum coordinates from your dataset
-const originalMaxX = 23921; // debug island far right
-const originalMaxY = 15165; // stary yar far bottom
-
-// Scaling function
-function scaleCoord(x, y) {
-  return {
-    x: x / originalMaxX * mapWidth,
-    y: y / originalMaxY * mapHeight
-  };
-}
-
-// All your locations
-const locations = [
-    { ID: 1, English_Name: 'Chernogorsk', Native_Name: 'Черногорск', Coordinates: '6675,2674', Type: 'City' },
-    { ID: 2, English_Name: 'Elektrozavodsk', Native_Name: 'Электрозаводск', Coordinates: '10309,2175', Type: 'City' },
-    { ID: 3, English_Name: 'Berezino', Native_Name: 'Березино', Coordinates: '12604,9791', Type: 'City' },
-    { ID: 4, English_Name: 'Zelenogorsk', Native_Name: 'Зеленогорск', Coordinates: '2663,5201', Type: 'City' },
-    { ID: 5, English_Name: 'Novaya Petrovka', Native_Name: 'Новая Петровка', Coordinates: '3465,13065', Type: 'City' },
-    { ID: 6, English_Name: 'Stary Sobor', Native_Name: 'Старый Собор', Coordinates: '6139,7781', Type: 'Village' },
-    // Add the rest of your 200+ locations here in the same format
+// List of cities you want to click on
+const cities = [
+    'Chernogorsk',
+    'Elektrozavodsk',
+    'Berezino',
+    'Zelenogorsk',
+    'Novaya Petrovka',
+    'Stary Sobor',
+    'Novy Sobor',
+    'Kabanino',
+    'Vybor',
+    'Tisy Military Base',
+    'Northwest Airfield (NWAF)',
+    'Balota Airfield'
+    // Add more cities here...
 ];
 
+let currentIndex = 0;
+let listening = false;
+
 const mapContainer = document.getElementById('map-container');
-const tooltip = document.getElementById('tooltip');
+const logDiv = document.getElementById('log');
+const currentCityEl = document.getElementById('currentCity');
+const startBtn = document.getElementById('startBtn');
 
-locations.forEach(loc => {
-    const [x, y] = loc.Coordinates.split(',').map(Number);
-    const scaled = scaleCoord(x, y);
+// Start clicking
+startBtn.addEventListener('click', () => {
+    if (currentIndex >= cities.length) {
+        alert("All cities have been clicked!");
+        return;
+    }
+    listening = true;
+    currentCityEl.textContent = `Current City: ${cities[currentIndex]}`;
+    alert(`Click on the map where "${cities[currentIndex]}" is located.`);
+});
 
+// Map click listener
+mapContainer.addEventListener('click', e => {
+    if (!listening) return;
+
+    const rect = mapContainer.getBoundingClientRect();
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
+
+    // Add marker
     const marker = document.createElement('div');
-    marker.className = `marker ${loc.Type.replace(' ', '\\ ')}`;
-    marker.style.left = `${scaled.x}px`;
-    marker.style.top = `${scaled.y}px`;
-
-    marker.addEventListener('mouseenter', () => {
-        tooltip.style.display = 'block';
-        tooltip.innerText = `${loc.English_Name} ${loc.Native_Name ? '('+loc.Native_Name+')' : ''}`;
-    });
-    marker.addEventListener('mousemove', e => {
-        tooltip.style.left = e.pageX + 10 + 'px';
-        tooltip.style.top = e.pageY + 10 + 'px';
-    });
-    marker.addEventListener('mouseleave', () => {
-        tooltip.style.display = 'none';
-    });
-
+    marker.classList.add('marker');
+    marker.style.left = x + 'px';
+    marker.style.top = y + 'px';
     mapContainer.appendChild(marker);
+
+    // Log coordinates
+    const coordStr = `{ English_Name: '${cities[currentIndex]}', Coordinates: '${x}, ${y}' }`;
+    const p = document.createElement('p');
+    p.textContent = coordStr;
+    logDiv.appendChild(p);
+
+    // Move to next city
+    currentIndex++;
+    listening = false;
+    if (currentIndex < cities.length) {
+        alert(`Next city: "${cities[currentIndex]}". Click "Start Clicking Cities" to continue.`);
+        currentCityEl.textContent = `Current City: -`;
+    } else {
+        alert("All cities have been clicked! Copy coordinates from the log.");
+        currentCityEl.textContent = "Current City: -";
+    }
 });
 </script>
 
