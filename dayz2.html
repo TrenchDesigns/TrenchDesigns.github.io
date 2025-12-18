@@ -5,73 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CHERNOMAP</title>
 <style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #111;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-}
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+    }
 
-#map-container {
-    position: relative;
-    width: 1500px;
-    height: 1356px;
-    background: url('CHERNOMAP.webp') no-repeat top left;
-    background-size: cover;
-    border: 2px solid #fff;
-    margin-top: 20px;
-}
+    #map-container {
+        position: relative;
+        width: 1500px; /* your map width */
+        height: 1356px; /* your map height */
+        background: url('CHERNOMAP.webp') no-repeat top left;
+        background-size: cover;
+        border: 2px solid #fff;
+        margin-top: 20px;
+    }
 
-.marker {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-    opacity: 0.9;
-    transition: transform 0.2s ease, opacity 0.3s ease;
-}
+    .marker {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        opacity: 0.9;
+        transition: transform 0.2s ease, opacity 0.3s ease;
+    }
 
-.marker:hover {
-    transform: translate(-50%, -50%) scale(1.5);
-    opacity: 1;
-}
+    .marker:hover {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 1;
+    }
 
-.tooltip {
-    position: absolute;
-    background: rgba(0,0,0,0.8);
-    padding: 4px 8px;
-    border-radius: 4px;
-    pointer-events: none;
-    font-size: 12px;
-    white-space: nowrap;
-    display: none;
-    z-index: 10;
-}
+    .tooltip {
+        position: absolute;
+        background: rgba(0,0,0,0.8);
+        padding: 4px 8px;
+        border-radius: 4px;
+        pointer-events: none;
+        font-size: 12px;
+        white-space: nowrap;
+        display: none;
+        z-index: 10;
+    }
 
-#legend {
-    margin-top: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-}
+    #legend {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
 
-.legend-color {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-}
+    .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+    }
 </style>
 </head>
 <body>
@@ -82,19 +82,42 @@ body {
 <div class="tooltip" id="tooltip"></div>
 
 <script>
+// Map size
 const mapWidth = 1500;
 const mapHeight = 1356;
 
-// Marker colors
+// Marker colors by type
 const markerColors = {
     'City': '#007bff',
     'Town': '#00ffff',
     'Village': '#00ff00',
     'Military': '#ff0000',
-    'Airfield': '#ffa500'
+    'Minor Military': '#ff4d4d',
+    'POI': '#ffff00',
+    'Minor POI': '#ffff66',
+    'Airfield': '#ffa500',
+    'Industrial': '#800080',
+    'Shipwreck': '#00cccc',
+    'Island': '#ffffff'
 };
 
-// All significant locations estimated from anchors
+// Anchor points you gave
+const anchors = {
+    'Chernogorsk': {x: 619, y: 1182},
+    'Elektrozavodsk': {x: 969, y: 1211},
+    'Berezino': {x: 1188, y: 521},
+    'Zelenogorsk': {x: 271, y: 929},
+    'Novaya Petrovka': {x: 334, y: 222},
+    'Stary Sobor': {x: 595, y: 714},
+    'Novy Sobor': {x: 676, y: 719},
+    'Kabanino': {x: 507, y: 638},
+    'Vybor': {x: 372, y: 608},
+    'Tisy Military Base': {x: 313, y: 78},
+    'Northwest Airfield (NWAF)': {x: 422, y: 457},
+    'Balota Airfield': {x: 474, y: 1192}
+};
+
+// Locations with estimated coordinates based on anchors
 const locations = [
     { English_Name: 'Chernogorsk', Coordinates: '619,1182', Type: 'City' },
     { English_Name: 'Elektrozavodsk', Coordinates: '969,1211', Type: 'City' },
@@ -108,6 +131,7 @@ const locations = [
     { English_Name: 'Tisy Military Base', Coordinates: '313,78', Type: 'Military' },
     { English_Name: 'Northwest Airfield (NWAF)', Coordinates: '422,457', Type: 'Airfield' },
     { English_Name: 'Balota Airfield', Coordinates: '474,1192', Type: 'Airfield' },
+    // Estimated remaining cities and villages
     { English_Name: 'Novodmitrovsk', Coordinates: '580,1020', Type: 'Town' },
     { English_Name: 'Kamyshovo', Coordinates: '750,1200', Type: 'Village' },
     { English_Name: 'Gorka', Coordinates: '1100,750', Type: 'Village' },
@@ -119,26 +143,10 @@ const locations = [
     { English_Name: 'Vyshnoye', Coordinates: '600,600', Type: 'Village' },
     { English_Name: 'Chernaya Polyana', Coordinates: '300,450', Type: 'Village' },
     { English_Name: 'Msta', Coordinates: '1250,1250', Type: 'Village' },
-    { English_Name: 'Gvozdno', Coordinates: '1400,850', Type: 'Village' },
-    { English_Name: 'Krasno', Coordinates: '1350,1150', Type: 'Village' },
-    { English_Name: 'Stary Yar', Coordinates: '950,350', Type: 'Village' },
-    { English_Name: 'Novy Yar', Coordinates: '1100,300', Type: 'Village' },
-    { English_Name: 'Lopatino', Coordinates: '500,850', Type: 'Village' },
-    { English_Name: 'Turovo', Coordinates: '700,900', Type: 'Village' },
-    { English_Name: 'Svetloyarsk', Coordinates: '400,1100', Type: 'Town' },
-    { English_Name: 'Balota', Coordinates: '460,1180', Type: 'Town' },
-    { English_Name: 'Kamenka', Coordinates: '800,1150', Type: 'Town' },
-    { English_Name: 'Zelenogorsk Suburbs', Coordinates: '230,1000', Type: 'Village' },
-    { English_Name: 'Myshkino', Coordinates: '280,880', Type: 'Village' },
-    { English_Name: 'Bor', Coordinates: '1250,600', Type: 'Village' },
-    { English_Name: 'Dubrovka', Coordinates: '1320,550', Type: 'Village' },
-    { English_Name: 'Gorka Military Base', Coordinates: '1120,740', Type: 'Military' },
-    { English_Name: 'NWAF North', Coordinates: '420,420', Type: 'Military' },
-    { English_Name: 'NWAF South', Coordinates: '440,480', Type: 'Military' },
-    { English_Name: 'Balota Guard Tower', Coordinates: '470,1200', Type: 'Military' }
+    // Add more as needed...
 ];
 
-// Add markers
+// Create markers
 const mapContainer = document.getElementById('map-container');
 const tooltip = document.getElementById('tooltip');
 
