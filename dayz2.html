@@ -7,254 +7,331 @@
 
 <!-- Bootstrap 5 -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <style>
-/* ===== BODY ===== */
 body {
-  margin: 0;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  background: #0b0b0b;
-  color: #fff;
-  overflow: hidden;
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: #111;
+    color: #fff;
+    overflow: hidden;
 }
 
 /* ===== NAVBAR ===== */
-.navbar-glass .navbar-brand img {
-  height: 42px;
-  /* Outer subtle black shadow for depth */
-  filter: drop-shadow(0 0 2px rgba(0,0,0,0.6));
-  /* Outer soft green glow */
-  box-shadow: 0 0 8px #aaff00, 0 0 12px #88ff00;
-  border-radius: 6px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.navbar-glass {
+    backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(30,30,30,0.6);
+    border-bottom: 2px solid #88ff00;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    padding: 0.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
-
-.navbar-glass .navbar-brand img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 10px #ccff33, 0 0 16px #aaff00;
+.navbar-glass .navbar-brand {
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: #88ff00;
+    text-shadow: 0 0 6px #aaff00;
+}
+.navbar-glass .navbar-brand:hover {
+    color: #ccff33;
+    text-shadow: 0 0 10px #ccff33, 0 0 14px #88ff00;
+}
+.navbar-glass .btn, .navbar-glass .dropdown-toggle {
+    border-radius: 20px;
+    font-weight: 500;
+    box-shadow: 0 0 6px #88ff00;
+    transition: all 0.2s ease;
+}
+.navbar-glass .btn:hover, .navbar-glass .dropdown-toggle:hover {
+    box-shadow: 0 0 12px #ccff33;
+}
+.navbar-glass .dropdown-menu {
+    background-color: rgba(20,20,20,0.9);
+    border: 1px solid #88ff00;
+    backdrop-filter: blur(12px);
+    color: #ccff33;
+}
+.navbar-glass .dropdown-item:hover {
+    background-color: rgba(136,255,0,0.1);
+    color: #88ff00;
 }
 
 /* ===== VIEWPORT ===== */
 #viewport {
-  width: 100%;
-  height: calc(100vh - 60px);
-  overflow: hidden;
-  position: relative;
-  background: linear-gradient(#0b0b0b, #111);
+    width: 100%;
+    height: calc(100vh - 120px);
+    overflow: hidden;
+    position: relative;
 }
 
 /* ===== MAP WRAPPER ===== */
 #map-wrapper {
-  position: absolute;
-  width: 1500px;
-  height: 1356px;
-  transform-origin: 0 0;
-  transition: transform 0.05s ease-out;
-  cursor: grab;
+    position: absolute;
+    width: 1500px;
+    height: 1356px;
+    transform-origin: 0 0;
 }
-#map-wrapper:active { cursor: grabbing; }
 
-/* ===== MAP IMAGE ===== */
-#map-image {
-  width: 1500px;
-  height: 1356px;
-  display: block;
-  image-rendering: pixelated; /* prevents blurring when scaling */
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+/* ===== MAP ===== */
+#map-container {
+    width: 1500px;
+    height: 1356px;
+    background: url('CHERNOMAP.webp') no-repeat top left;
+    background-size: contain;
+    image-rendering: pixelated;
 }
 
 /* ===== MARKERS ===== */
 .marker {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  opacity: 0.9;
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    opacity: 0.9;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 .marker:hover {
-  transform: translate(-50%, -50%) scale(1.6);
-  box-shadow: 0 0 14px rgba(255,255,255,0.7);
+    transform: translate(-50%, -50%) scale(1.6);
+    box-shadow: 0 0 12px rgba(255,255,255,0.6);
 }
 
 /* ===== TOOLTIP ===== */
 #tooltip {
-  position: fixed;
-  background: rgba(0,0,0,0.85);
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-  pointer-events: none;
-  display: none;
-  z-index: 1000;
-  white-space: nowrap;
-  font-weight: 500;
-  text-shadow: 0 0 2px #000;
+    position: fixed;
+    background: rgba(0,0,0,0.85);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    pointer-events: none;
+    display: none;
+    z-index: 1100;
+    white-space: nowrap;
+    font-weight: 500;
 }
 
-/* ===== LEGEND PANEL ===== */
+/* ===== LEGEND ===== */
 #legend {
-  position: absolute;
-  top: 70px;
-  left: 20px;
-  padding: 14px 18px;
-  border-radius: 20px;
-  backdrop-filter: blur(16px) saturate(180%);
-  background-color: rgba(20,20,20,0.55);
-  border: 1px solid rgba(255,255,255,0.1);
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+    position: absolute;
+    top: 100px;
+    left: 20px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 500;
-}
-.legend-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.3);
+.legend-badge {
+    font-size: 0.85rem;
+    padding: 0.35em 0.6em;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: default;
 }
 
 /* ===== THERMAL OVERLAY ===== */
 #thermal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1500px;
-  height: 1356px;
-  pointer-events: none;
-  opacity: 0.5;
-  display: none;
-  mix-blend-mode: overlay;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1500px;
+    height: 1356px;
+    pointer-events: none;
+    opacity: 0.5;
+    display: none;
+    mix-blend-mode: overlay;
 }
 
-/* ===== THERMAL BUTTON ===== */
-#toggle-thermal {
-  backdrop-filter: blur(16px) saturate(180%);
-  background-color: rgba(30,30,30,0.65);
-  border: 1px solid rgba(255,255,255,0.1);
-  font-weight: 500;
-}
-#toggle-thermal:hover {
-  background-color: rgba(40,40,40,0.85);
+/* ===== FOOTER ===== */
+footer {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    padding: 0.5rem 2rem;
+    text-align: center;
+    backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(30,30,30,0.6);
+    border-top: 2px solid #88ff00;
+    color: #88ff00;
+    font-weight: 500;
+    box-shadow: 0 0 15px rgba(0,255,0,0.2);
+    z-index: 100;
 }
 </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-glass">
-  <div class="container-fluid justify-content-center position-relative">
-    <a class="navbar-brand" href="#">
-      <img src="https://fontmeme.com/permalink/251218/3bb880fbbc5310d5e3107ad59fc8edc4.png" alt="Sebs DayZ Map">
-    </a>
-    <button class="btn btn-sm btn-outline-light position-absolute end-0 me-3" id="toggle-thermal">
-      <i class="fa-solid fa-fire"></i> Thermal
-    </button>
-  </div>
+<nav class="navbar navbar-glass d-flex justify-content-between align-items-center">
+    <span class="navbar-brand"><i class="fa-solid fa-map"></i> Sebs DayZ Map</span>
+    <div class="d-flex gap-2 align-items-center">
+        <button class="btn btn-success btn-sm" id="toggle-thermal"><i class="fa-solid fa-fire"></i> Thermal</button>
+        
+        <div class="dropdown">
+            <button class="btn btn-outline-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="fa-solid fa-info-circle"></i> Info
+            </button>
+            <ul class="dropdown-menu">
+                <li><span class="dropdown-item-text">Info: This map was created by Seb for sh*ts and gigs.</span></li>
+            </ul>
+        </div>
+    </div>
 </nav>
 
 <!-- MAP VIEWPORT -->
 <div id="viewport">
-  <div id="map-wrapper">
-    <img id="map-image" src="CHERNOMAP.webp" width="1500" height="1356"/>
-    <canvas id="thermal-overlay"></canvas>
-  </div>
-  <div id="legend"></div>
+    <div id="map-wrapper">
+        <div id="map-container"></div>
+        <canvas id="thermal-overlay"></canvas>
+    </div>
+    <div id="legend" class="d-flex flex-column"></div>
 </div>
 
 <div id="tooltip"></div>
 
+<!-- FOOTER -->
+<footer>
+    Designed by Seb, 2026
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-/* ===== FULL LOCATION LIST ===== */
+// ===== LOCATIONS & COLORS =====
 const locations = [
-{n:'Balota',x:453,y:1188,t:'Village'},{n:'Balota Airfield',x:479,y:1197,t:'Airfield'},{n:'Berezino',x:1149,y:536,t:'City'},{n:'Bor',x:323,y:1046,t:'Village'},{n:'Chernaya Polyana',x:1179,y:167,t:'Village'},{n:'Chernogorsk',x:621,y:1176,t:'City'},{n:'Drozhino',x:328,y:973,t:'Village'},{n:'Dubrovka',x:978,y:521,t:'Village'},{n:'Elektrozavodsk',x:971,y:1224,t:'City'},{n:'Gorka',x:899,y:604,t:'Town'},{n:'Grishino',x:566,y:473,t:'Town'},{n:'Guglovo',x:797,y:796,t:'Village'},{n:'Kabanino',x:502,y:627,t:'Village'},{n:'Kalinovka',x:713,y:192,t:'Village'},{n:'Kamensk Military',x:737,y:73,t:'Military'},{n:'Kamyshovo',x:1121,y:1088,t:'Village'},{n:'Khelm',x:1141,y:409,t:'Village'},{n:'Komarovo',x:344,y:1188,t:'Village'},{n:'Kozlovka',x:421,y:987,t:'Village'},{n:'Krasnostav',x:1036,y:296,t:'Town'},{n:'Krasnostav Airstrip',x:1132,y:266,t:'Airfield'},{n:'Lopatino',x:268,y:506,t:'Village'},{n:'Mogilevka',x:717,y:944,t:'Town'},{n:'Msta',x:1064,y:909,t:'Village'},{n:'Myshkino',x:212,y:744,t:'Village'},{n:'Myshkino Tents',x:122,y:748,t:'Military'},{n:'Nadezhdino',x:559,y:977,t:'Village'},{n:'Northwest Airfield (NWAF)',x:418,y:453,t:'Airfield'},{n:'Novaya Petrovka',x:323,y:222,t:'City'},{n:'Novodmitrovsk',x:1076,y:112,t:'City'},{n:'Novy Sobor',x:673,y:713,t:'Village'},{n:'Orlovets',x:1127,y:743,t:'Village'},{n:'Pavlovo',x:179,y:1077,t:'Village'},{n:'Pavlovo Military',x:213,y:1104,t:'Military'},{n:'Polana',x:997,y:651,t:'Village'},{n:'Prigorodki',x:698,y:1116,t:'Village'},{n:'Pulkovo',x:467,y:898,t:'Village'},{n:'Pusta',x:866,y:1072,t:'Village'},{n:'Rogovo',x:452,y:787,t:'Village'},{n:'Severograd',x:741,y:261,t:'Town'},{n:'Shakhovka',x:877,y:823,t:'Village'},{n:'Sinystok',x:149,y:314,t:'Village'},{n:'Solnichniy',x:1232,y:833,t:'Town'},{n:'Sosnovka',x:247,y:834,t:'Village'},{n:'Staroye',x:924,y:909,t:'Town'},{n:'Stary Sobor',x:587,y:723,t:'Village'},{n:'Stary Sobor Military',x:607,y:701,t:'Military'},{n:'Svetlojarsk',x:1292,y:211,t:'Town'},{n:'Tisy Military Base',x:157,y:139,t:'Military'},{n:'Topolniki',x:287,y:254,t:'Village'},{n:'Tulga',x:1196,y:998,t:'Village'},{n:'Vybor',x:372,y:603,t:'Town'},{n:'Vyshnoye',x:633,y:862,t:'Village'},{n:'Zelenogorsk',x:263,y:934,t:'City'},{n:'Zelenogorsk Military',x:243,y:951,t:'Military'},{n:'Zvir',x:62,y:928,t:'Village'}
+  {n:'Balota',x:453,y:1188,t:'Village'},
+  {n:'Balota Airfield',x:479,y:1197,t:'Airfield'},
+  {n:'Berezino',x:1149,y:536,t:'City'},
+  {n:'Bor',x:323,y:1046,t:'Village'},
+  {n:'Chernaya Polyana',x:1179,y:167,t:'Village'},
+  {n:'Chernogorsk',x:621,y:1176,t:'City'},
+  {n:'Drozhino',x:328,y:973,t:'Village'},
+  {n:'Dubrovka',x:978,y:521,t:'Village'},
+  {n:'Elektrozavodsk',x:971,y:1224,t:'City'},
+  {n:'Gorka',x:899,y:604,t:'Town'},
+  {n:'Grishino',x:566,y:473,t:'Town'},
+  {n:'Guglovo',x:797,y:796,t:'Village'},
+  {n:'Kabanino',x:502,y:627,t:'Village'},
+  {n:'Kalinovka',x:713,y:192,t:'Village'},
+  {n:'Kamensk Military',x:737,y:73,t:'Military'},
+  {n:'Kamyshovo',x:1121,y:1088,t:'Village'},
+  {n:'Khelm',x:1141,y:409,t:'Village'},
+  {n:'Komarovo',x:344,y:1188,t:'Village'},
+  {n:'Kozlovka',x:421,y:987,t:'Village'},
+  {n:'Krasnostav',x:1036,y:296,t:'Town'},
+  {n:'Krasnostav Airstrip',x:1132,y:266,t:'Airfield'},
+  {n:'Lopatino',x:268,y:506,t:'Village'},
+  {n:'Mogilevka',x:717,y:944,t:'Town'},
+  {n:'Msta',x:1064,y:909,t:'Village'},
+  {n:'Myshkino',x:212,y:744,t:'Village'},
+  {n:'Myshkino Tents',x:122,y:748,t:'Military'},
+  {n:'Nadezhdino',x:559,y:977,t:'Village'},
+  {n:'Northwest Airfield (NWAF)',x:418,y:453,t:'Airfield'},
+  {n:'Novaya Petrovka',x:323,y:222,t:'City'},
+  {n:'Novodmitrovsk',x:1076,y:112,t:'City'},
+  {n:'Novy Sobor',x:673,y:713,t:'Village'},
+  {n:'Orlovets',x:1127,y:743,t:'Village'},
+  {n:'Pavlovo',x:179,y:1077,t:'Village'},
+  {n:'Pavlovo Military',x:213,y:1104,t:'Military'},
+  {n:'Polana',x:997,y:651,t:'Village'},
+  {n:'Prigorodki',x:698,y:1116,t:'Village'},
+  {n:'Pulkovo',x:467,y:898,t:'Village'},
+  {n:'Pusta',x:866,y:1072,t:'Village'},
+  {n:'Rogovo',x:452,y:787,t:'Village'},
+  {n:'Severograd',x:741,y:261,t:'Town'},
+  {n:'Shakhovka',x:877,y:823,t:'Village'},
+  {n:'Sinystok',x:149,y:314,t:'Village'},
+  {n:'Solnichniy',x:1232,y:833,t:'Town'},
+  {n:'Sosnovka',x:247,y:834,t:'Village'},
+  {n:'Staroye',x:924,y:909,t:'Town'},
+  {n:'Stary Sobor',x:587,y:723,t:'Village'},
+  {n:'Stary Sobor Military',x:607,y:701,t:'Military'},
+  {n:'Svetlojarsk',x:1292,y:211,t:'Town'},
+  {n:'Tisy Military Base',x:157,y:139,t:'Military'},
+  {n:'Topolniki',x:287,y:254,t:'Village'},
+  {n:'Tulga',x:1196,y:998,t:'Village'},
+  {n:'Vybor',x:372,y:603,t:'Town'},
+  {n:'Vyshnoye',x:633,y:862,t:'Village'},
+  {n:'Zelenogorsk',x:263,y:934,t:'City'},
+  {n:'Zelenogorsk Military',x:243,y:951,t:'Military'},
+  {n:'Zvir',x:62,y:928,t:'Village'}
 ];
 
-/* ===== COLORS ===== */
-const colors = { City:'#1e90ff', Town:'#00ffff', Village:'#00ff66', Military:'#ff3333', Airfield:'#ffa500' };
+const colors = {City:'#1e90ff',Town:'#00ffff',Village:'#00ff66',Military:'#ff3333',Airfield:'#ffa500};
+const hotspotWeights = {'Northwest Airfield (NWAF)':5,'Tisy Military Base':5,'Balota Airfield':4,'Chernogorsk':4,'Elektrozavodsk':4,'Zelenogorsk':3,'Stary Sobor':3,'Novy Sobor':3,'Vybor':3,'Berezino':3};
 
-/* ===== HOTSPOT WEIGHTS ===== */
-const hotspotWeights = { 'Northwest Airfield (NWAF)':5, 'Tisy Military Base':5, 'Balota Airfield':4, 'Chernogorsk':4, 'Elektrozavodsk':4, 'Zelenogorsk':3, 'Stary Sobor':3, 'Novy Sobor':3, 'Vybor':3, 'Berezino':3 };
-
-/* ===== MARKERS ===== */
-const mapWrapper = document.getElementById('map-wrapper');
+// ===== MARKERS =====
+const map = document.getElementById('map-container');
 const tooltip = document.getElementById('tooltip');
 locations.forEach(l=>{
-  const m=document.createElement('div');
+  const m = document.createElement('div');
   m.className='marker';
   m.style.left=l.x+'px';
   m.style.top=l.y+'px';
   m.style.background=colors[l.t];
-  m.onmouseenter=()=>{tooltip.style.display='block'; tooltip.innerHTML=`<strong>${l.n}</strong><br>${l.t}`;};
-  m.onmousemove=e=>{tooltip.style.left=e.clientX+12+'px'; tooltip.style.top=e.clientY+12+'px';};
+  m.onmouseenter=()=>{tooltip.style.display='block';tooltip.innerHTML=`<strong>${l.n}</strong><br>${l.t}`;};
+  m.onmousemove=e=>{tooltip.style.left=e.clientX+12+'px';tooltip.style.top=e.clientY+12+'px';};
   m.onmouseleave=()=>tooltip.style.display='none';
-  mapWrapper.appendChild(m);
+  map.appendChild(m);
 });
 
-/* ===== LEGEND ===== */
+// ===== LEGEND =====
 const legend = document.getElementById('legend');
 Object.entries(colors).forEach(([type,color])=>{
-  const item=document.createElement('div');
-  item.className='legend-item';
-  const dot=document.createElement('div');
-  dot.className='legend-dot';
-  dot.style.background=color;
-  item.appendChild(dot);
-  item.appendChild(document.createTextNode(type));
-  legend.appendChild(item);
+  const badge = document.createElement('span');
+  badge.className = 'badge legend-badge';
+  badge.style.background = color;
+  badge.textContent = type;
+  legend.appendChild(badge);
 });
 
-/* ===== ZOOM + PAN ===== */
-let scale=1.2,targetScale=1.2,originX=0,originY=0,dragging=false,startX=0,startY=0,zoomMouseX=0,zoomMouseY=0;
+// ===== ZOOM + PAN =====
+const wrapper = document.getElementById('map-wrapper');
+const viewport = document.getElementById('viewport');
+let scale = 1.2, originX=0, originY=0, dragging=false, startX=0, startY=0, lastMouseX=0, lastMouseY=0;
 
-function updateTransform(){ mapWrapper.style.transform=`translate(${originX}px,${originY}px) scale(${scale})`; }
+function updateTransform() {
+    wrapper.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
+}
 
-function centerMapInitial(){ const vp=document.getElementById('viewport').getBoundingClientRect(); originX=(vp.width-1500*scale)/2; originY=(vp.height-1356*scale)/2; updateTransform(); }
-window.addEventListener('load',centerMapInitial);
-window.addEventListener('resize',centerMapInitial);
+viewport.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = wrapper.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-document.getElementById('viewport').addEventListener('wheel', e=>{
-  e.preventDefault();
-  const rect = mapWrapper.getBoundingClientRect();
-  zoomMouseX = e.clientX - rect.left;
-  zoomMouseY = e.clientY - rect.top;
-  targetScale = Math.min(4, Math.max(0.6, targetScale + (e.deltaY>0?-0.1:0.1)));
-},{passive:false});
+    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+    const newScale = Math.min(4, Math.max(0.6, scale * zoomFactor));
 
-function animateZoom(){
-  if(Math.abs(scale-targetScale)>0.001){
-    const newScale = scale + (targetScale - scale) * 0.15;
-    originX -= (zoomMouseX/scale)*(newScale-scale);
-    originY -= (zoomMouseY/scale)*(newScale-scale);
+    originX -= (mouseX / scale) * (newScale - scale);
+    originY -= (mouseY / scale) * (newScale - scale);
     scale = newScale;
     updateTransform();
-  }
-  requestAnimationFrame(animateZoom);
-}
-animateZoom();
+},{ passive: false });
 
-/* Dragging */
-document.getElementById('viewport').addEventListener('mousedown', e=>{ dragging=true; startX=e.clientX-originX; startY=e.clientY-originY; });
+viewport.addEventListener('mousedown', e => {
+    dragging = true;
+    startX = e.clientX; startY = e.clientY;
+    lastMouseX = originX; lastMouseY = originY;
+});
 document.addEventListener('mouseup', ()=>dragging=false);
-document.addEventListener('mousemove', e=>{ if(!dragging) return; originX=e.clientX-startX; originY=e.clientY-startY; updateTransform(); });
+document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    originX = lastMouseX + dx; originY = lastMouseY + dy;
+    updateTransform();
+});
 
-/* ===== THERMAL OVERLAY ===== */
+// ===== THERMAL =====
 const canvas = document.getElementById('thermal-overlay');
 const ctx = canvas.getContext('2d');
-canvas.width=1500; canvas.height=1356;
+canvas.width = 1500; canvas.height = 1356;
 
 function drawThermal(){
   ctx.clearRect(0,0,1500,1356);
@@ -270,13 +347,23 @@ function drawThermal(){
   });
 }
 
-let thermalOn=false;
-document.getElementById('toggle-thermal').addEventListener('click',()=>{
-  thermalOn=!thermalOn;
-  canvas.style.display=thermalOn?'block':'none';
+const thermalBtn = document.getElementById('toggle-thermal');
+let thermalOn = false;
+thermalBtn.addEventListener('click', ()=>{
+  thermalOn = !thermalOn;
+  canvas.style.display = thermalOn ? 'block' : 'none';
   if(thermalOn) drawThermal();
 });
-</script>
 
+// ===== CENTER MAP =====
+function centerMap(){
+    const vp = viewport.getBoundingClientRect();
+    originX = (vp.width - 1500 * scale)/2;
+    originY = (vp.height - 1356 * scale)/2;
+    updateTransform();
+}
+window.addEventListener('load', centerMap);
+window.addEventListener('resize', centerMap);
+</script>
 </body>
 </html>
