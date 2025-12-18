@@ -3,138 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CHERNOMAP Click-to-Generate</title>
+<title>CHERNOMAP</title>
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #111;
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        min-height: 100vh;
-    }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
 
-    #map-container {
-        position: relative;
-        width: 1500px;
-        height: 1356px;
-        background: url('CHERNOMAP.webp') no-repeat top left;
-        border: 2px solid #fff;
-        margin-top: 20px;
-    }
+#map-container {
+    position: relative;
+    width: 1500px;
+    height: 1356px;
+    background: url('CHERNOMAP.webp') no-repeat top left;
+    background-size: cover;
+    border: 2px solid #fff;
+    margin-top: 20px;
+}
 
-    .marker {
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        cursor: pointer;
-        background: red;
-    }
+.marker {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    opacity: 0.9;
+    transition: transform 0.2s ease, opacity 0.3s ease;
+}
 
-    #panel {
-        margin-top: 20px;
-        padding: 10px;
-        background: #222;
-        width: 90%;
-        max-width: 800px;
-        border: 2px solid #fff;
-    }
+.marker:hover {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 1;
+}
 
-    #panel button {
-        margin: 4px;
-    }
+.tooltip {
+    position: absolute;
+    background: rgba(0,0,0,0.8);
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    font-size: 12px;
+    white-space: nowrap;
+    display: none;
+    z-index: 10;
+}
 
-    #log p {
-        margin: 2px 0;
-        font-family: monospace;
-    }
+#legend {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
 </style>
 </head>
 <body>
 
-<h1>CHERNOMAP Coordinate Generator</h1>
-
+<h1>CHERNOMAP</h1>
 <div id="map-container"></div>
-
-<div id="panel">
-    <button id="startBtn">Start Clicking Cities</button>
-    <p id="currentCity">Current City: -</p>
-    <div id="log"></div>
-</div>
+<div id="legend"></div>
+<div class="tooltip" id="tooltip"></div>
 
 <script>
-// List of cities you want to click on
-const cities = [
-    'Chernogorsk',
-    'Elektrozavodsk',
-    'Berezino',
-    'Zelenogorsk',
-    'Novaya Petrovka',
-    'Stary Sobor',
-    'Novy Sobor',
-    'Kabanino',
-    'Vybor',
-    'Tisy Military Base',
-    'Northwest Airfield (NWAF)',
-    'Balota Airfield'
-    // Add more cities here...
+const mapWidth = 1500;
+const mapHeight = 1356;
+
+// Marker colors
+const markerColors = {
+    'City': '#007bff',
+    'Town': '#00ffff',
+    'Village': '#00ff00',
+    'Military': '#ff0000',
+    'Airfield': '#ffa500'
+};
+
+// All significant locations estimated from anchors
+const locations = [
+    { English_Name: 'Chernogorsk', Coordinates: '619,1182', Type: 'City' },
+    { English_Name: 'Elektrozavodsk', Coordinates: '969,1211', Type: 'City' },
+    { English_Name: 'Berezino', Coordinates: '1188,521', Type: 'City' },
+    { English_Name: 'Zelenogorsk', Coordinates: '271,929', Type: 'City' },
+    { English_Name: 'Novaya Petrovka', Coordinates: '334,222', Type: 'City' },
+    { English_Name: 'Stary Sobor', Coordinates: '595,714', Type: 'Village' },
+    { English_Name: 'Novy Sobor', Coordinates: '676,719', Type: 'Village' },
+    { English_Name: 'Kabanino', Coordinates: '507,638', Type: 'Village' },
+    { English_Name: 'Vybor', Coordinates: '372,608', Type: 'Town' },
+    { English_Name: 'Tisy Military Base', Coordinates: '313,78', Type: 'Military' },
+    { English_Name: 'Northwest Airfield (NWAF)', Coordinates: '422,457', Type: 'Airfield' },
+    { English_Name: 'Balota Airfield', Coordinates: '474,1192', Type: 'Airfield' },
+    { English_Name: 'Novodmitrovsk', Coordinates: '580,1020', Type: 'Town' },
+    { English_Name: 'Kamyshovo', Coordinates: '750,1200', Type: 'Village' },
+    { English_Name: 'Gorka', Coordinates: '1100,750', Type: 'Village' },
+    { English_Name: 'Pusta', Coordinates: '900,500', Type: 'Village' },
+    { English_Name: 'Severograd', Coordinates: '250,650', Type: 'Town' },
+    { English_Name: 'Krasnostav', Coordinates: '1200,200', Type: 'City' },
+    { English_Name: 'Khelm', Coordinates: '450,900', Type: 'Village' },
+    { English_Name: 'Grishino', Coordinates: '1020,1100', Type: 'Town' },
+    { English_Name: 'Vyshnoye', Coordinates: '600,600', Type: 'Village' },
+    { English_Name: 'Chernaya Polyana', Coordinates: '300,450', Type: 'Village' },
+    { English_Name: 'Msta', Coordinates: '1250,1250', Type: 'Village' },
+    { English_Name: 'Gvozdno', Coordinates: '1400,850', Type: 'Village' },
+    { English_Name: 'Krasno', Coordinates: '1350,1150', Type: 'Village' },
+    { English_Name: 'Stary Yar', Coordinates: '950,350', Type: 'Village' },
+    { English_Name: 'Novy Yar', Coordinates: '1100,300', Type: 'Village' },
+    { English_Name: 'Lopatino', Coordinates: '500,850', Type: 'Village' },
+    { English_Name: 'Turovo', Coordinates: '700,900', Type: 'Village' },
+    { English_Name: 'Svetloyarsk', Coordinates: '400,1100', Type: 'Town' },
+    { English_Name: 'Balota', Coordinates: '460,1180', Type: 'Town' },
+    { English_Name: 'Kamenka', Coordinates: '800,1150', Type: 'Town' },
+    { English_Name: 'Zelenogorsk Suburbs', Coordinates: '230,1000', Type: 'Village' },
+    { English_Name: 'Myshkino', Coordinates: '280,880', Type: 'Village' },
+    { English_Name: 'Bor', Coordinates: '1250,600', Type: 'Village' },
+    { English_Name: 'Dubrovka', Coordinates: '1320,550', Type: 'Village' },
+    { English_Name: 'Gorka Military Base', Coordinates: '1120,740', Type: 'Military' },
+    { English_Name: 'NWAF North', Coordinates: '420,420', Type: 'Military' },
+    { English_Name: 'NWAF South', Coordinates: '440,480', Type: 'Military' },
+    { English_Name: 'Balota Guard Tower', Coordinates: '470,1200', Type: 'Military' }
 ];
 
-let currentIndex = 0;
-let listening = false;
-
+// Add markers
 const mapContainer = document.getElementById('map-container');
-const logDiv = document.getElementById('log');
-const currentCityEl = document.getElementById('currentCity');
-const startBtn = document.getElementById('startBtn');
+const tooltip = document.getElementById('tooltip');
 
-// Start clicking
-startBtn.addEventListener('click', () => {
-    if (currentIndex >= cities.length) {
-        alert("All cities have been clicked!");
-        return;
-    }
-    listening = true;
-    currentCityEl.textContent = `Current City: ${cities[currentIndex]}`;
-    alert(`Click on the map where "${cities[currentIndex]}" is located.`);
-});
-
-// Map click listener
-mapContainer.addEventListener('click', e => {
-    if (!listening) return;
-
-    const rect = mapContainer.getBoundingClientRect();
-    const x = Math.round(e.clientX - rect.left);
-    const y = Math.round(e.clientY - rect.top);
-
-    // Add marker
+locations.forEach(loc => {
     const marker = document.createElement('div');
     marker.classList.add('marker');
-    marker.style.left = x + 'px';
-    marker.style.top = y + 'px';
+    marker.style.background = markerColors[loc.Type] || '#fff';
+    const [x, y] = loc.Coordinates.split(',').map(Number);
+    marker.style.left = `${x}px`;
+    marker.style.top = `${y}px`;
+
+    marker.addEventListener('mouseenter', e => {
+        tooltip.style.display = 'block';
+        tooltip.innerHTML = `${loc.English_Name}`;
+    });
+
+    marker.addEventListener('mousemove', e => {
+        tooltip.style.left = e.pageX + 10 + 'px';
+        tooltip.style.top = e.pageY + 10 + 'px';
+    });
+
+    marker.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+    });
+
     mapContainer.appendChild(marker);
+});
 
-    // Log coordinates
-    const coordStr = `{ English_Name: '${cities[currentIndex]}', Coordinates: '${x}, ${y}' }`;
-    const p = document.createElement('p');
-    p.textContent = coordStr;
-    logDiv.appendChild(p);
-
-    // Move to next city
-    currentIndex++;
-    listening = false;
-    if (currentIndex < cities.length) {
-        alert(`Next city: "${cities[currentIndex]}". Click "Start Clicking Cities" to continue.`);
-        currentCityEl.textContent = `Current City: -`;
-    } else {
-        alert("All cities have been clicked! Copy coordinates from the log.");
-        currentCityEl.textContent = "Current City: -";
-    }
+// Legend
+const legend = document.getElementById('legend');
+Object.keys(markerColors).forEach(type => {
+    const item = document.createElement('div');
+    item.classList.add('legend-item');
+    const colorBox = document.createElement('div');
+    colorBox.classList.add('legend-color');
+    colorBox.style.background = markerColors[type];
+    item.appendChild(colorBox);
+    const label = document.createElement('span');
+    label.textContent = type;
+    item.appendChild(label);
+    legend.appendChild(item);
 });
 </script>
 
