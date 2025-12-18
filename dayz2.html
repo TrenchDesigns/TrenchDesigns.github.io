@@ -9,7 +9,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-/* ===== BODY ===== */
 body {
     margin: 0;
     font-family: 'Segoe UI', Roboto, sans-serif;
@@ -18,7 +17,7 @@ body {
     overflow: hidden;
 }
 
-/* ===== NAVBAR ===== */
+/* Navbar */
 .navbar-glass {
     backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(30,30,30,0.55);
@@ -30,7 +29,7 @@ body {
     letter-spacing: 1px;
 }
 
-/* ===== VIEWPORT ===== */
+/* Viewport */
 #viewport {
     width: 100%;
     height: calc(100vh - 60px);
@@ -38,7 +37,7 @@ body {
     position: relative;
 }
 
-/* ===== MAP WRAPPER ===== */
+/* Map wrapper */
 #map-wrapper {
     position: absolute;
     width: 1500px;
@@ -47,16 +46,13 @@ body {
     transition: transform 0.2s ease;
 }
 
-/* ===== MAP ===== */
-#map-container {
-    position: absolute;
-    width: 1500px;
-    height: 1356px;
-    background: url('CHERNOMAP.webp') no-repeat top left;
-    background-size: cover;
+#map-image {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
-/* ===== MARKERS ===== */
+/* Markers */
 .marker {
     position: absolute;
     width: 14px;
@@ -72,7 +68,7 @@ body {
     box-shadow: 0 0 12px rgba(255,255,255,0.6);
 }
 
-/* ===== TOOLTIP ===== */
+/* Tooltip */
 #tooltip {
     position: fixed;
     background: rgba(0,0,0,0.85);
@@ -86,7 +82,7 @@ body {
     font-weight: 500;
 }
 
-/* ===== LEGEND PANEL ===== */
+/* Legend */
 #legend {
     position: absolute;
     top: 70px;
@@ -113,7 +109,7 @@ body {
     border-radius: 50%;
 }
 
-/* ===== THERMAL OVERLAY ===== */
+/* Thermal Overlay */
 #thermal-overlay {
     position: absolute;
     top: 0;
@@ -129,7 +125,7 @@ body {
 </head>
 <body>
 
-<!-- NAVBAR -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-glass">
   <div class="container-fluid">
     <a class="navbar-brand text-light" href="#">CHERNOMAP</a>
@@ -137,10 +133,10 @@ body {
   </div>
 </nav>
 
-<!-- MAP VIEWPORT -->
+<!-- Map Viewport -->
 <div id="viewport">
     <div id="map-wrapper">
-        <div id="map-container"></div>
+        <img id="map-image" src="CHERNOMAP.webp" width="1500" height="1356" />
         <canvas id="thermal-overlay"></canvas>
     </div>
     <div id="legend"></div>
@@ -149,67 +145,66 @@ body {
 <div id="tooltip"></div>
 
 <script>
-/* ===== FULL LOCATION LIST ===== */
+/* ===== Locations & Colors ===== */
 const locations = [
-{n:'Balota',x:453,y:1188,t:'Village'},
-{n:'Balota Airfield',x:479,y:1197,t:'Airfield'},
-{n:'Berezino',x:1149,y:536,t:'City'},
-{n:'Bor',x:323,y:1046,t:'Village'},
-{n:'Chernaya Polyana',x:1179,y:167,t:'Village'},
-{n:'Chernogorsk',x:621,y:1176,t:'City'},
-{n:'Drozhino',x:328,y:973,t:'Village'},
-{n:'Dubrovka',x:978,y:521,t:'Village'},
-{n:'Elektrozavodsk',x:971,y:1224,t:'City'},
-{n:'Gorka',x:899,y:604,t:'Town'},
-{n:'Grishino',x:566,y:473,t:'Town'},
-{n:'Guglovo',x:797,y:796,t:'Village'},
-{n:'Kabanino',x:502,y:627,t:'Village'},
-{n:'Kalinovka',x:713,y:192,t:'Village'},
-{n:'Kamensk Military',x:737,y:73,t:'Military'},
-{n:'Kamyshovo',x:1121,y:1088,t:'Village'},
-{n:'Khelm',x:1141,y:409,t:'Village'},
-{n:'Komarovo',x:344,y:1188,t:'Village'},
-{n:'Kozlovka',x:421,y:987,t:'Village'},
-{n:'Krasnostav',x:1036,y:296,t:'Town'},
-{n:'Krasnostav Airstrip',x:1132,y:266,t:'Airfield'},
-{n:'Lopatino',x:268,y:506,t:'Village'},
-{n:'Mogilevka',x:717,y:944,t:'Town'},
-{n:'Msta',x:1064,y:909,t:'Village'},
-{n:'Myshkino',x:212,y:744,t:'Village'},
-{n:'Myshkino Tents',x:122,y:748,t:'Military'},
-{n:'Nadezhdino',x:559,y:977,t:'Village'},
-{n:'Northwest Airfield (NWAF)',x:418,y:453,t:'Airfield'},
-{n:'Novaya Petrovka',x:323,y:222,t:'City'},
-{n:'Novodmitrovsk',x:1076,y:112,t:'City'},
-{n:'Novy Sobor',x:673,y:713,t:'Village'},
-{n:'Orlovets',x:1127,y:743,t:'Village'},
-{n:'Pavlovo',x:179,y:1077,t:'Village'},
-{n:'Pavlovo Military',x:213,y:1104,t:'Military'},
-{n:'Polana',x:997,y:651,t:'Village'},
-{n:'Prigorodki',x:698,y:1116,t:'Village'},
-{n:'Pulkovo',x:467,y:898,t:'Village'},
-{n:'Pusta',x:866,y:1072,t:'Village'},
-{n:'Rogovo',x:452,y:787,t:'Village'},
-{n:'Severograd',x:741,y:261,t:'Town'},
-{n:'Shakhovka',x:877,y:823,t:'Village'},
-{n:'Sinystok',x:149,y:314,t:'Village'},
-{n:'Solnichniy',x:1232,y:833,t:'Town'},
-{n:'Sosnovka',x:247,y:834,t:'Village'},
-{n:'Staroye',x:924,y:909,t:'Town'},
-{n:'Stary Sobor',x:587,y:723,t:'Village'},
-{n:'Stary Sobor Military',x:607,y:701,t:'Military'},
-{n:'Svetlojarsk',x:1292,y:211,t:'Town'},
-{n:'Tisy Military Base',x:157,y:139,t:'Military'},
-{n:'Topolniki',x:287,y:254,t:'Village'},
-{n:'Tulga',x:1196,y:998,t:'Village'},
-{n:'Vybor',x:372,y:603,t:'Town'},
-{n:'Vyshnoye',x:633,y:862,t:'Village'},
-{n:'Zelenogorsk',x:263,y:934,t:'City'},
-{n:'Zelenogorsk Military',x:243,y:951,t:'Military'},
-{n:'Zvir',x:62,y:928,t:'Village'}
+  {n:'Balota',x:453,y:1188,t:'Village'},
+  {n:'Balota Airfield',x:479,y:1197,t:'Airfield'},
+  {n:'Berezino',x:1149,y:536,t:'City'},
+  {n:'Bor',x:323,y:1046,t:'Village'},
+  {n:'Chernaya Polyana',x:1179,y:167,t:'Village'},
+  {n:'Chernogorsk',x:621,y:1176,t:'City'},
+  {n:'Drozhino',x:328,y:973,t:'Village'},
+  {n:'Dubrovka',x:978,y:521,t:'Village'},
+  {n:'Elektrozavodsk',x:971,y:1224,t:'City'},
+  {n:'Gorka',x:899,y:604,t:'Town'},
+  {n:'Grishino',x:566,y:473,t:'Town'},
+  {n:'Guglovo',x:797,y:796,t:'Village'},
+  {n:'Kabanino',x:502,y:627,t:'Village'},
+  {n:'Kalinovka',x:713,y:192,t:'Village'},
+  {n:'Kamensk Military',x:737,y:73,t:'Military'},
+  {n:'Kamyshovo',x:1121,y:1088,t:'Village'},
+  {n:'Khelm',x:1141,y:409,t:'Village'},
+  {n:'Komarovo',x:344,y:1188,t:'Village'},
+  {n:'Kozlovka',x:421,y:987,t:'Village'},
+  {n:'Krasnostav',x:1036,y:296,t:'Town'},
+  {n:'Krasnostav Airstrip',x:1132,y:266,t:'Airfield'},
+  {n:'Lopatino',x:268,y:506,t:'Village'},
+  {n:'Mogilevka',x:717,y:944,t:'Town'},
+  {n:'Msta',x:1064,y:909,t:'Village'},
+  {n:'Myshkino',x:212,y:744,t:'Village'},
+  {n:'Myshkino Tents',x:122,y:748,t:'Military'},
+  {n:'Nadezhdino',x:559,y:977,t:'Village'},
+  {n:'Northwest Airfield (NWAF)',x:418,y:453,t:'Airfield'},
+  {n:'Novaya Petrovka',x:323,y:222,t:'City'},
+  {n:'Novodmitrovsk',x:1076,y:112,t:'City'},
+  {n:'Novy Sobor',x:673,y:713,t:'Village'},
+  {n:'Orlovets',x:1127,y:743,t:'Village'},
+  {n:'Pavlovo',x:179,y:1077,t:'Village'},
+  {n:'Pavlovo Military',x:213,y:1104,t:'Military'},
+  {n:'Polana',x:997,y:651,t:'Village'},
+  {n:'Prigorodki',x:698,y:1116,t:'Village'},
+  {n:'Pulkovo',x:467,y:898,t:'Village'},
+  {n:'Pusta',x:866,y:1072,t:'Village'},
+  {n:'Rogovo',x:452,y:787,t:'Village'},
+  {n:'Severograd',x:741,y:261,t:'Town'},
+  {n:'Shakhovka',x:877,y:823,t:'Village'},
+  {n:'Sinystok',x:149,y:314,t:'Village'},
+  {n:'Solnichniy',x:1232,y:833,t:'Town'},
+  {n:'Sosnovka',x:247,y:834,t:'Village'},
+  {n:'Staroye',x:924,y:909,t:'Town'},
+  {n:'Stary Sobor',x:587,y:723,t:'Village'},
+  {n:'Stary Sobor Military',x:607,y:701,t:'Military'},
+  {n:'Svetlojarsk',x:1292,y:211,t:'Town'},
+  {n:'Tisy Military Base',x:157,y:139,t:'Military'},
+  {n:'Topolniki',x:287,y:254,t:'Village'},
+  {n:'Tulga',x:1196,y:998,t:'Village'},
+  {n:'Vybor',x:372,y:603,t:'Town'},
+  {n:'Vyshnoye',x:633,y:862,t:'Village'},
+  {n:'Zelenogorsk',x:263,y:934,t:'City'},
+  {n:'Zelenogorsk Military',x:243,y:951,t:'Military'},
+  {n:'Zvir',x:62,y:928,t:'Village'}
 ];
 
-/* ===== COLORS ===== */
 const colors = {
   City:'#1e90ff',
   Town:'#00ffff',
@@ -218,7 +213,6 @@ const colors = {
   Airfield:'#ffa500'
 };
 
-/* ===== HOTSPOT WEIGHTS ===== */
 const hotspotWeights = {
   'Northwest Airfield (NWAF)': 5,
   'Tisy Military Base': 5,
@@ -232,24 +226,24 @@ const hotspotWeights = {
   'Berezino': 3
 };
 
-/* ===== RENDER MARKERS ===== */
-const map = document.getElementById('map-container');
+/* ===== Render Markers ===== */
+const mapWrapper = document.getElementById('map-wrapper');
 const tooltip = document.getElementById('tooltip');
 
 locations.forEach(l=>{
-  const m = document.createElement('div');
+  const m=document.createElement('div');
   m.className='marker';
   m.style.left=l.x+'px';
   m.style.top=l.y+'px';
   m.style.background=colors[l.t];
-  m.onmouseenter=()=>{tooltip.style.display='block';tooltip.innerHTML=`<strong>${l.n}</strong><br>${l.t}`;};
-  m.onmousemove=e=>{tooltip.style.left=e.clientX+12+'px';tooltip.style.top=e.clientY+12+'px';};
+  m.onmouseenter=()=>{tooltip.style.display='block'; tooltip.innerHTML=`<strong>${l.n}</strong><br>${l.t}`;};
+  m.onmousemove=e=>{tooltip.style.left=e.clientX+12+'px'; tooltip.style.top=e.clientY+12+'px';};
   m.onmouseleave=()=>tooltip.style.display='none';
-  map.appendChild(m);
+  mapWrapper.appendChild(m);
 });
 
-/* ===== LEGEND ===== */
-const legend = document.getElementById('legend');
+/* ===== Legend ===== */
+const legend=document.getElementById('legend');
 Object.entries(colors).forEach(([type,color])=>{
   const item=document.createElement('div');
   item.className='legend-item';
@@ -261,48 +255,49 @@ Object.entries(colors).forEach(([type,color])=>{
   legend.appendChild(item);
 });
 
-/* ===== ZOOM + PAN ===== */
-const wrapper=document.getElementById('map-wrapper');
-let scale=1.2;
-let originX=0;
-let originY=0;
-let dragging=false,startX=0,startY=0;
+/* ===== Zoom & Pan ===== */
+let scale = 1.2;
+let originX = 0;
+let originY = 0;
+let dragging = false, startX = 0, startY = 0;
 
 function centerMap(){
-  const vp=document.getElementById('viewport').getBoundingClientRect();
-  originX=(vp.width-1500*scale)/2;
-  originY=(vp.height-1356*scale)/2;
+  const vp = document.getElementById('viewport').getBoundingClientRect();
+  originX = (vp.width - 1500*scale)/2;
+  originY = (vp.height - 1356*scale)/2;
   updateTransform();
 }
-function updateTransform(){
-  wrapper.style.transform=`translate(${originX}px,${originY}px) scale(${scale})`;
-}
-window.addEventListener('load',centerMap);
-window.addEventListener('resize',centerMap);
 
-document.getElementById('viewport').addEventListener('wheel',e=>{
+function updateTransform(){
+  mapWrapper.style.transform=`translate(${originX}px,${originY}px) scale(${scale})`;
+}
+
+window.addEventListener('load', centerMap);
+window.addEventListener('resize', centerMap);
+
+document.getElementById('viewport').addEventListener('wheel', e=>{
   e.preventDefault();
-  scale=Math.min(4,Math.max(0.6,scale+(e.deltaY>0?-0.1:0.1)));
+  scale = Math.min(4, Math.max(0.6, scale + (e.deltaY>0?-0.1:0.1)));
   centerMap();
 },{passive:false});
 
-document.getElementById('viewport').addEventListener('mousedown',e=>{
-  dragging=true;
-  startX=e.clientX-originX;
-  startY=e.clientY-originY;
+document.getElementById('viewport').addEventListener('mousedown', e=>{
+  dragging = true;
+  startX = e.clientX - originX;
+  startY = e.clientY - originY;
 });
-document.addEventListener('mouseup',()=>dragging=false);
-document.addEventListener('mousemove',e=>{
+document.addEventListener('mouseup', ()=>dragging=false);
+document.addEventListener('mousemove', e=>{
   if(!dragging) return;
-  originX=e.clientX-startX;
-  originY=e.clientY-startY;
+  originX = e.clientX - startX;
+  originY = e.clientY - startY;
   updateTransform();
 });
 
-/* ===== THERMAL OVERLAY ===== */
+/* ===== Thermal Overlay ===== */
 const canvas=document.getElementById('thermal-overlay');
 const ctx=canvas.getContext('2d');
-canvas.width=1500;canvas.height=1356;
+canvas.width=1500; canvas.height=1356;
 
 function drawThermal(){
   ctx.clearRect(0,0,1500,1356);
@@ -326,6 +321,5 @@ thermalBtn.addEventListener('click',()=>{
   if(thermalOn) drawThermal();
 });
 </script>
-
 </body>
 </html>
