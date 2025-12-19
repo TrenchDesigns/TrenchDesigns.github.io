@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Resume | Seb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --ocean: #0d6efd;
+      --ocean-dark: #0b5ed7;
+      --sand: #f4d06f;
+      --sky: #f5f9fc;
+    }
+
+    body {
+      background-color: var(--sky);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 270px;
+      height: 100vh;
+      background: linear-gradient(180deg, var(--ocean), var(--ocean-dark));
+      padding: 1.75rem 1.5rem;
+    }
+
+    .sidebar .nav-link {
+      color: #fff;
+      border-radius: 0.6rem;
+      padding: 0.65rem 0.85rem;
+      font-weight: 500;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background: rgba(255,255,255,0.18);
+    }
+
+    .profile-img {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid var(--sand);
+    }
+
+    /* Main content offset */
+    main {
+      margin-left: 270px;
+      padding: 2.75rem;
+    }
+
+    .section-card {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2.4rem;
+      margin-bottom: 2.75rem;
+      box-shadow: 0 0.75rem 1.75rem rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      border-left: 5px solid var(--ocean);
+      padding-left: 0.85rem;
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 10px;
+    }
+
+    .progress-bar {
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+      }
+
+      main {
+        margin-left: 0;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar d-flex flex-column">
+  <div class="text-center mb-4">
+    <!-- Avatar -->
+    <img src="pic of seb.jpg" alt="Seb working on a car" class="profile-img mb-3">
+    <h5 class="text-white mb-0">Seb</h5>
+    <small class="text-white-50">Multi-Skilled Technologist</small>
+  </div>
+
+  <nav class="nav nav-pills flex-column gap-1">
+    <a class="nav-link active" href="#about"><i class="bi bi-person me-2"></i>About</a>
+    <a class="nav-link" href="#skills"><i class="bi bi-bar-chart-line me-2"></i>Skills</a>
+    <a class="nav-link" href="#experience"><i class="bi bi-briefcase me-2"></i>Experience</a>
+    <a class="nav-link" href="#education"><i class="bi bi-mortarboard me-2"></i>Education</a>
+    <a class="nav-link" href="#contact"><i class="bi bi-envelope me-2"></i>Contact</a>
+  </nav>
+
+  <div class="mt-auto text-center text-white-50 small">
+    Gold Coast & Surrounds, QLD
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main>
+
+  <!-- About -->
+  <section id="about" class="section-card">
+    <h3 class="section-title">About Me</h3>
+    <p>
+      Hands-on problem solver with a strong background in automotive paint-refinishing,
+      detailing, and mechanical diagnostics, now actively applying the same attention
+      to detail and systems thinking to frontend web development (It's my side-hustle).
+    </p>
+    <p>
+      Comfortable working with real-world systems, learning fast, and building
+      clean, practical solutions - whether that’s on a vehicle or in code.
+    </p>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills" class="section-card">
+    <h3 class="section-title">Skills & Expertise</h3>
+
+    <!-- Automotive Refinishing -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between">
+        <span class="fw-semibold">Automotive Refinishing & Detailing</span>
+        <span class="text-muted">50%</span>
+      </div>
+      <div class="progress mb-1">
+        <div class="progress-bar bg-primary" style="width: 50%"></div>
+      </div>
+      <small class="text-muted">
+        Paint correction, refinishing, surface prep, polishing, precision work.
+      </small>
+    </div>
+
+    <!-- Mechanical -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between">
+        <span class="fw-semibold">Mechanical & Technical Diagnostics</span>
+        <span class="text-muted">20%</span>
+      </div>
+      <div class="progress mb-1">
+        <div class="progress-bar bg-info" style="width: 20%"></div>
+      </div>
+      <small class="text-muted">
+        Fault diagnosis, servicing, accessory installation, systems understanding.
+      </small>
+    </div>
+
+    <!-- Web Dev -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between">
+        <span class="fw-semibold">Web Development & Frontend Engineering</span>
+        <span class="text-muted">20%</span>
+      </div>
+      <div class="progress mb-1">
+        <div class="progress-bar bg-success" style="width: 20%"></div>
+      </div>
+      <small class="text-muted">
+        HTML, CSS, Bootstrap, responsive layouts, UI structure, rapid learning.
+      </small>
+    </div>
+
+    <!-- Professional -->
+    <div>
+      <div class="d-flex justify-content-between">
+        <span class="fw-semibold">Professional Skills & Adaptability</span>
+        <span class="text-muted">10%</span>
+      </div>
+      <div class="progress mb-1">
+        <div class="progress-bar bg-warning" style="width: 10%"></div>
+      </div>
+      <small class="text-muted">
+        Communication, discipline, reliability, problem-solving mindset.
+      </small>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience" class="section-card">
+    <h3 class="section-title">Experience</h3>
+    <h6 class="fw-bold mb-1">Automotive Technician / Detailer</h6>
+    <p class="text-muted mb-2">Various Roles · Ongoing</p>
+    <ul>
+      <li>High-quality paint refinement and detailing work</li>
+      <li>Diagnosing and resolving mechanical issues</li>
+      <li>Applying precision and care to every task</li>
+    </ul>
+  </section>
+
+  <!-- Education -->
+  <section id="education" class="section-card">
+    <h3 class="section-title">Education</h3>
+    <p class="fw-semibold mb-1">Self-Directed Web Development & Technical Learning</p>
+    <p class="text-muted">
+      Continuous learning through hands-on projects and real-world problem solving
+    </p>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="section-card">
+    <h3 class="section-title">Contact</h3>
+    <p><i class="bi bi-envelope me-2"></i>sundrunksoul3@icloud.com</p>
+    <p><i class="bi bi-phone me-2"></i>+61 413 773 044</p>
+  </section>
+
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
