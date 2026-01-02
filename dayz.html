@@ -3,28 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sebs DayZ Map — V100000+++</title>
-
+<title>Sebs DayZ Map — AAA+++ Edition</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
 <style>
-html,body{margin:0;height:100%;overflow:hidden;background:#0f1115;color:#fff;font-family:'Segoe UI',Roboto,sans-serif;}
-*{box-sizing:border-box;}
-.navbar-glass{backdrop-filter:blur(18px) saturate(180%);background:rgba(20,22,28,.65);border-bottom:2px solid #88ff00;padding:.45rem 1rem;box-shadow:0 10px 30px rgba(0,0,0,.4);}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#111;color:#fff;font-family:'Segoe UI',Roboto,sans-serif;}
+.navbar-glass{backdrop-filter:blur(18px) saturate(180%);background:rgba(20,20,20,0.65);border-bottom:2px solid #88ff00;padding:.45rem 1rem;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
 .navbar-brand{font-weight:800;color:#88ff00;letter-spacing:.5px;}
-#viewport{position:relative;width:100%;height:calc(100vh - 110px);overflow:hidden;cursor:grab;touch-action:none;}
-#viewport:active{cursor:grabbing;}
-#map-wrapper{position:absolute;width:1500px;height:1356px;transform-origin:0 0;will-change:transform;}
-#map-container{width:1500px;height:1356px;background:url('CHERNOMAP.webp') no-repeat top left;background-size:contain;}
-.marker{position:absolute;width:16px;height:16px;border-radius:50%;transform:translate(-50%,-50%);cursor:pointer;transition:transform .15s ease,opacity .2s ease,box-shadow .2s ease;}
-.marker:hover{box-shadow:0 0 12px rgba(255,255,255,.6);}
-.marker.hidden{opacity:0;pointer-events:none;}
-#tooltip{position:fixed;background:rgba(10,12,18,.95);padding:6px 10px;border-radius:10px;font-size:12px;display:none;z-index:3000;pointer-events:none;}
+#viewport{position:relative;width:100%;height:calc(100vh - 110px);touch-action:none;user-select:none;}
 #legend{position:absolute;top:90px;left:12px;z-index:500;display:flex;flex-direction:column;gap:6px;}
 .legend-badge{font-size:.72rem;padding:.35em .6em;border-radius:.45rem;}
-#thermal-overlay{position:absolute;inset:0;width:1500px;height:1356px;display:none;pointer-events:none;mix-blend-mode:overlay;}
-footer{position:sticky;bottom:0;width:100%;padding:.35rem;font-size:.72rem;background:rgba(20,22,28,.65);border-top:2px solid #88ff00;color:#88ff00;text-align:center;}
+#tooltip{position:absolute;background:rgba(0,0,0,0.85);padding:6px 10px;border-radius:10px;font-size:12px;display:none;pointer-events:none;z-index:3000;}
+footer{position:sticky;bottom:0;width:100%;padding:.35rem;font-size:.72rem;background:rgba(20,20,20,0.65);border-top:2px solid #88ff00;color:#88ff00;text-align:center;}
+canvas{display:block;position:absolute;top:0;left:0;}
 </style>
 </head>
 <body>
@@ -32,239 +23,262 @@ footer{position:sticky;bottom:0;width:100%;padding:.35rem;font-size:.72rem;backg
 <nav class="navbar navbar-glass d-flex justify-content-between align-items-center">
     <span class="navbar-brand"><i class="fa-solid fa-map"></i> Sebs DayZ Map</span>
     <div class="d-flex gap-2 align-items-center">
-        <input id="searchBox" class="form-control form-control-sm" placeholder="Search…">
+        <input id="searchBox" class="form-control form-control-sm" placeholder="Search POI…">
         <button class="btn btn-success btn-sm" id="toggle-thermal"><i class="fa-solid fa-fire"></i></button>
     </div>
 </nav>
 
 <div id="viewport">
-    <div id="map-wrapper">
-        <div id="map-container"></div>
-        <canvas id="thermal-overlay" width="1500" height="1356"></canvas>
-    </div>
+    <canvas id="mapCanvas" width="1500" height="1356"></canvas>
+    <canvas id="thermalCanvas" width="1500" height="1356" style="display:none;"></canvas>
     <div id="legend"></div>
+    <div id="tooltip"></div>
 </div>
 
-<div id="tooltip"></div>
-<footer>Sebs DayZ Map — V100000+++</footer>
+<footer>Sebs DayZ Map — AAA+++ Edition</footer>
 
 <script>
 // ===== DATA =====
 const locations=[
- {n:'Balota',x:453,y:1188,t:'Village'},
- {n:'Balota Airfield',x:479,y:1197,t:'Airfield'},
- {n:'Berezino',x:1149,y:536,t:'City'},
- {n:'Bor',x:323,y:1046,t:'Village'},
- {n:'Chernaya Polyana',x:1179,y:167,t:'Village'},
- {n:'Chernogorsk',x:621,y:1176,t:'City'},
- {n:'Drozhino',x:328,y:973,t:'Village'},
- {n:'Dubrovka',x:978,y:521,t:'Village'},
- {n:'Elektrozavodsk',x:971,y:1224,t:'City'},
- {n:'Gorka',x:899,y:604,t:'Town'},
- {n:'Grishino',x:566,y:473,t:'Town'},
- {n:'Guglovo',x:797,y:796,t:'Village'},
- {n:'Kabanino',x:502,y:627,t:'Village'},
- {n:'Kalinovka',x:713,y:192,t:'Village'},
- {n:'Kamensk Military',x:737,y:73,t:'Military'},
- {n:'Kamyshovo',x:1121,y:1088,t:'Village'},
- {n:'Khelm',x:1141,y:409,t:'Village'},
- {n:'Komarovo',x:344,y:1188,t:'Village'},
- {n:'Kozlovka',x:421,y:987,t:'Village'},
- {n:'Krasnostav',x:1036,y:296,t:'Town'},
- {n:'Krasnostav Airstrip',x:1132,y:266,t:'Airfield'},
- {n:'Lopatino',x:268,y:506,t:'Village'},
- {n:'Mogilevka',x:717,y:944,t:'Town'},
- {n:'Msta',x:1064,y:909,t:'Village'},
- {n:'Myshkino',x:212,y:744,t:'Village'},
- {n:'Myshkino Tents',x:122,y:748,t:'Military'},
- {n:'Nadezhdino',x:559,y:977,t:'Village'},
- {n:'Northwest Airfield (NWAF)',x:418,y:453,t:'Airfield'},
- {n:'Novaya Petrovka',x:323,y:222,t:'City'},
- {n:'Novodmitrovsk',x:1076,y:112,t:'City'},
- {n:'Novy Sobor',x:673,y:713,t:'Village'},
- {n:'Orlovets',x:1127,y:743,t:'Village'},
- {n:'Pavlovo',x:179,y:1077,t:'Village'},
- {n:'Pavlovo Military',x:213,y:1104,t:'Military'},
- {n:'Polana',x:997,y:651,t:'Village'},
- {n:'Prigorodki',x:698,y:1116,t:'Village'},
- {n:'Pulkovo',x:467,y:898,t:'Village'},
- {n:'Pusta',x:866,y:1072,t:'Village'},
- {n:'Rogovo',x:452,y:787,t:'Village'},
- {n:'Severograd',x:741,y:261,t:'Town'},
- {n:'Shakhovka',x:877,y:823,t:'Village'},
- {n:'Sinystok',x:149,y:314,t:'Village'},
- {n:'Solnichniy',x:1232,y:833,t:'Town'},
- {n:'Sosnovka',x:247,y:834,t:'Village'},
- {n:'Staroye',x:924,y:909,t:'Town'},
- {n:'Stary Sobor',x:587,y:723,t:'Village'},
- {n:'Stary Sobor Military',x:607,y:701,t:'Military'},
- {n:'Svetlojarsk',x:1292,y:211,t:'Town'},
- {n:'Tisy Military Base',x:157,y:139,t:'Military'},
- {n:'Topolniki',x:287,y:254,t:'Village'},
- {n:'Tulga',x:1196,y:998,t:'Village'},
- {n:'Vybor',x:372,y:603,t:'Town'},
- {n:'Vyshnoye',x:633,y:862,t:'Village'},
- {n:'Zelenogorsk',x:263,y:934,t:'City'},
- {n:'Zelenogorsk Military',x:243,y:951,t:'Military'},
- {n:'Zvir',x:62,y:928,t:'Village'}
+  {n:'Balota',x:453,y:1188,t:'Village'},
+  {n:'Balota Airfield',x:479,y:1197,t:'Airfield'},
+  {n:'Berezino',x:1149,y:536,t:'City'},
+  {n:'Bor',x:323,y:1046,t:'Village'},
+  {n:'Chernaya Polyana',x:1179,y:167,t:'Village'},
+  {n:'Chernogorsk',x:621,y:1176,t:'City'},
+  {n:'Drozhino',x:328,y:973,t:'Village'},
+  {n:'Dubrovka',x:978,y:521,t:'Village'},
+  {n:'Elektrozavodsk',x:971,y:1224,t:'City'},
+  {n:'Gorka',x:899,y:604,t:'Town'},
+  {n:'Grishino',x:566,y:473,t:'Town'},
+  {n:'Guglovo',x:797,y:796,t:'Village'},
+  {n:'Kabanino',x:502,y:627,t:'Village'},
+  {n:'Kalinovka',x:713,y:192,t:'Village'},
+  {n:'Kamensk Military',x:737,y:73,t:'Military'},
+  {n:'Kamyshovo',x:1121,y:1088,t:'Village'},
+  {n:'Khelm',x:1141,y:409,t:'Village'},
+  {n:'Komarovo',x:344,y:1188,t:'Village'},
+  {n:'Kozlovka',x:421,y:987,t:'Village'},
+  {n:'Krasnostav',x:1036,y:296,t:'Town'},
+  {n:'Krasnostav Airstrip',x:1132,y:266,t:'Airfield'},
+  {n:'Lopatino',x:268,y:506,t:'Village'},
+  {n:'Mogilevka',x:717,y:944,t:'Town'},
+  {n:'Msta',x:1064,y:909,t:'Village'},
+  {n:'Myshkino',x:212,y:744,t:'Village'},
+  {n:'Myshkino Tents',x:122,y:748,t:'Military'},
+  {n:'Nadezhdino',x:559,y:977,t:'Village'},
+  {n:'Northwest Airfield (NWAF)',x:418,y:453,t:'Airfield'},
+  {n:'Novaya Petrovka',x:323,y:222,t:'City'},
+  {n:'Novodmitrovsk',x:1076,y:112,t:'City'},
+  {n:'Novy Sobor',x:673,y:713,t:'Village'},
+  {n:'Orlovets',x:1127,y:743,t:'Village'},
+  {n:'Pavlovo',x:179,y:1077,t:'Village'},
+  {n:'Pavlovo Military',x:213,y:1104,t:'Military'},
+  {n:'Polana',x:997,y:651,t:'Village'},
+  {n:'Prigorodki',x:698,y:1116,t:'Village'},
+  {n:'Pulkovo',x:467,y:898,t:'Village'},
+  {n:'Pusta',x:866,y:1072,t:'Village'},
+  {n:'Rogovo',x:452,y:787,t:'Village'},
+  {n:'Severograd',x:741,y:261,t:'Town'},
+  {n:'Shakhovka',x:877,y:823,t:'Village'},
+  {n:'Sinystok',x:149,y:314,t:'Village'},
+  {n:'Solnichniy',x:1232,y:833,t:'Town'},
+  {n:'Sosnovka',x:247,y:834,t:'Village'},
+  {n:'Staroye',x:924,y:909,t:'Town'},
+  {n:'Stary Sobor',x:587,y:723,t:'Village'},
+  {n:'Stary Sobor Military',x:607,y:701,t:'Military'},
+  {n:'Svetlojarsk',x:1292,y:211,t:'Town'},
+  {n:'Tisy Military Base',x:157,y:139,t:'Military'},
+  {n:'Topolniki',x:287,y:254,t:'Village'},
+  {n:'Tulga',x:1196,y:998,t:'Village'},
+  {n:'Vybor',x:372,y:603,t:'Town'},
+  {n:'Vyshnoye',x:633,y:862,t:'Village'},
+  {n:'Zelenogorsk',x:263,y:934,t:'City'},
+  {n:'Zelenogorsk Military',x:243,y:951,t:'Military'},
+  {n:'Zvir',x:62,y:928,t:'Village'}
 ];
+
 const colors={City:'#1e90ff',Town:'#00ffff',Village:'#00ff66',Military:'#ff3333',Airfield:'#ffa500'};
 const hotspotWeights={'Northwest Airfield (NWAF)':5,'Tisy Military Base':5,'Balota Airfield':4,'Chernogorsk':4,'Elektrozavodsk':4,'Zelenogorsk':3,'Stary Sobor':3,'Novy Sobor':3,'Vybor':3,'Berezino':3};
 
 // ===== ELEMENTS =====
 const viewport=document.getElementById('viewport');
-const wrapper=document.getElementById('map-wrapper');
-const map=document.getElementById('map-container');
+const mapCanvas=document.getElementById('mapCanvas');
+const thermalCanvas=document.getElementById('thermalCanvas');
+const mapCtx=mapCanvas.getContext('2d');
+const thermalCtx=thermalCanvas.getContext('2d');
 const tooltip=document.getElementById('tooltip');
-const markers=[];
 
-// ===== MARKERS =====
-locations.forEach(l=>{
-  const m=document.createElement('div');
-  m.className='marker';
-  m.style.left=l.x+'px';
-  m.style.top=l.y+'px';
-  m.style.background=colors[l.t];
-  m.dataset.type=l.t;
-  m.dataset.name=l.n.toLowerCase();
-
-  m.addEventListener('mouseenter',()=>{tooltip.style.display='block';tooltip.innerHTML=`<strong>${l.n}</strong><br>${l.t}`});
-  m.addEventListener('mousemove',e=>{tooltip.style.left=e.clientX+12+'px';tooltip.style.top=e.clientY+12+'px'});
-  m.addEventListener('mouseleave',()=>tooltip.style.display='none');
-  m.addEventListener('click',()=>smoothZoomTo(l.x,l.y,2.6));
-
-  map.appendChild(m);
-  markers.push(m);
-});
+// ===== STATE =====
+let scale=1,translateX=0,translateY=0;
+let dragging=false,lastX=0,lastY=0;
+let pinchStart=0,pinchScale=1,pinchCenter={x:0,y:0};
+let thermalOn=false;
 
 // ===== LEGEND =====
 const legend=document.getElementById('legend');
 Object.entries(colors).forEach(([k,v])=>{
-  const s=document.createElement('span');
-  s.className='badge legend-badge';
-  s.style.background=v;
-  s.textContent=k;
-  legend.appendChild(s);
+    const s=document.createElement('span');
+    s.className='badge legend-badge';
+    s.style.background=v;
+    s.textContent=k;
+    legend.appendChild(s);
 });
 
-// ===== TRANSFORM =====
-let scale=1,originX=0,originY=0;
-let dragging=false,startX=0,startY=0;
-function update(){
-  const vw=viewport.clientWidth,vh=viewport.clientHeight;
-  const mw=1500*scale,mh=1356*scale;
-  originX=Math.min(0,Math.max(vw-mw,originX));
-  originY=Math.min(0,Math.max(vh-mh,originY));
-  wrapper.style.transform=`translate(${originX}px,${originY}px) scale(${scale})`;
-  markers.forEach(m=>{
-    if(scale<0.85 && m.dataset.type==='Village') m.classList.add('hidden'); else m.classList.remove('hidden');
-    m.style.transform=`translate(-50%,-50%) scale(${1/scale})`;
-  });
+// ===== MAP IMAGE =====
+const mapImg=new Image();
+mapImg.src='CHERNOMAP.webp';
+mapImg.onload=()=>draw();
+
+// ===== DRAW FUNCTION =====
+function draw(){
+    mapCtx.clearRect(0,0,mapCanvas.width,mapCanvas.height);
+    mapCtx.save();
+    mapCtx.translate(translateX,translateY);
+    mapCtx.scale(scale,scale);
+    mapCtx.drawImage(mapImg,0,0,mapCanvas.width,mapCanvas.height);
+    // DRAW MARKERS
+    locations.forEach(loc=>{
+        mapCtx.beginPath();
+        mapCtx.fillStyle=colors[loc.t];
+        mapCtx.arc(loc.x,loc.y,10,0,Math.PI*2);
+        mapCtx.fill();
+    });
+    mapCtx.restore();
+    if(thermalOn) drawThermal();
 }
 
-// ===== MOUSE / TOUCH =====
-viewport.addEventListener('mousedown',e=>{dragging=true;startX=e.clientX-originX;startY=e.clientY-originY;});
+// ===== THERMAL =====
+function drawThermal(){
+    thermalCtx.clearRect(0,0,thermalCanvas.width,thermalCanvas.height);
+    thermalCtx.save();
+    thermalCtx.translate(translateX,translateY);
+    thermalCtx.scale(scale,scale);
+    locations.forEach(l=>{
+        const w=hotspotWeights[l.n]||1,radius=50+20*w,alpha=0.1+0.1*w;
+        const grad=thermalCtx.createRadialGradient(l.x,l.y,0,l.x,l.y,radius);
+        grad.addColorStop(0,'rgba(255,0,0,'+alpha+')');
+        grad.addColorStop(1,'rgba(255,0,0,0)');
+        thermalCtx.fillStyle=grad;
+        thermalCtx.fillRect(l.x-radius,l.y-radius,radius*2,radius*2);
+    });
+    thermalCtx.restore();
+}
+
+// ===== POINTER HELPERS =====
+function screenToMap(x,y){return {x:(x-translateX)/scale, y:(y-translateY)/scale};}
+
+// ===== TOOLTIP =====
+viewport.addEventListener('mousemove',e=>{
+    const m=screenToMap(e.offsetX,e.offsetY);
+    const hit=locations.find(l=>Math.hypot(l.x-m.x,l.y-m.y)<12);
+    if(hit){
+        tooltip.style.display='block';
+        tooltip.style.left=e.clientX+12+'px';
+        tooltip.style.top=e.clientY+12+'px';
+        tooltip.innerHTML=`<strong>${hit.n}</strong><br>${hit.t}`;
+    } else tooltip.style.display='none';
+});
+
+// ===== DRAG =====
+viewport.addEventListener('mousedown',e=>{dragging=true; lastX=e.clientX; lastY=e.clientY;});
 window.addEventListener('mouseup',()=>dragging=false);
-window.addEventListener('mousemove',e=>{if(!dragging)return; originX=e.clientX-startX; originY=e.clientY-startY; update();});
+window.addEventListener('mousemove',e=>{
+    if(!dragging) return;
+    translateX += e.clientX - lastX;
+    translateY += e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    draw();
+});
 
 // ===== WHEEL ZOOM =====
 viewport.addEventListener('wheel',e=>{
- e.preventDefault();
- const r=viewport.getBoundingClientRect();
- const cx=e.clientX-r.left;
- const cy=e.clientY-r.top;
- const prev=scale;
- scale*=e.deltaY<0?1.12:0.88;
- scale=Math.min(4,Math.max(.6,scale));
- originX-=(cx/prev)*(scale-prev);
- originY-=(cy/prev)*(scale-prev);
- update();
+    e.preventDefault();
+    const rect=viewport.getBoundingClientRect();
+    const cx=e.clientX-rect.left,cy=e.clientY-rect.top;
+    const prevScale=scale;
+    scale *= e.deltaY<0?1.12:0.88;
+    scale=Math.min(4,Math.max(0.5,scale));
+    translateX -= (cx-translateX)*(scale/prevScale -1);
+    translateY -= (cy-translateY)*(scale/prevScale -1);
+    draw();
 },{passive:false});
 
-// ===== TOUCH PINCH ZOOM =====
-let pinchDist=0,pinchScale=1,pinchCenter={x:0,y:0};
+// ===== TOUCH =====
 viewport.addEventListener('touchstart',e=>{
- if(e.touches.length===2){
-   const t1=e.touches[0],t2=e.touches[1];
-   pinchDist=Math.hypot(t1.clientX-t2.clientX,t1.clientY-t2.clientY);
-   pinchScale=scale;
-   const r=viewport.getBoundingClientRect();
-   pinchCenter.x=(t1.clientX+t2.clientX)/2-r.left;
-   pinchCenter.y=(t1.clientY+t2.clientY)/2-r.top;
- } else if(e.touches.length===1){
-   startX=e.touches[0].clientX-originX;
-   startY=e.touches[0].clientY-originY;
- }
-},{passive:false});
-viewport.addEventListener('touchmove',e=>{
- e.preventDefault();
- if(e.touches.length===1){originX=e.touches[0].clientX-startX;originY=e.touches[0].clientY-startY;}
- if(e.touches.length===2){
-   const t1=e.touches[0],t2=e.touches[1];
-   const d=Math.hypot(t1.clientX-t2.clientX,t1.clientY-t2.clientY);
-   scale=Math.min(4,Math.max(.6,pinchScale*d/pinchDist));
-   const delta=scale-pinchScale;
-   originX-=(pinchCenter.x/pinchScale)*delta;
-   originY-=(pinchCenter.y/pinchScale)*delta;
- }
- update();
+    if(e.touches.length===2){
+        const t1=e.touches[0],t2=e.touches[1];
+        pinchStart=Math.hypot(t1.clientX-t2.clientX,t1.clientY-t2.clientY);
+        pinchScale=scale;
+        const rect=viewport.getBoundingClientRect();
+        pinchCenter.x=(t1.clientX+t2.clientX)/2-rect.left;
+        pinchCenter.y=(t1.clientY+t2.clientY)/2-rect.top;
+    } else if(e.touches.length===1){
+        lastX=e.touches[0].clientX-translateX;
+        lastY=e.touches[0].clientY-translateY;
+    }
 },{passive:false});
 
-// ===== SMOOTH ZOOM TO =====
-function smoothZoomTo(x,y,targetScale){
-  const startScale=scale;
-  const startXpos=originX;
-  const startYpos=originY;
-  const targetX=viewport.clientWidth/2-x*targetScale;
-  const targetY=viewport.clientHeight/2-y*targetScale;
-  const steps=20; let step=0;
-  const anim=setInterval(()=>{
-    step++;
-    const t=step/steps;
-    scale=startScale+(targetScale-startScale)*t;
-    originX=startXpos+(targetX-startXpos)*t;
-    originY=startYpos+(targetY-startYpos)*t;
-    update();
-    if(step>=steps) clearInterval(anim);
-  },15);
+viewport.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===1){
+        translateX=e.touches[0].clientX-lastX;
+        translateY=e.touches[0].clientY-lastY;
+    } else if(e.touches.length===2){
+        const t1=e.touches[0],t2=e.touches[1];
+        const d=Math.hypot(t1.clientX-t2.clientX,t1.clientY-t2.clientY);
+        const prevScale=scale;
+        scale=Math.min(4,Math.max(0.5,pinchScale*d/pinchStart));
+        translateX -= (pinchCenter.x/prevScale)*(scale-prevScale);
+        translateY -= (pinchCenter.y/prevScale)*(scale-prevScale);
+    }
+    draw();
+},{passive:false});
+
+// ===== ZOOM TO POI =====
+function smoothZoomTo(x,y,target){
+    const steps=25,interval=15;
+    const startScale=scale,startX=translateX,startY=translateY;
+    const targetX=viewport.clientWidth/2 - x*target;
+    const targetY=viewport.clientHeight/2 - y*target;
+    let step=0;
+    const anim=setInterval(()=>{
+        step++;
+        const t=step/steps;
+        scale=startScale + (target-startScale)*t;
+        translateX=startX + (targetX-startX)*t;
+        translateY=startY + (targetY-startY)*t;
+        draw();
+        if(step>=steps) clearInterval(anim);
+    },interval);
 }
 
 // ===== SEARCH =====
-const searchBox=document.getElementById('searchBox');
-searchBox.addEventListener('keydown',e=>{
- if(e.key!=='Enter')return;
- const q=searchBox.value.toLowerCase();
- const l=locations.find(l=>l.n.toLowerCase().includes(q));
- if(l) smoothZoomTo(l.x,l.y,2.6);
+document.getElementById('searchBox').addEventListener('keydown',e=>{
+    if(e.key!=='Enter') return;
+    const q=e.target.value.toLowerCase();
+    const l=locations.find(l=>l.n.toLowerCase().includes(q));
+    if(l) smoothZoomTo(l.x,l.y,2.5);
 });
 
 // ===== THERMAL =====
-const canvas=document.getElementById('thermal-overlay');
-const ctx=canvas.getContext('2d');
-let thermalOn=false;
-function drawThermal(){
- ctx.clearRect(0,0,1500,1356);
- locations.forEach(l=>{
-   const weight=hotspotWeights[l.n]||1;
-   const radius=50+20*weight;
-   const alpha=0.1+0.1*weight;
-   const grad=ctx.createRadialGradient(l.x,l.y,0,l.x,l.y,radius);
-   grad.addColorStop(0,'rgba(255,0,0,'+alpha+')');
-   grad.addColorStop(1,'rgba(255,0,0,0)');
-   ctx.fillStyle=grad;
-   ctx.fillRect(l.x-radius,l.y-radius,radius*2,radius*2);
- });
-}
 document.getElementById('toggle-thermal').onclick=()=>{
- thermalOn=!thermalOn;
- canvas.style.display=thermalOn?'block':'none';
- if(thermalOn) drawThermal();
+    thermalOn=!thermalOn;
+    thermalCanvas.style.display=thermalOn?'block':'none';
+    draw();
 };
 
-// ===== INIT =====
-function centerMap(){scale=1;originX=(viewport.clientWidth-1500)/2;originY=(viewport.clientHeight-1356)/2;update();}
+// ===== INIT CENTER =====
+function centerMap(){
+    scale=1;
+    translateX=(viewport.clientWidth-mapCanvas.width)/2;
+    translateY=(viewport.clientHeight-mapCanvas.height)/2;
+    draw();
+}
 window.addEventListener('resize',centerMap);
 centerMap();
 </script>
+
 </body>
 </html>
