@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>RZTA 2398 Map</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+html,body{
+    margin:0;padding:0;width:100%;height:100%;
+    background:#111;color:#fff;overflow:hidden;
+    font-family:'Segoe UI',Roboto,sans-serif;
+}
+.navbar-glass{
+    backdrop-filter:blur(18px) saturate(180%);
+    background:rgba(20,20,20,.65);
+    border-bottom:2px solid #88ff00;
+    padding:.45rem 1rem;
+}
+.navbar-brand{font-weight:800;color:#88ff00;}
+#viewport{
+    position:relative;
+    width:100%;
+    height:calc(100dvh - 96px);
+    touch-action:none;
+}
+canvas{position:absolute;top:0;left:0;}
+#tooltip{
+    position:absolute;
+    background:rgba(0,0,0,.85);
+    padding:6px 10px;
+    border-radius:10px;
+    font-size:12px;
+    display:none;
+    pointer-events:none;
+    z-index:3000;
+}
+#coordHud{
+    position:absolute;
+    bottom:12px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,.9);
+    padding:8px 14px;
+    border-radius:12px;
+    font-size:13px;
+    display:none;
+    z-index:4000;
+    color:#88ff00;
+}
+footer{
+    position:absolute;
+    bottom:0;width:100%;
+    padding:.3rem;
+    font-size:.7rem;
+    background:rgba(20,20,20,.65);
+    border-top:2px solid #88ff00;
+    color:#88ff00;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-glass d-flex justify-content-between align-items-center">
+    <span class="navbar-brand">
+        <i class="fa-solid fa-map"></i> RZTA 2398 Map
+    </span>
+    <div class="d-flex gap-2">
+        <button class="btn btn-warning btn-sm" id="toggle-picker">
+            <i class="fa-solid fa-crosshairs"></i>
+        </button>
+    </div>
+</nav>
+
+<div id="viewport">
+    <canvas id="mapCanvas" width="1500" height="1356"></canvas>
+    <div id="tooltip"></div>
+    <div id="coordHud">
+        X: <span id="cx"></span> | Y: <span id="cy"></span>
+        <span style="opacity:.6;font-size:11px;">copied</span>
+    </div>
+</div>
+
+<footer>RZTA 2398 Map</footer>
+
+<script>
+// ===== DATA =====
+const locations=[
+  {n:'NWAF',x:418,y:453,t:'Airfield'},
+  {n:'Tisy',x:157,y:139,t:'Military'}
+];
+
+const colors={Airfield:'#ffa500',Military:'#ff3333'};
+
+// ===== ELEMENTS =====
+const viewport=document.getElementById('viewport');
+const canvas=document.getElementById('mapCanvas');
+const ctx=canvas.getContext('2d');
+const tooltip=document.getElementById('tooltip');
+const coordHud=document.getElementById('coordHud');
+const cx=document.getElementById('cx');
+const cy=document.getElementById('cy');
+
+// ===== STATE =====
+let scale=1,tx=0,ty=0;
+let dragging=false;
+let pickerOn=false;
+let last={x:0,y:0};
+
+// ===== MAP IMAGE =====
+const img=new Image();
+img.src='CHERNOMAP.webp';
+img.onload=()=>center();
+
+// ===== DRAW =====
+function draw(){
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.setTransform(scale,0,0,scale,tx,ty);
+    ctx.drawImage(img,0,0);
+    locations.forEach(l=>{
+        ctx.beginPath();
+        ctx.fillStyle=colors[l.t];
+        ctx.arc(l.x,l.y,10,0,Math.PI*2);
+        ctx.fill();
+    });
+}
+
+// ===== HELPERS =====
+function screenToMap(x,y){
+    return {x:(x-tx)/scale,y:(y-ty)/scale};
+}
+
+// ===== PICKER TOGGLE =====
+document.getElementById('toggle-picker').onclick=()=>{
+    pickerOn=!pickerOn;
+};
+
+// ===== TOUCH PICKER =====
+viewport.addEventListener('touchend',e=>{
+    if(!pickerOn) return;
+    const t=e.changedTouches[0];
+    const rect=viewport.getBoundingClientRect();
+    const m=screenToMap(t.clientX-rect.left,t.clientY-rect.top);
+    const x=Math.round(m.x);
+    const y=Math.round(m.y);
+    cx.textContent=x;
+    cy.textContent=y;
+    coordHud.style.display='block';
+    navigator.clipboard.writeText(
+        `{ n:'NEW LOCATION', x:${x}, y:${y}, t:'Village' },`
+    );
+    setTimeout(()=>coordHud.style.display='none',1500);
+});
+
+// ===== DRAG =====
+viewport.addEventListener('touchstart',e=>{
+    if(pickerOn) return;
+    dragging=true;
+    last.x=e.touches[0].clientX;
+    last.y=e.touches[0].clientY;
+});
+
+viewport.addEventListener('touchmove',e=>{
+    if(!dragging || pickerOn) return;
+    const t=e.touches[0];
+    tx+=t.clientX-last.x;
+    ty+=t.clientY-last.y;
+    last.x=t.clientX;
+    last.y=t.clientY;
+    draw();
+},{passive:false});
+
+viewport.addEventListener('touchend',()=>dragging=false);
+
+// ===== CENTER =====
+function center(){
+    scale=1;
+    tx=(viewport.clientWidth-canvas.width)/2;
+    ty=(viewport.clientHeight-canvas.height)/2;
+    draw();
+}
+window.addEventListener('resize',center);
+</script>
+
+</body>
+</html>
